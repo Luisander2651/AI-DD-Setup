@@ -72,6 +72,10 @@ Lista las incógnitas técnicas (cómo guardar X, qué librería para Y, dónde 
 - Decisión y motivo, preferentemente alineada con lo que ya usa el proyecto.
 - Si la decisión introduce una dependencia nueva, cambia la arquitectura o contradice un ADR,
   márcala como **→ ADR**.
+- **Toda dependencia nueva** pasa la verificación de `../../shared/agent-security.md` §2 (existe,
+  antigüedad, reputación, licencia, scripts de instalación) **antes** de proponerla. Registra el
+  resultado en la decisión. Si no se puede verificar, no la propongas: pregunta.
+
 Si una decisión depende de una preferencia del usuario y ambas opciones son razonables, pregúntale
 antes de seguir (máximo 3 preguntas, en una ronda).
 
