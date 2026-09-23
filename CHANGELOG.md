@@ -3,6 +3,11 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.4.1] - 2026-09-22
+### Fixed
+- `aidd.py`: salida en UTF-8 en Windows (antes requería `PYTHONIOENCODING=utf-8`) y lectura del
+  evento del hook como UTF-8, para rutas con acentos. Detectado en la primera prueba real.
+
 ## [1.4.0] - 2026-09-22
 ### Added
 - `shared/agent-security.md`: seguridad del proceso con agentes (contenido de terceros como dato,

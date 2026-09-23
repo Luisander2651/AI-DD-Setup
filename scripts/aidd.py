@@ -5,17 +5,19 @@ Uso:
   aidd.py validate [RUTA ...]      Valida specs (carpetas docs/specs/NNN-slug o archivos).
                                    Sin rutas valida todas. Código de salida 1 si hay errores.
   aidd.py status [--json]          Estado de todas las specs y siguiente paso sugerido.
+  aidd.py hash RUTA                Huellas de spec/plan/tasks (las registra /analyze).
   aidd.py hook pre-tool            Hook PreToolUse: lee el evento JSON por stdin.
 
 Solo usa la biblioteca estándar de Python 3.8+. Se copia a cada proyecto como .ai/bin/aidd.py
 para que CI pueda ejecutarlo sin el plugin.
 """
+import hashlib
 import json
 import os
 import re
 import sys
 
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -116,7 +118,7 @@ class Report:
 
 def load_spec_dir(d):
     spec = {"dir": d, "name": os.path.basename(os.path.normpath(d))}
-    for kind in ("spec", "plan", "tasks", "review"):
+    for kind in ("spec", "plan", "tasks", "review", "analysis"):
         p = os.path.join(d, kind + ".md")
         spec[kind] = read(p) if os.path.isfile(p) else None
     return spec
@@ -161,6 +163,32 @@ def parse_tasks(tasks_text):
         })
         order.append(tid)
     return tasks, order
+
+
+def fingerprint(text):
+    """Huella estable del contenido: ignora frontmatter, casillas marcadas y notas de avance."""
+    if not text:
+        return None
+    lines = []
+    for line in body(text).splitlines():
+        if re.match(r"^\s+- nota:", line):
+            continue
+        lines.append(re.sub(r"^(\s*)- \[[xX]\]", r"\1- [ ]", line).rstrip())
+    return hashlib.sha256("\n".join(lines).strip().encode("utf-8")).hexdigest()[:12]
+
+
+def fingerprints(s):
+    return {k + "_sha": fingerprint(s[k]) for k in ("spec", "plan", "tasks")}
+
+
+def analysis_state(s):
+    """None si no hay análisis; 'stale', 'fail' o 'pass'."""
+    if not s["analysis"]:
+        return None
+    afm = frontmatter(s["analysis"])
+    if any(afm.get(k) != v for k, v in fingerprints(s).items()):
+        return "stale"
+    return "pass" if afm.get("result") == "pass" else "fail"
 
 
 def constitution_principles(root):
@@ -321,6 +349,14 @@ def validate_spec_dir(d, root):
     elif st in {"implemented", "released"}:
         rep.err(f"spec {st} sin tasks.md")
 
+    # --- analysis
+    if s["analysis"]:
+        ast = analysis_state(s)
+        if frontmatter(s["analysis"]).get("result") not in {"pass", "fail"}:
+            rep.err("analysis: result inválido o ausente (pass | fail)")
+        elif ast == "stale" and st == "approved":
+            rep.warn("analysis: desactualizado (spec, plan o tareas cambiaron después de /analyze)")
+
     # --- review
     if s["review"]:
         rfm = frontmatter(s["review"])
@@ -397,8 +433,11 @@ def next_step(s):
             return "/tasks"
         if tst != "approved":
             return "aprobar las tareas"
-        if not os.path.isfile(os.path.join(s["dir"], "analysis.md")):
-            return "/analyze"
+        ast = analysis_state(s)
+        if ast in (None, "stale"):
+            return "/analyze" if ast is None else "/analyze (desactualizado)"
+        if ast == "fail":
+            return "corregir hallazgos de /analyze"
         return "/implement"
     if st == "implemented":
         if not s["review"] or verdict == "changes_requested":
@@ -502,7 +541,8 @@ def cmd_hook(args):
     if os.environ.get("AIDD_ALLOW") == "1":
         return 0
     try:
-        event = json.loads(sys.stdin.read() or "{}")
+        raw = sys.stdin.buffer.read() if hasattr(sys.stdin, "buffer") else sys.stdin.read().encode("utf-8")
+        event = json.loads(raw.decode("utf-8-sig") or "{}")
     except ValueError:
         return 0
     root = find_root(event.get("cwd") or os.getcwd())
@@ -549,7 +589,17 @@ def cmd_hook(args):
 
 # ---------------------------------------------------------------- main
 
+def force_utf8():
+    """En Windows la consola suele usar cp1252: sin esto, ✓/✗/→ y los acentos rompen la salida."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
+
 def main(argv):
+    force_utf8()
     if len(argv) < 2 or argv[1] in ("-h", "--help"):
         print(__doc__)
         return 0
@@ -561,6 +611,15 @@ def main(argv):
         return cmd_validate(args)
     if cmd == "status":
         return cmd_status(args)
+    if cmd == "hash":
+        if not args:
+            print("Uso: aidd.py hash docs/specs/NNN-slug")
+            return 2
+        d = os.path.abspath(args[0])
+        d = os.path.dirname(d) if os.path.isfile(d) else d
+        for k, v in fingerprints(load_spec_dir(d)).items():
+            print(f"{k}: {v}")
+        return 0
     if cmd == "hook":
         try:
             return cmd_hook(args)
