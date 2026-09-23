@@ -39,6 +39,13 @@ updated: {{date}}
 | Contenedores / IaC | {{trivy}} | {{trivy fs .}} | /review, /release |
 | DAST | {{OWASP ZAP baseline}} | {{…}} | /release, solo contra staging |
 
+## Permisos del agente
+Reglas base en `shared/agent-security.md` del plugin. Específicas de este proyecto:
+- Antigüedad mínima de paquetes nuevos: {{7}} días
+- Rutas protegidas adicionales: {{…}}
+- Servicios externos aprobados para enviar código o datos: {{ninguno}}
+- Dominios de red que el agente necesita: {{registros de paquetes, …}}
+
 ## Excepciones aceptadas
 | ID | Hallazgo | Severidad | Motivo | Aprobado por | Vence |
 |---|---|---|---|---|---|

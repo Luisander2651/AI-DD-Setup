@@ -29,6 +29,9 @@ security:
     sca: {{npm audit --audit-level=high}}
     containers: {{trivy fs --severity HIGH,CRITICAL .}}
     dast: {{null}}             # solo contra staging
+  agent:
+    min_package_age_days: 7
+    protected_paths: []        # además de las de shared/agent-security.md
 skills:
   enabled: [{{enabled_skills}}]  # p. ej. [design]
 paths:
