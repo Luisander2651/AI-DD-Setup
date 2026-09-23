@@ -1,0 +1,13 @@
+{
+  "name": "ai-dd",
+  "owner": {
+    "name": "luisander2651"
+  },
+  "plugins": [
+    {
+      "name": "ai-dd",
+      "source": "./",
+      "description": "Flujo de desarrollo guiado por especificaciones: init, specify, plan, tasks, implement, review y release."
+    }
+  ]
+}
