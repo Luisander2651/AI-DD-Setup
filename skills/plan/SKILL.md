@@ -181,6 +181,7 @@ habría que considerar al configurarlo.
 - [ ] Modelo de amenazas completo (o motivo de no aplicar); cada `TM#` con control y test; cada
       `CA (abuso)` cubierto.
 - [ ] No se modificó la spec.
+- [ ] Tras escribir el plan, `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) sin errores.
 ## Paso 8 — Escritura y aprobación
 
 1. Escribe `docs/specs/NNN-<slug>/plan.md` con `status: draft`.

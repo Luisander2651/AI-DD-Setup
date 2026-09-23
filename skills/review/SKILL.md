@@ -56,6 +56,9 @@ Ejecuta los comandos de `AGENTS.md`: tests (suite completa), lint, type-check y 
 la línea base registrada por `/implement` (si existe en las notas de `tasks.md`). Cualquier fallo
 nuevo es `bloqueante`.
 
+Ejecuta `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`); cualquier error del validador es
+`bloqueante` (artefactos inconsistentes).
+
 Ejecuta también las herramientas de `.ai/project.yaml → security.tools` sobre el rango
 `base..head` (o el repo completo si la herramienta no admite rangos): secretos, SAST, SCA y
 contenedores. Registra el resultado en la sección "Seguridad" de `review.md`. Si una herramienta

@@ -119,6 +119,10 @@ Antes de escribir, confirma cada punto; corrige lo que falle:
       `CA (abuso)` (acceso a datos de otro usuario, entradas maliciosas, abuso de volumen…).
 ## Paso 7 — Escritura
 
+Después de escribir, ejecuta `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) y corrige todo error de
+la spec antes de pedir aprobación. Si el script no existe o no hay Python, sigue con la
+autoverificación manual y avísalo.
+
 1. Crea `docs/specs/NNN-<slug>/spec.md` con `status: draft` y la fecha de hoy.
 2. Añade una fila en `docs/specs/README.md` (créalo si no existe):
    `| NNN | [nombre](NNN-slug/spec.md) | draft | fecha |`.

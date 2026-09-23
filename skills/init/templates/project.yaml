@@ -12,6 +12,8 @@ stack:
   package_manager: {{package_manager}}
 packages: []                   # solo monorepo: [{ path: apps/web, type: frontend }, …]
 constitution_version: 1.0.0
+workflow:
+  enforcement: warn            # off | warn (pide aprobación) | block — lo aplica el hook del plugin
 skills_version: {{skills_version}}   # versión del paquete de skills con que se inicializó
 deploy:
   strategy: {{strategy}}       # none | manual | ci-on-merge | ci-on-tag

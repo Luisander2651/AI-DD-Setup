@@ -130,6 +130,8 @@ Registra el resultado en la sección "Constitution Check" con el mismo formato q
 - [ ] Tablas de cobertura completas.
 - [ ] T090–T098 presentes.
 - [ ] Cada `TM#` y cada `CA (abuso)` con sus tareas.
+- [ ] Tras escribir, `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) sin errores (el script revisa
+      formato, rangos, dependencias, ciclos y cobertura).
 
 ## Paso 6 — Escritura y aprobación
 

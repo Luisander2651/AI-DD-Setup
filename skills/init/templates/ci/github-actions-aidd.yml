@@ -1,0 +1,47 @@
+# Generado por /init (ai-dd). Valida el flujo y la seguridad en cada PR.
+# Fija cada acción a un SHA de commit completo en lugar de una etiqueta (cadena de suministro).
+name: ai-dd
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  flujo:
+    name: Artefactos del flujo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   # TODO: fijar a SHA
+      - uses: actions/setup-python@v5   # TODO: fijar a SHA
+        with:
+          python-version: "3.12"
+      - name: Validar specs, planes y tareas
+        run: python .ai/bin/aidd.py validate
+
+  calidad:
+    name: Tests y lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   # TODO: fijar a SHA
+      # {{pasos de setup del runtime del proyecto}}
+      - run: {{install}}
+      - run: {{lint}}
+      - run: {{test}}
+      - run: {{build}}
+
+  seguridad:
+    name: Seguridad
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   # TODO: fijar a SHA
+        with:
+          fetch-depth: 0
+      # Solo los pasos cuyas herramientas están en .ai/project.yaml → security.tools
+      - name: Secretos
+        run: {{security.tools.secrets}}
+      - name: SAST
+        run: {{security.tools.sast}}
+      - name: Dependencias (SCA)
+        run: {{security.tools.sca}}

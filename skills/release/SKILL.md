@@ -57,6 +57,8 @@ Para el repositorio:
    (versión, changelog y cierre, sin despliegue); en ese caso T095–T097 se marcan como
    `no aplica`.
 
+8. `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) para cada spec incluida, sin errores.
+
 Si algo falla, detente e indica qué skill lo resuelve.
 
 ## Paso 1 — Versión

@@ -140,9 +140,16 @@ en `TODO(init): …`. Elimina las secciones marcadas `<!-- if type=… -->` que 
 8. `docs/roadmap.md` ← `templates/roadmap.md`
 9. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
    `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
-10. `CHANGELOG.md` ← `templates/CHANGELOG.md` (solo si no existe; si existe, respeta su formato).
-11. `AGENTS.md` ← `templates/AGENTS.md` (se escribe al final porque enlaza todo lo anterior).
-12. `CLAUDE.md` ← `templates/CLAUDE.md` (si no existe; si existe, añade `@AGENTS.md` al inicio).
+10. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
+    plugin). En re-sincronización, reemplázalo si su `--version` es anterior.
+11. **CI (opcional, pregunta):** si el proyecto usa GitHub, propone
+    `.github/workflows/ai-dd.yml` ← `templates/ci/github-actions-aidd.yml`, rellenado con los
+    comandos de `AGENTS.md` y `security.tools`; quita los pasos de herramientas no configuradas.
+    Es una ruta protegida: créala solo con confirmación explícita. Si usa otra plataforma de CI,
+    describe los pasos equivalentes en `docs/deployment.md` en lugar de crear el archivo.
+12. `CHANGELOG.md` ← `templates/CHANGELOG.md` (solo si no existe; si existe, respeta su formato).
+13. `AGENTS.md` ← `templates/AGENTS.md` (se escribe al final porque enlaza todo lo anterior).
+14. `CLAUDE.md` ← `templates/CLAUDE.md` (si no existe; si existe, añade `@AGENTS.md` al inicio).
 ### Secciones condicionales por tipo
 
 Aplica según `project.type` (en monorepo, por paquete):
@@ -174,6 +181,11 @@ Cada skill condicional debe comprobar ese archivo al activarse (ver `../../share
 3. Comprueba que `AGENTS.md` no supera ~150 líneas; si lo hace, mueve detalle a `docs/`.
 4. Comprueba que no quedan `{{placeholders}}` sin sustituir (excepto en `docs/templates/`, que
    los conserva a propósito).
+5. En brownfield, ejecuta `python .ai/bin/aidd.py validate` (o `python3`) sobre las specs
+   inferidas y corrige los errores de formato. Si Python no está disponible, avisa: los hooks y
+   validadores del plugin lo necesitan (3.8+).
+6. Explica al usuario el modo `workflow.enforcement` (por defecto `warn`: el hook pide aprobación
+   antes de editar código sin spec activa, tocar rutas protegidas o añadir dependencias).
 ---
 
 ## Fase 5 — Resumen

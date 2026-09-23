@@ -129,6 +129,8 @@ Cuando todas las tareas hasta **T089** estén hechas:
    Corre también el escaneo de secretos sobre todo el diff de la spec.
 4. Marca cada criterio `CA` de la spec como `[x]` solo si su test pasa.
 5. **T092:** cambia la spec a `status: implemented` y actualiza `docs/specs/README.md`.
+6. Ejecuta `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`): no debe haber errores (criterios sin
+   marcar, tareas abiertas).
 
 ## Paso 6 — Informe
 
