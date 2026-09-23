@@ -4,7 +4,8 @@ Reglas compartidas por todas las skills del plugin. Cada skill las lee antes de 
 skill contradice este archivo, prevalece este archivo. Al cambiarlo, sube la versión del plugin y
 revisa todas las skills afectadas.
 
-- **Todas** leen `.ai/project.yaml` y `docs/constitution.md` antes de actuar.
+- **Todas** leen `.ai/project.yaml`, `docs/constitution.md` y `docs/security.md` (si existe)
+  antes de actuar.
 - `/specify` crea `docs/specs/NNN-<slug>/spec.md` desde `docs/templates/spec.md`
   (NNN = siguiente número libre, 3 dígitos, nunca reutilizado). Máximo 3
   `[NECESITA ACLARACIÓN]`; con alguno abierto la spec no puede pasar a `approved`.

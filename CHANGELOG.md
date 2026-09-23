@@ -3,6 +3,13 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.3.1] - 2026-09-22
+### Fixed
+- `release`: con `deploy.strategy: none` ahora se ejecuta el cierre y la spec pasa a `released`.
+- `init`: pide confirmación antes de instalar dependencias y usa modo sin scripts en repos no confiables.
+- `review`: regla para cuando no quedan números de tarea libres.
+- Contrato: `docs/security.md` es lectura obligatoria para todas las skills.
+
 ## [1.3.0] - 2026-09-22
 ### Added
 - Capa de seguridad OWASP en todo el flujo: `shared/security-checklist.md`, plantilla

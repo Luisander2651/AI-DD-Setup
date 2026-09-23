@@ -114,7 +114,8 @@ sugerencia. Para cada importante pregunta: corregir ahora o aceptar (con motivo)
 
 **`changes_requested`:**
 1. Por cada hallazgo a corregir, añade una tarea a `tasks.md` con el siguiente número libre
-   (≤ T089) y la nota `añadida por /review: R3`.
+   (≤ T089) y la nota `añadida por /review: R3`. Si no quedan números libres, no desbordes el
+   rango: propone crear una spec de seguimiento para esas correcciones.
 2. Desmarca T092 y cambia la spec a `status: approved`.
 3. Registra en "Tareas añadidas" de `review.md` la relación tarea ← hallazgo.
 4. Siguiente paso: `/implement NNN`, y luego `/review NNN --rerun`.

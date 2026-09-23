@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.3.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.3.1` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -161,7 +161,12 @@ Cada skill condicional debe comprobar ese archivo al activarse (ver `../../share
 
 ## Fase 4 — Verificación
 
-1. Ejecuta los comandos declarados en `AGENTS.md` (instalar, lint, test, build) con timeout
+1. **Instalación:** antes de instalar dependencias, pide confirmación al usuario. En brownfield,
+   pregunta si el repositorio es suyo o de confianza: instalar ejecuta scripts de ciclo de vida
+   de las dependencias (`postinstall`, etc.) con los permisos del usuario. Si no es de confianza,
+   usa el modo sin scripts del gestor (p. ej. `npm ci --ignore-scripts`, `pnpm install
+   --ignore-scripts`) o no instales, y registra la limitación.
+   Después ejecuta los comandos declarados en `AGENTS.md` (lint, test, build) con timeout
    razonable. **No** ejecutes comandos de despliegue, migraciones sobre bases reales ni nada que
    escriba fuera del repo. Registra el resultado en `.ai/project.yaml → verification`.
    Si un comando falla, no lo borres: márcalo con `# ⚠ falló en /init: <motivo breve>`.

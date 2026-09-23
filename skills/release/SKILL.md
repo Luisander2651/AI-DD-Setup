@@ -53,8 +53,9 @@ Para el repositorio:
    nuevas desde la review. Cualquier vulnerabilidad crítica o alta sin excepción vigente en
    `docs/security.md → Excepciones aceptadas` detiene el release. Una excepción solo la registra el
    usuario, con motivo y fecha de vencimiento; las vencidas no cuentan.
-7. Lee `.ai/project.yaml → deploy`. Si `strategy: none`, ejecuta solo los Pasos 1–3 y 8 (versión y
-   changelog, sin despliegue).
+7. Lee `.ai/project.yaml → deploy`. Si `strategy: none`, ejecuta solo los Pasos 1–3, 7 y 8
+   (versión, changelog y cierre, sin despliegue); en ese caso T095–T097 se marcan como
+   `no aplica`.
 
 Si algo falla, detente e indica qué skill lo resuelve.
 
