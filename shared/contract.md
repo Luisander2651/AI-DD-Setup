@@ -1,0 +1,34 @@
+# Contrato del flujo AI-DD
+
+Reglas compartidas por todas las skills del plugin. Cada skill las lee antes de actuar; si una
+skill contradice este archivo, prevalece este archivo. Al cambiarlo, sube la versión del plugin y
+revisa todas las skills afectadas.
+
+- **Todas** leen `.ai/project.yaml` y `docs/constitution.md` antes de actuar.
+- `/specify` crea `docs/specs/NNN-<slug>/spec.md` desde `docs/templates/spec.md`
+  (NNN = siguiente número libre, 3 dígitos, nunca reutilizado). Máximo 3
+  `[NECESITA ACLARACIÓN]`; con alguno abierto la spec no puede pasar a `approved`.
+- Ciclo de vida de una spec: `draft` → `approved` → `implemented` → (review) → `released`
+  (`inferred` → `approved` para las creadas por `/init`). Una spec `implemented` o `released` no se
+  edita: se crea otra que la extienda.
+- `/plan` exige spec `approved`, incluye **Trazabilidad** (criterio → cambio → test) y queda en
+  `draft`, `approved` o `blocked`.
+- `/plan` y `/tasks` incluyen una sección **Constitution Check**: cada principio con
+  ✅ cumple / ➖ no aplica / ❌ viola. Un ❌ solo avanza con aceptación explícita del usuario.
+- Una skill condicional (p. ej. `design`) empieza así:
+  > Lee `.ai/project.yaml`. Si `design` no está en `skills.enabled`, informa que no aplica a este
+  > tipo de proyecto y detente, salvo que el usuario insista.
+- `/plan` incluye una sección **Rollout** (flags, orden de migraciones, rollback, métricas).
+- `/tasks` exige plan `approved`; numera T001–T089 para el trabajo y reserva T090–T099; cada
+  tarea declara archivos, criterio de hecho, `cubre: CA…` y `depende:`; incluye tablas de Cobertura.
+- `/implement` exige `tasks.md` `approved`, ejecuta una tarea a la vez, se detiene en T092 y deja
+  la spec en `implemented`.
+- `/review` exige spec `implemented`, escribe `review.md` con veredicto `approved`,
+  `changes_requested` o `blocked`. Con `changes_requested`, añade tareas a `tasks.md` y la spec
+  vuelve a `approved` hasta que `/implement` las cierre.
+- `/release` lee `docs/deployment.md`, verifica que la spec tenga todas sus tareas cerradas y
+  `review.md` con veredicto `approved`, sube versión, actualiza `CHANGELOG.md`, despliega a
+  staging y **solo con confirmación explícita del usuario** despliega a producción. Al terminar
+  marca la spec como `released` y actualiza el roadmap.
+- Cambiar la constitución requiere subir `version` y añadir una entrada en "Enmiendas".
+- Una spec `inferred` pasa a `approved` solo con confirmación explícita del usuario.

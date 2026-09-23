@@ -1,0 +1,69 @@
+# Prompts de los subagentes de exploración
+
+Sustituye `{{root}}` por la raíz del repo y `{{type_hint}}` por el tipo detectado en la Fase 0.
+Todos son de **solo lectura**: no crean ni modifican archivos y solo ejecutan comandos de
+consulta (`ls`, `grep`, `git log`); nunca instalan, compilan ni corren tests.
+
+Formato de salida común (inclúyelo literalmente en cada prompt):
+
+```
+## Hallazgos
+- [confianza: alta|media|baja] <hallazgo> — evidencia: <ruta:línea>, <ruta>
+## No determinado
+- <pregunta concreta para el usuario>
+## Contradicciones
+- <qué contradice a qué, con rutas>
+```
+
+Ignorar siempre: `node_modules/`, `vendor/`, `.venv/`, `dist/`, `build/`, `target/`, `.git/`,
+archivos generados y lockfiles (salvo para identificar el gestor de paquetes). Nunca leer ni
+reportar valores de `.env` reales, llaves o secretos.
+
+### A. Arquitectura
+
+> Explora el repositorio en `{{root}}` (tipo probable: `{{type_hint}}`) y describe su arquitectura
+> **tal como está**, no como debería ser. Reporta:
+> 1. Estilo arquitectónico (capas, hexagonal, MVC, feature-folders, microservicios, monolito modular…).
+> 2. Módulos/paquetes principales: responsabilidad en una línea y dependencias entre ellos.
+> 3. Punto(s) de entrada de la aplicación.
+> 4. Flujo de una petición o interacción típica de punta a punta.
+> 5. Persistencia: motores, ORM, ubicación de esquemas y migraciones.
+> 6. Integraciones externas: APIs, colas, servicios cloud, proveedores de auth.
+> 7. Despliegue: Dockerfiles, IaC, configuración de plataforma.
+> 8. Si es fullstack/monorepo: cómo se comunican las capas y si hay tipos/contratos compartidos.
+> Incluye un diagrama Mermaid (`flowchart`) de componentes. Muestrea archivos representativos;
+> no leas todo. Usa el formato de salida indicado.
+
+### B. Dominio y features
+
+> Explora `{{root}}` y construye un **inventario de funcionalidades** visibles para el usuario o
+> consumidor de la API. Para cada una: `slug` kebab-case, nombre, descripción en 1–2 frases,
+> evidencia (rutas/endpoints/pantallas, archivos principales, tests que la cubren), entidades de
+> dominio involucradas y confianza en que es una feature real (vs. experimento o código muerto).
+> Además: lista de entidades de dominio con sus campos clave y un glosario de términos del negocio.
+> Fuentes útiles: definiciones de rutas, controladores, páginas, OpenAPI/GraphQL, tests e2e,
+> README, changelog. Usa el formato de salida indicado.
+
+### C. Convenciones
+
+> Explora `{{root}}` e identifica las convenciones **realmente usadas** (no solo configuradas):
+> naming de archivos/funciones/clases/componentes; estructura de carpetas y dónde va cada cosa;
+> patrones recurrentes (errores, validación, inyección de dependencias, estado); configuración de
+> lint/format y reglas notables; estilo de commits (`git log --oneline -30`) y ramas; idioma del
+> código, comentarios y docs. Señala dónde el código contradice la configuración declarada.
+> Usa el formato de salida indicado.
+
+### D. Tooling, calidad y despliegue
+
+> Explora `{{root}}` y reporta cómo se construye, prueba y ejecuta: gestor de paquetes y versión de
+> runtime (`.nvmrc`, `.python-version`, `engines`, toolchain); comandos exactos para instalar,
+> desarrollo local, build, test (unit/integración/e2e), lint, format y type-check, tomados de
+> `scripts`, `Makefile`, `justfile`, `tox.ini`, etc.; frameworks de testing, ubicación de tests y
+> cobertura aproximada; CI/CD (archivos, jobs, disparadores); variables de entorno requeridas
+> (solo nombres, desde `.env.example`, config o código).
+> Despliegue: entornos existentes (dev/staging/prod), plataforma (Vercel, Fly, AWS, K8s, etc.),
+> cómo se dispara cada deploy (push a rama, tag, manual), aprobaciones configuradas, estrategia
+> (rolling, blue-green, canary), cómo se aplican las migraciones, procedimiento de rollback si
+> existe, health checks y dónde están logs y métricas. Si no encuentras rollback, dilo
+> explícitamente en "No determinado". **No ejecutes** comandos.
+> Usa el formato de salida indicado.

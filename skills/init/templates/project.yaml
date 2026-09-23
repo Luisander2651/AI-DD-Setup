@@ -1,0 +1,34 @@
+# Generado por /init. Lo leen todas las skills del flujo.
+name: {{project_name}}
+type: {{type}}                 # frontend | backend | fullstack | monorepo | library
+stage: {{stage}}               # prototype | mvp | production | maintenance
+origin: {{origin}}             # greenfield | brownfield
+initialized_at: {{date}}
+stack:
+  languages: [{{languages}}]
+  frontend: {{frontend_stack}} # null si no aplica
+  backend: {{backend_stack}}   # null si no aplica
+  database: {{database}}
+  package_manager: {{package_manager}}
+packages: []                   # solo monorepo: [{ path: apps/web, type: frontend }, …]
+constitution_version: 1.0.0
+skills_version: {{skills_version}}   # versión del paquete de skills con que se inicializó
+deploy:
+  strategy: {{strategy}}       # none | manual | ci-on-merge | ci-on-tag
+  platform: {{platform}}
+  environments: [{{environments}}]   # p. ej. [dev, staging, prod]
+  prod_approval: human         # innegociable
+  rollback: {{rollback}}       # descripción corta o TODO(init)
+skills:
+  enabled: [{{enabled_skills}}]  # p. ej. [design]
+paths:
+  constitution: docs/constitution.md
+  architecture: docs/architecture.md
+  roadmap: docs/roadmap.md
+  deployment: docs/deployment.md
+  changelog: CHANGELOG.md
+  specs: docs/specs
+  adr: docs/adr
+  templates: docs/templates
+verification:                  # lo llena la Fase 4
+  - { command: "{{cmd}}", result: pass|fail, note: "" }
