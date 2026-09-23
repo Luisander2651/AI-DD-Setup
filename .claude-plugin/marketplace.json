@@ -1,5 +1,6 @@
 {
   "name": "ai-dd",
+  "description": "Marketplace del plugin ai-dd: flujo de desarrollo guiado por especificaciones (AI-Driven Development) con constitución, trazabilidad, seguridad OWASP y puertas de aprobación humana.",
   "owner": {
     "name": "luisander2651"
   },
