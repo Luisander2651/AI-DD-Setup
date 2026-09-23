@@ -5,6 +5,9 @@ Fecha: 2026-09-22. Objetivo: un flujo completo de desarrollo asistido por IA que
 spec-driven development (GitHub Spec Kit, guías de SDD 2026) y con los modelos de amenazas
 publicados para agentes de código.
 
+**Estado:** 1.3.1 y 1.4.0 implementadas (defectos 1.1, 1.2, 1.6, 1.7; secciones 2.1, 3.1, 3.2 y
+3.3). Siguiente: 1.5.0.
+
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
 

@@ -3,6 +3,22 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.4.0] - 2026-09-22
+### Added
+- `shared/agent-security.md`: seguridad del proceso con agentes (contenido de terceros como dato,
+  verificación de dependencias nuevas contra slopsquatting, comandos y rutas protegidas, secretos).
+- `scripts/aidd.py`: validador determinista (`validate`), índice de estado (`status`), huellas
+  (`hash`) y hook de guardia (`hook pre-tool`).
+- `hooks/hooks.json`: guardia `PreToolUse` configurable con `workflow.enforcement`.
+- Skills `clarify` y `analyze`; `analyze` es la puerta antes de `implement`.
+- Plantilla de GitHub Actions (`templates/ci/`) que `init` propone con confirmación.
+
+### Changed
+- Todas las skills ejecutan el validador en su autoverificación.
+- `init` copia el validador a `.ai/bin/aidd.py` y añade `workflow.enforcement` y
+  `security.agent` a `project.yaml`.
+- `implement` exige un `analysis.md` vigente con `result: pass`.
+
 ## [1.3.1] - 2026-09-22
 ### Fixed
 - `release`: con `deploy.strategy: none` ahora se ejecuta el cierre y la spec pasa a `released`.

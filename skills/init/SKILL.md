@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.3.1` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.4.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
