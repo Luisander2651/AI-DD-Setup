@@ -8,7 +8,7 @@ description: "Libera specs revisadas: versión, CHANGELOG, staging y, solo con a
 Último paso del flujo:
 
 ```
-/init → /specify → /plan → /tasks → /implement → /review → [/release]
+/init → /specify → /plan → /tasks → /analyze → /implement → /review → [/release]
 ```
 
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este

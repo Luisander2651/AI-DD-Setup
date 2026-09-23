@@ -5,7 +5,7 @@ especificaciones**: cada cambio pasa por una spec aprobada, un plan que respeta 
 del proyecto, tareas verificables, revisión independiente y un release con aprobación humana.
 
 ```
-/init → /specify → /plan → /tasks → /implement → /review → /release
+/init → /specify → /plan → /tasks → /analyze → /implement → /review → /release
 ```
 
 ## Skills

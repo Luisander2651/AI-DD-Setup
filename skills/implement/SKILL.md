@@ -8,7 +8,7 @@ description: Ejecuta las tareas aprobadas de una spec una por una, con tests pri
 Quinto paso del flujo:
 
 ```
-/init → /specify → /plan → /tasks → [/implement] → /review → /release
+/init → /specify → /plan → /tasks → /analyze → [/implement] → /review → /release
 ```
 
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este
@@ -53,16 +53,19 @@ siguiente. **Implementa exactamente lo que dice el plan**: no rediseña, no agre
 
 1. Spec `approved`, plan `approved` y `tasks.md` en `status: approved`. Si no, detente e indica
    qué falta aprobar.
-2. Lee los comandos de `AGENTS.md` (test, lint, build, type-check). Si no están, detente y sugiere
+2. `analysis.md` con `result: pass` y **vigente**: ejecuta `python .ai/bin/aidd.py status` (o
+   `python3`); si la spec indica `/analyze` o `/analyze (desactualizado)`, detente y sugiere
+   `/analyze NNN`. Si el usuario decide omitirlo, registra su decisión como nota en `tasks.md`.
+3. Lee los comandos de `AGENTS.md` (test, lint, build, type-check). Si no están, detente y sugiere
    `/init` en modo re-sincronizar.
-3. Revisa el estado de git:
+4. Revisa el estado de git:
    - Cambios sin commitear ajenos a esta spec → pregunta antes de seguir.
    - Si estás en la rama principal, propone crear una rama `feat/NNN-<slug>` (o la convención de
      `AGENTS.md`).
-4. **Política de commits** (pregunta una vez por sesión si no está en `AGENTS.md`):
+5. **Política de commits** (pregunta una vez por sesión si no está en `AGENTS.md`):
    (a) un commit por tarea, (b) un commit por fase, (c) sin commits, el usuario los hace.
    Mensajes con la convención del proyecto e incluyendo el ID: `feat(notificaciones): T020 …`.
-5. Ejecuta la suite de tests una vez. Si ya hay tests fallando antes de empezar, regístralos como
+6. Ejecuta la suite de tests una vez. Si ya hay tests fallando antes de empezar, regístralos como
    **línea base** (nota bajo el encabezado de `tasks.md`) y avísale al usuario; no son
    responsabilidad de esta spec, pero no deben aumentar.
 

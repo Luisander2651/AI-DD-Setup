@@ -22,6 +22,17 @@ revisa todas las skills afectadas.
 - `/plan` incluye una sección **Rollout** (flags, orden de migraciones, rollback, métricas).
 - `/tasks` exige plan `approved`; numera T001–T089 para el trabajo y reserva T090–T099; cada
   tarea declara archivos, criterio de hecho, `cubre: CA…` y `depende:`; incluye tablas de Cobertura.
+- `/clarify` solo modifica specs en `draft` o `inferred`, con máximo 5 preguntas por sesión y
+  registro en la sección "Aclaraciones".
+- `/analyze` corre después de `/tasks` y antes de `/implement`, con un subagente independiente;
+  escribe `analysis.md` con `result: pass | fail` y las huellas de spec, plan y tareas
+  (`aidd.py hash`). Un análisis `fail` o desactualizado bloquea `/implement`.
+- **Validación determinista:** `.ai/bin/aidd.py validate` es la fuente de verdad del formato y la
+  consistencia de los artefactos; cada skill lo ejecuta al terminar y no deja errores.
+  `aidd.py status` da el estado y el siguiente paso de cada spec.
+- **Guardia:** el hook del plugin aplica `workflow.enforcement` (`off`, `warn`, `block`) al editar
+  código sin spec activa, tocar rutas protegidas, añadir dependencias o ejecutar comandos
+  peligrosos. `AIDD_ALLOW=1` en el entorno lo desactiva de forma puntual y consciente.
 - `/implement` exige `tasks.md` `approved`, ejecuta una tarea a la vez, se detiene en T092 y deja
   la spec en `implemented`.
 - `/review` exige spec `implemented`, escribe `review.md` con veredicto `approved`,

@@ -8,7 +8,7 @@ description: "Revisa una spec implementada contra la spec, el plan, la constituc
 Sexto paso del flujo:
 
 ```
-/init → /specify → /plan → /tasks → /implement → [/review] → /release
+/init → /specify → /plan → /tasks → /analyze → /implement → [/review] → /release
 ```
 
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este

@@ -8,7 +8,7 @@ description: "Crea o modifica una spec (qué y por qué, sin cómo) en docs/spec
 Segundo paso del flujo:
 
 ```
-/init → [/specify] → /plan → /tasks → /implement → /review → /release
+/init → [/specify] → /plan → /tasks → /analyze → /implement → /review → /release
 ```
 
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este
@@ -135,7 +135,8 @@ preguntas abiertas. Pregunta si la aprueba.
 - **Aprueba y no hay marcadores abiertos** → `status: approved`, actualiza el README.
 - **Pide cambios** → aplica, repite el Paso 6 y vuelve a preguntar.
 - **Hay marcadores abiertos** → no puede aprobarse; indícalo.
-Siguiente paso sugerido: `/plan NNN`.
+Siguiente paso sugerido: si quedaron supuestos importantes o la spec es grande, `/clarify NNN`
+antes de aprobar; si ya está aprobada, `/plan NNN`.
 
 ---
 

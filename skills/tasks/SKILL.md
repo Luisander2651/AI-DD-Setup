@@ -8,7 +8,7 @@ description: Divide un plan aprobado en tareas pequeñas, ordenadas y verificabl
 Cuarto paso del flujo:
 
 ```
-/init → /specify → /plan → [/tasks] → /implement → /review → /release
+/init → /specify → /plan → [/tasks] → /analyze → /implement → /review → /release
 ```
 
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este
@@ -142,7 +142,8 @@ Registra el resultado en la sección "Constitution Check" con el mismo formato q
    - **Aprueba** → `status: approved`.
    - **Pide cambios** → aplica, repite el Paso 5 y vuelve a preguntar.
 
-Siguiente paso sugerido: `/implement NNN`.
+Siguiente paso sugerido: `/analyze NNN` (idealmente antes de aprobar las tareas) y después
+`/implement NNN`.
 
 ---
 

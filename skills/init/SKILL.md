@@ -8,7 +8,7 @@ description: "Inicializa un proyecto para desarrollo guiado por IA (spec-driven)
 Prepara un repositorio para trabajar con el flujo:
 
 ```
-/init → /specify → /plan → /tasks → /implement → /review → /release
+/init → /specify → /plan → /tasks → /analyze → /implement → /review → /release
 ```
 
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que

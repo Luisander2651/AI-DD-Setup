@@ -21,9 +21,13 @@
 1. `/specify` → spec en `docs/specs/NNN-<slug>/spec.md`
 2. `/plan` → `plan.md` con Constitution Check
 3. `/tasks` → `tasks.md`
-4. `/implement` → solo tareas aprobadas, una a la vez, con tests
-5. `/review` → contra spec, plan y constitución → `review.md`
-6. `/release` → versión, changelog, staging y, con tu aprobación, producción
+4. `/analyze` → verificación independiente de consistencia → `analysis.md`
+5. `/implement` → solo tareas aprobadas, una a la vez, con tests
+6. `/review` → contra spec, plan y constitución → `review.md`
+7. `/release` → versión, changelog, staging y, con tu aprobación, producción
+
+Usa `/clarify` para cerrar ambigüedades de una spec antes de aprobarla. Estado de todas las specs:
+`python .ai/bin/aidd.py status`.
 
 No implementes sin spec aprobada. No hagas commit sin que pasen `{{test}}` y `{{lint}}`.
 Nunca despliegues a producción sin aprobación explícita; sigue [docs/deployment.md](docs/deployment.md).
