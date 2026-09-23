@@ -52,6 +52,7 @@ Lee, en este orden y solo lo necesario:
 - `docs/constitution.md` (principios y restricciones que afectan requisitos: accesibilidad,
   compliance, performance).
 - `docs/roadmap.md` (¿esta feature está en los objetivos?).
+- `docs/security.md` (clasificación de datos y modelo de permisos), si existe.
 - `docs/specs/README.md` y los títulos de las specs existentes.
 - `docs/architecture.md` solo para entender el dominio y el glosario, **no** para diseñar.
 ## Paso 2 — Duplicados y tamaño
@@ -78,6 +79,7 @@ Completa la plantilla. Guía por sección:
 | Historias de usuario | "Como <rol>, quiero <acción> para <beneficio>". Roles reales del dominio, no "usuario" genérico si hay más precisión. |
 | Criterios de aceptación | Al menos uno por historia, más los casos límite: vacío, error, permisos, límites. |
 | Fuera de alcance | Lo que alguien razonablemente esperaría y **no** se hará. Nunca vacía. |
+| Seguridad y privacidad | Qué datos sensibles toca (según la clasificación de `docs/security.md`), quién puede hacer qué, y **casos de abuso**: "Como atacante/usuario malintencionado, intento X → se rechaza/limita/registra". Cada caso de abuso genera un criterio `CA` marcado `(abuso)`. Sin tecnología: describe el comportamiento, no el mecanismo. Si la feature no toca datos sensibles, permisos ni entradas externas, escribe "No aplica" y el motivo. |
 | Requisitos no funcionales | Solo los que apliquen, medibles. Incluye los que exija la constitución según el tipo (p. ej. WCAG AA en frontend). |
 | Preguntas abiertas | Marcadores `[NECESITA ACLARACIÓN]`. **Máximo 3.** |
 
@@ -113,6 +115,8 @@ Antes de escribir, confirma cada punto; corrige lo que falle:
 - [ ] "Fuera de alcance" tiene contenido.
 - [ ] No contradice ningún principio de la constitución.
 - [ ] Máximo 3 `[NECESITA ACLARACIÓN]`.
+- [ ] Si toca datos sensibles, permisos o entradas externas: al menos un caso de abuso con su
+      `CA (abuso)` (acceso a datos de otro usuario, entradas maliciosas, abuso de volumen…).
 ## Paso 7 — Escritura
 
 1. Crea `docs/specs/NNN-<slug>/spec.md` con `status: draft` y la fecha de hoy.

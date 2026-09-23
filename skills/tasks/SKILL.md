@@ -66,6 +66,10 @@ Genera tareas a partir del plan, en este orden de fases:
 | Integración y documentación | Cableado final, T090–T092 | Impacto en arquitectura |
 | Despliegue | T095–T098 (las ejecuta `/release`) | Rollout |
 
+**Seguridad:** por cada amenaza `TM#` del plan, una tarea de test (en la fase Tests) y una de
+control (en Implementación); por cada `CA (abuso)`, al menos un test. Los controles no se agrupan
+en una tarea genérica tipo "añadir seguridad": cada uno va junto al módulo que protege.
+
 **Orden de tests e implementación:**
 - Si la constitución exige TDD: cada tarea de implementación depende de la tarea de test que
   cubre su criterio, y el test se escribe primero.
@@ -105,6 +109,7 @@ Construye y comprueba estas dos tablas (van al final de `tasks.md`):
 
 - Todo `CA` de la spec necesita al menos una tarea de test y una de implementación.
 - Todo módulo de "Cambios por módulo" necesita al menos una tarea.
+- Toda amenaza `TM#` necesita una tarea de control y una de test (tabla de amenazas de la plantilla).
 - Toda tarea de implementación debe poder rastrearse a un cambio del plan. Si no, sobra o el plan
   está incompleto.
 
@@ -124,6 +129,7 @@ Registra el resultado en la sección "Constitution Check" con el mismo formato q
 - [ ] No hay dependencias circulares.
 - [ ] Tablas de cobertura completas.
 - [ ] T090–T098 presentes.
+- [ ] Cada `TM#` y cada `CA (abuso)` con sus tareas.
 
 ## Paso 6 — Escritura y aprobación
 

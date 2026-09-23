@@ -33,8 +33,9 @@ para desplegarse. Produce un veredicto que `/release` exige.
 - **Todo hallazgo lleva evidencia:** archivo y línea, o el comando y su salida.
 - **No inventes hallazgos para parecer exhaustivo.** Una review sin hallazgos es válida.
 - **Severidades:**
-  - `bloqueante`: incumple un criterio de aceptación, viola la constitución, rompe tests, abre
-    un problema de seguridad o hace el rollback imposible.
+  - `bloqueante`: incumple un criterio de aceptación, viola la constitución, rompe tests, hay una
+    vulnerabilidad crítica o alta (ver severidades en `../../shared/security-checklist.md`) o hace
+    el rollback imposible.
   - `importante`: riesgo real (bug probable, caso límite sin manejar, test que no prueba lo que
     dice), pero no incumple un criterio.
   - `menor`: estilo, nombres, legibilidad.
@@ -55,6 +56,12 @@ Ejecuta los comandos de `AGENTS.md`: tests (suite completa), lint, type-check y 
 la línea base registrada por `/implement` (si existe en las notas de `tasks.md`). Cualquier fallo
 nuevo es `bloqueante`.
 
+Ejecuta también las herramientas de `.ai/project.yaml → security.tools` sobre el rango
+`base..head` (o el repo completo si la herramienta no admite rangos): secretos, SAST, SCA y
+contenedores. Registra el resultado en la sección "Seguridad" de `review.md`. Si una herramienta
+no está configurada, anótalo como hallazgo `menor` ("sin SAST configurado"), salvo que
+`docs/security.md` lo justifique. Descarta falsos positivos solo con justificación escrita.
+
 ## Paso 2 — Revisiones en paralelo
 
 Lanza estos subagentes de solo lectura en paralelo. A cada uno pásale: rutas de la spec, del plan,
@@ -65,10 +72,11 @@ de `tasks.md`, de la constitución, el rango `base..head` y el formato de hallaz
 |---|---|
 | A. Spec | Por cada `CA`: existe un test que lo prueba de verdad (no solo que existe), el test pasa, y el comportamiento implementado coincide con el texto del criterio. Revisa también los casos límite y los requisitos no funcionales. |
 | B. Plan y alcance | Los cambios coinciden con "Cambios por módulo" y "Contratos y datos". Lista archivos modificados que no aparecen en ninguna tarea (alcance extra) y partes del plan sin implementar. |
-| C. Constitución y seguridad | Cada principio evaluado sobre el **código real**, no sobre el plan. Además: secretos, validación de entradas, autorización, inyección, datos sensibles en logs, dependencias nuevas sin ADR. |
+| C. Constitución | Cada principio evaluado sobre el **código real**, no sobre el plan. Dependencias nuevas sin ADR. |
+| S. Seguridad (OWASP) | Recorre **cada tema** de `shared/security-checklist.md` aplicable al diff y reporta ✅ / ➖ / ❌ con evidencia, mapeado a la edición del OWASP Top 10 de `docs/security.md`. Verifica que cada control del modelo de amenazas del plan exista y que su test realmente lo pruebe. Incluye los resultados de las herramientas para confirmar o descartar sus hallazgos. No escribe exploits: describe ubicación, impacto y corrección. |
 | D. Calidad y tests | Convenciones de `AGENTS.md`, legibilidad, duplicación, manejo de errores. Calidad de los tests: aserciones significativas, sin `skip`, sin mocks que vacíen la prueba, sin tests que pasarían con cualquier implementación. |
 
-Si `design` está en `skills.enabled` y la spec toca UI, añade un subagente E que revise
+Si `design` está en `skills.enabled` y la spec toca UI, añade un subagente de accesibilidad que revise
 accesibilidad y consistencia con el sistema de diseño.
 
 ## Paso 3 — Preparación para release
@@ -79,6 +87,7 @@ Revisa tú mismo, contra la sección Rollout del plan y `docs/deployment.md`:
   misma entrega que el *expand*).
 - Existen los feature flags que el plan pide, y su valor por defecto es seguro.
 - `docs/architecture.md` y `docs/deployment.md` reflejan los cambios (T090, T091).
+- No hay vulnerabilidades críticas o altas de SCA sin excepción vigente en `docs/security.md`.
 Lo que falle aquí es `bloqueante` si impide revertir, `importante` en otro caso.
 
 ## Paso 4 — Consolidación

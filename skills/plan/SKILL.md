@@ -53,7 +53,8 @@ forma de desplegar del proyecto. No escribe código.
 Lee:
 - La spec completa, incluidas "Supuestos" y "Notas para /plan".
 - `.ai/project.yaml`: tipo, stack, `deploy`, `skills.enabled`.
-- `docs/constitution.md`, `docs/architecture.md`, `docs/deployment.md`.
+- `docs/constitution.md`, `docs/architecture.md`, `docs/deployment.md`, `docs/security.md`.
+- `../../shared/security-checklist.md` (relativo a este archivo) para el modelo de amenazas.
 - ADRs vigentes en `docs/adr/` (ignora los `superseded`).
 - Planes de specs relacionadas o que esta extiende.
 **Código existente:** identifica los módulos que la feature probablemente toca y léelos. Si son
@@ -105,7 +106,28 @@ Añade siempre esta sección, aunque la plantilla no la traiga:
 | CA1: <resumen> | <módulo> | <tipo y nombre del test> |
 ```
 
-Todo criterio de la spec debe aparecer. Un criterio sin test es un error del plan.
+Todo criterio de la spec (incluidos los `(abuso)`) y toda amenaza `TM#` deben aparecer. Un criterio
+o amenaza sin test es un error del plan.
+
+## Paso 3b — Modelo de amenazas
+
+**Obligatorio** si la spec toca datos sensibles, autenticación, permisos, pagos, archivos subidos,
+URLs o entradas externas nuevas. Si no aplica, escribe una línea con el motivo y continúa.
+
+1. Dibuja mentalmente el flujo de datos de la feature: actores, puntos de entrada, datos que
+   cruzan límites de confianza (navegador → API, API → base de datos, API → terceros).
+2. Por cada punto de entrada y cada límite, aplica **STRIDE**: suplantación, manipulación,
+   repudio, divulgación de información, denegación de servicio, elevación de privilegios.
+3. Contrasta con los temas de `shared/security-checklist.md` que apliquen y mapea cada amenaza a
+   su categoría del OWASP Top 10 (edición de `docs/security.md`). Para APIs, revisa también el API
+   Security Top 10; si la feature usa LLMs, el Top 10 para LLM.
+4. Por cada amenaza real (no teórica para este contexto): un **control** concreto en el diseño y un
+   **test** que lo verifique (p. ej. "usuario B no puede leer el recurso de A → 404").
+5. Cada caso de abuso de la spec debe quedar cubierto por al menos una amenaza `TM#`.
+6. Registra todo en la tabla "Modelo de amenazas" del plan y añade los tests a Trazabilidad.
+
+Si un control requiere una dependencia nueva (librería de rate limiting, WAF, etc.), va a
+Decisiones y se marca → ADR.
 
 ## Paso 4 — Constitution Check
 
@@ -152,6 +174,8 @@ habría que considerar al configurarlo.
 - [ ] Las rutas de "Cambios por módulo" existen, o están marcadas como nuevas.
 - [ ] Las dependencias nuevas tienen ADR.
 - [ ] Rollout completo o justificado como no aplicable.
+- [ ] Modelo de amenazas completo (o motivo de no aplicar); cada `TM#` con control y test; cada
+      `CA (abuso)` cubierto.
 - [ ] No se modificó la spec.
 ## Paso 8 — Escritura y aprobación
 

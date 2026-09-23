@@ -40,6 +40,10 @@ Formato:
 |---|---|---|
 | CA1 | T010 | T020 |
 
+| Amenaza (TM#) | Tarea(s) de control | Tarea(s) de test |
+|---|---|---|
+| TM1 | T021 | T011 |
+
 | Cambio del plan (módulo) | Tarea(s) |
 |---|---|
 | {{módulo}} | T020 |

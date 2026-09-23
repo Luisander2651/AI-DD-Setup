@@ -33,6 +33,18 @@ human_signoff: {{pending|<nombre> <fecha>|no requerido}}
 | Principio | Resultado | Evidencia |
 |---|---|---|
 
+## Seguridad
+| Herramienta | Resultado |
+|---|---|
+| {{secretos}} | ✅ / ❌ ({{n}} hallazgos) |
+| {{SAST}} | |
+| {{SCA}} | {{crít: n · alta: n · media: n}} |
+| {{contenedores}} | |
+
+| Tema OWASP | Resultado | Evidencia |
+|---|---|---|
+| {{A01:año Control de acceso}} | ✅ / ➖ / ❌ | |
+
 ## Hallazgos
 | ID | Severidad | Archivo:línea | Hallazgo | Sugerencia |
 |---|---|---|---|---|

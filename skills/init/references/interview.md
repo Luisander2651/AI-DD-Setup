@@ -1,6 +1,6 @@
 # Guía de entrevista
 
-Máximo 4 rondas de hasta 4 preguntas. Opción múltiple siempre que se pueda; el usuario siempre
+Máximo 5 rondas de hasta 4 preguntas. Opción múltiple siempre que se pueda; el usuario siempre
 puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo inferido
 ("Detecté X — ¿correcto?").
 
@@ -22,7 +22,16 @@ puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo 
 3. Aprobación de producción: ¿quién la da? (por defecto: el usuario, siempre explícita).
 4. Rollback: ¿cómo se revierte hoy? (redeploy de la versión anterior · revert + pipeline ·
    no existe → se registra como riesgo y se propone uno).
-**Ronda 4 — Operación** (solo si falta información)
+**Ronda 4 — Seguridad** (obligatoria)
+1. Datos sensibles que maneja el proyecto: ninguno · datos personales · financieros · salud ·
+   credenciales de terceros (multi).
+2. Autenticación: sin usuarios · sesión propia · JWT · OAuth/OIDC con proveedor externo.
+3. Nivel ASVS objetivo: 1 (básico, la mayoría de apps) · 2 (datos sensibles o negocio crítico,
+   recomendado) · 3 (alto riesgo: salud, finanzas, infraestructura).
+4. Herramientas: proponer un set según el stack (secretos, SAST, SCA, contenedores); el usuario
+   confirma cuáles adoptar. Registrar los comandos en `docs/security.md` y `.ai/project.yaml`.
+
+**Ronda 5 — Operación** (solo si falta información)
 1. Convenciones de ramas y commits (proponer Conventional Commits si no hay).
 2. Versionado y changelog (proponer SemVer + `CHANGELOG.md` si no hay).
 3. Próximos 3 objetivos (→ roadmap).
@@ -37,5 +46,11 @@ puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo 
 - Nada llega a producción sin pasar por staging (si existe staging).
 - Todo cambio desplegable tiene un plan de rollback probado o documentado.
 - Las migraciones son compatibles con la versión anterior del código (expand → migrate → contract).
+- Toda autorización se verifica en el servidor; ningún endpoint nuevo sin control de acceso explícito.
+- Toda entrada externa se valida en el servidor; consultas siempre parametrizadas.
+- Ninguna vulnerabilidad crítica o alta llega a producción sin excepción aprobada y con fecha de
+  vencimiento en `docs/security.md`.
+- Toda feature que toca datos sensibles o autenticación tiene modelo de amenazas en su plan.
+
 Rechaza principios no verificables ("código limpio", "buen rendimiento") y propón una versión
 medible ("funciones ≤ 50 líneas salvo justificación", "p95 < 300 ms en endpoints públicos").

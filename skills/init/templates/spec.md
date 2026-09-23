@@ -20,6 +20,12 @@ created: {{date}}
 ## Fuera de alcance
 - {{…}}
 
+## Seguridad y privacidad
+- Datos sensibles involucrados: {{ninguno · cuáles, según docs/security.md}}
+- Quién puede hacer qué: {{rol → acción permitida / denegada}}
+- Casos de abuso (cada uno con su criterio `CA` marcado `(abuso)`):
+  - Como {{atacante o usuario malintencionado}}, intento {{acción}} → {{resultado esperado: se rechaza, se limita, se registra}}
+
 ## Requisitos no funcionales
 - {{performance, seguridad, accesibilidad}}
 

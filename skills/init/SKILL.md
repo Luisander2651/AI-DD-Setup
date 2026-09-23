@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.2.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.3.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -67,7 +67,7 @@ Informa en una línea qué detectaste antes de continuar.
 
 Omitir con `--no-explore` o en greenfield.
 
-Lanza **en paralelo** cuatro subagentes de solo lectura (tipo `Explore` si existe). Los prompts
+Lanza **en paralelo** cinco subagentes de solo lectura (tipo `Explore` si existe). Los prompts
 exactos están en `references/explore-agents.md`:
 
 | Subagente | Produce |
@@ -76,10 +76,11 @@ exactos están en `references/explore-agents.md`:
 | B. Dominio y features | Inventario de features con evidencia (rutas, archivos, tests) |
 | C. Convenciones | Estilo, naming, estructura, patrones, lint/format, commits |
 | D. Tooling, calidad y despliegue | Comandos build/test/lint/dev, CI, cobertura, variables de entorno, pipelines de deploy, entornos, rollback |
+| E. Seguridad | Autenticación y autorización, datos sensibles, puntos de entrada, manejo de secretos, herramientas de seguridad existentes, riesgos evidentes |
 
 Cada subagente devuelve un informe estructurado con **evidencia** (rutas de archivo) y un nivel de
 confianza (`alta`/`media`/`baja`) por hallazgo. No generan documentos: solo informan.
-Si el entorno no permite subagentes, ejecuta las cuatro exploraciones tú mismo en secuencia con
+Si el entorno no permite subagentes, ejecuta las cinco exploraciones tú mismo en secuencia con
 los mismos prompts.
 
 Después, **consolida**:
@@ -105,6 +106,8 @@ Bloques obligatorios:
 6. Despliegue: entornos, plataforma, quién aprueba producción y cómo se revierte
    (→ `docs/deployment.md`). En prototipos sin despliegue aún, registra `deploy.strategy: none`
    y marca la sección como `TODO(init)`.
+7. Seguridad: clasificación de datos, modelo de autenticación y autorización, nivel ASVS
+   objetivo y herramientas de seguridad (→ `docs/security.md`).
 ---
 
 ## Fase 3 — Generación
@@ -129,12 +132,17 @@ en `TODO(init): …`. Elimina las secciones marcadas `<!-- if type=… -->` que 
    - Brownfield: `status: inferred`, a partir de pipelines, Dockerfiles, IaC y scripts reales.
    - Si no hay procedimiento de rollback conocido, déjalo como `TODO(init)` y repórtalo como
      riesgo en el resumen: es el hueco más peligroso del documento.
-7. `docs/roadmap.md` ← `templates/roadmap.md`
-8. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
+7. `docs/security.md` ← `templates/security.md`
+   - Greenfield: `status: proposed`; propone herramientas según el stack (secretos, SAST, SCA,
+     contenedores) sin instalarlas.
+   - Brownfield: `status: inferred`, a partir del subagente E.
+   - Registra la edición vigente del OWASP Top 10 en "Referencias".
+8. `docs/roadmap.md` ← `templates/roadmap.md`
+9. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
    `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
-9. `CHANGELOG.md` ← `templates/CHANGELOG.md` (solo si no existe; si existe, respeta su formato).
-10. `AGENTS.md` ← `templates/AGENTS.md` (se escribe al final porque enlaza todo lo anterior).
-11. `CLAUDE.md` ← `templates/CLAUDE.md` (si no existe; si existe, añade `@AGENTS.md` al inicio).
+10. `CHANGELOG.md` ← `templates/CHANGELOG.md` (solo si no existe; si existe, respeta su formato).
+11. `AGENTS.md` ← `templates/AGENTS.md` (se escribe al final porque enlaza todo lo anterior).
+12. `CLAUDE.md` ← `templates/CLAUDE.md` (si no existe; si existe, añade `@AGENTS.md` al inicio).
 ### Secciones condicionales por tipo
 
 Aplica según `project.type` (en monorepo, por paquete):
@@ -170,6 +178,8 @@ Entrega al usuario, sin recapitular los pasos:
 - Qué requiere revisión humana (todo lo `inferred`, `proposed` y cada `TODO(init)`), con conteo.
 - Resultado de la verificación de comandos.
 - Estado de `docs/deployment.md`, destacando si falta el procedimiento de rollback.
+- Estado de `docs/security.md`: herramientas configuradas o pendientes, y riesgos evidentes
+  detectados en brownfield (sin detallar vectores de explotación).
 - Siguiente paso sugerido: revisar y aprobar `docs/constitution.md`, luego `/specify` para la
   primera feature.
 

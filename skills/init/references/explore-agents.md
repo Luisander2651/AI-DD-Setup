@@ -67,3 +67,19 @@ reportar valores de `.env` reales, llaves o secretos.
 > existe, health checks y dónde están logs y métricas. Si no encuentras rollback, dilo
 > explícitamente en "No determinado". **No ejecutes** comandos.
 > Usa el formato de salida indicado.
+
+### E. Seguridad
+
+> Explora `{{root}}` y describe la postura de seguridad **tal como está**:
+> - Autenticación (mecanismo, librerías, dónde se configura) y autorización (roles, permisos,
+>   dónde se aplican: middleware, guardas, políticas).
+> - Puntos de entrada: rutas HTTP, colas, webhooks, CLIs, tareas programadas; cuáles son públicos.
+> - Datos sensibles: campos personales, financieros, credenciales; dónde se guardan y si se cifran.
+> - Manejo de secretos: cómo se cargan (variables de entorno, gestor) y si hay archivos que
+>   parezcan contener secretos versionados (reporta **solo la ruta**, nunca el valor).
+> - Herramientas existentes: gitleaks, semgrep, CodeQL, Dependabot/Renovate, Snyk, Trivy, npm audit,
+>   pip-audit, reglas de lint de seguridad, cabeceras de seguridad configuradas.
+> - Riesgos evidentes (p. ej. consultas construidas con concatenación, CORS abierto, debug activo),
+>   con ruta y línea. No intentes explotarlos ni escribas pruebas de concepto.
+> Consulta `../../shared/security-checklist.md` como guía de temas. **No ejecutes** comandos
+> distintos de consulta. Usa el formato de salida indicado.

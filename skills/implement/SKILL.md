@@ -36,6 +36,11 @@ siguiente. **Implementa exactamente lo que dice el plan**: no rediseña, no agre
   tolerancias) sin aprobación explícita del usuario.
 - **Sigue las convenciones** de `AGENTS.md` y el código vecino, no tus preferencias.
 - **Sin secretos** en el código ni en los logs.
+- **Código seguro por defecto** (guía completa en `../../shared/security-checklist.md`): consultas
+  parametrizadas, validación de entradas en el servidor, autorización verificada en el servidor
+  para cada recurso, salida codificada según contexto, sin `eval` ni deserialización insegura,
+  errores sin detalles internos, mínimo privilegio. Implementa los controles del modelo de
+  amenazas tal como los define el plan.
 - **No despliegues.** Las tareas T095–T098 son de `/release`; `/implement` se detiene en T092.
 - **No hagas push.** Los commits siguen la política del Paso 0.
 
@@ -76,6 +81,9 @@ Para la siguiente tarea pendiente cuyas dependencias estén hechas:
    - La suite completa no tiene fallos nuevos respecto a la línea base (en suites lentas, corre
      los tests del módulo en cada tarea y la suite completa al cerrar cada fase).
    - Lint y type-check limpios en los archivos tocados.
+   - Si `.ai/project.yaml → security.tools.secrets` o `security.tools.sast` están configurados,
+     córrelos sobre los archivos tocados. Un hallazgo crítico o alto se corrige dentro de la tarea;
+     uno que parezca falso positivo se anota como nota y lo decide `/review`.
 5. **Marca** la tarea `[x]` en `tasks.md`. Si hubo algo relevante, añade una nota debajo:
    `  - nota: <decisión menor, archivo extra justificado, deuda detectada>`.
 6. **Commit** según la política elegida.
@@ -115,6 +123,7 @@ Cuando todas las tareas hasta **T089** estén hechas:
 1. **T090:** actualiza `docs/architecture.md` según "Impacto en arquitectura" del plan.
 2. **T091:** actualiza `docs/deployment.md` si cambiaron variables, entornos o pasos.
 3. Corre la suite completa, lint, type-check y build. Todo debe pasar (salvo la línea base).
+   Corre también el escaneo de secretos sobre todo el diff de la spec.
 4. Marca cada criterio `CA` de la spec como `[x]` solo si su test pasa.
 5. **T092:** cambia la spec a `status: implemented` y actualiza `docs/specs/README.md`.
 

@@ -27,6 +27,7 @@
 
 No implementes sin spec aprobada. No hagas commit sin que pasen `{{test}}` y `{{lint}}`.
 Nunca despliegues a producción sin aprobación explícita; sigue [docs/deployment.md](docs/deployment.md).
+Nunca escribas secretos en el código, los logs ni los docs.
 
 ## Reglas y estilo
 - {{convención 1: naming, estructura}}
@@ -41,6 +42,7 @@ Nunca despliegues a producción sin aprobación explícita; sigue [docs/deployme
 - [Constitución](docs/constitution.md) — principios innegociables
 - [Arquitectura](docs/architecture.md)
 - [Despliegue](docs/deployment.md) — entornos, deploy y rollback
+- [Seguridad](docs/security.md) — datos sensibles, auth, herramientas y excepciones
 - [Roadmap](docs/roadmap.md) — etapa actual y objetivos
 - [Specs](docs/specs/README.md)
 - [ADRs](docs/adr/)

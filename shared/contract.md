@@ -30,5 +30,12 @@ revisa todas las skills afectadas.
   `review.md` con veredicto `approved`, sube versión, actualiza `CHANGELOG.md`, despliega a
   staging y **solo con confirmación explícita del usuario** despliega a producción. Al terminar
   marca la spec como `released` y actualiza el roadmap.
+- **Seguridad:** `docs/security.md` y `.ai/project.yaml → security` son la fuente de verdad (datos
+  sensibles, nivel ASVS, herramientas, excepciones). `/specify` incluye casos de abuso, `/plan`
+  un modelo de amenazas con controles y tests, `/implement` corre secretos y SAST sobre lo que toca,
+  `/review` audita con `shared/security-checklist.md` y las herramientas configuradas, y
+  `/release` bloquea con vulnerabilidades críticas o altas sin excepción vigente.
+- Ninguna skill escribe exploits ni pruebas de concepto ofensivas; los hallazgos se describen con
+  ubicación, impacto y corrección.
 - Cambiar la constitución requiere subir `version` y añadir una entrada en "Enmiendas".
 - Una spec `inferred` pasa a `approved` solo con confirmación explícita del usuario.

@@ -27,12 +27,20 @@ Evaluar **todos** los principios. ➖ = no aplica (con motivo). Un ❌ solo se a
 ## Estrategia de pruebas
 {{qué se prueba y a qué nivel}}
 
+## Modelo de amenazas
+<!-- Obligatorio si la spec toca datos sensibles, autenticación, permisos o entradas externas;
+     en otro caso, una línea explicando por qué no aplica. -->
+| ID | Amenaza (STRIDE) | Categoría OWASP | Componente | Control | Test |
+|---|---|---|---|---|---|
+| TM1 | {{Spoofing / Tampering / Repudiation / Information disclosure / DoS / Elevation}} | {{A0x:año}} | {{…}} | {{…}} | {{…}} |
+
 ## Trazabilidad
 | Criterio de aceptación | Cambio(s) | Test(s) |
 |---|---|---|
 | CA1: {{resumen}} | {{módulo}} | {{tipo y nombre del test}} |
 
-Todo criterio de la spec debe aparecer; un criterio sin test es un error del plan.
+Todo criterio de la spec (incluidos los de abuso) y toda amenaza `TM#` deben aparecer; un criterio
+o amenaza sin test es un error del plan.
 
 ## Rollout
 - Feature flag: {{nombre o "no aplica"}}

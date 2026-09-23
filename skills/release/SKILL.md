@@ -48,7 +48,12 @@ Para el repositorio:
 4. Árbol limpio y rama correcta según `docs/deployment.md`.
 5. CI en verde para el commit a liberar (consulta con `gh` o la herramienta disponible; si no
    puedes consultarlo, pide al usuario que lo confirme).
-6. Lee `.ai/project.yaml → deploy`. Si `strategy: none`, ejecuta solo los Pasos 1–3 y 8 (versión y
+6. **Puerta de seguridad:** corre la herramienta SCA (y la de contenedores, si aplica) de
+   `.ai/project.yaml → security.tools` sobre el commit a liberar; pueden haber aparecido CVEs
+   nuevas desde la review. Cualquier vulnerabilidad crítica o alta sin excepción vigente en
+   `docs/security.md → Excepciones aceptadas` detiene el release. Una excepción solo la registra el
+   usuario, con motivo y fecha de vencimiento; las vencidas no cuentan.
+7. Lee `.ai/project.yaml → deploy`. Si `strategy: none`, ejecuta solo los Pasos 1–3 y 8 (versión y
    changelog, sin despliegue).
 
 Si algo falla, detente e indica qué skill lo resuelve.
@@ -83,7 +88,10 @@ Si existe staging:
 2. Verifica: health check, smoke tests y, por cada spec, los criterios de aceptación que puedan
    comprobarse en staging.
 3. Revisa logs y errores durante unos minutos.
-4. Marca T095 en cada `tasks.md`.
+4. Si `security.tools.dast` está configurado, pide confirmación y ejecútalo **solo contra la URL de
+   staging** de `docs/deployment.md` (nunca contra producción ni contra dominios de terceros).
+   Hallazgos críticos o altos detienen el release como en el Paso 0.
+5. Marca T095 en cada `tasks.md`.
 Si falla, **no sigas a producción**: reporta, revierte staging si hace falta y sugiere volver a
 `/implement` con una tarea nueva.
 
@@ -97,6 +105,7 @@ Presenta al usuario, en un solo mensaje:
 - Migraciones y su orden.
 - Feature flags y su estado inicial.
 - Riesgos principales (de los planes y las reviews).
+- Estado de seguridad: resultado de SCA/DAST y excepciones vigentes que aplican a esta versión.
 - **Plan de rollback** exacto y tiempo estimado.
 - Métricas que vas a vigilar después.
 Pide la confirmación inequívoca. Registra en cada `tasks.md` bajo T096:

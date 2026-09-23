@@ -19,6 +19,16 @@ deploy:
   environments: [{{environments}}]   # p. ej. [dev, staging, prod]
   prod_approval: human         # innegociable
   rollback: {{rollback}}       # descripción corta o TODO(init)
+security:
+  owasp_top10_edition: {{año}}
+  asvs_level: {{1|2|3}}
+  sensitive_data: [{{personal, financial, health, credentials}}]
+  tools:                       # comandos; vacío si no hay herramienta configurada
+    secrets: {{gitleaks detect --no-banner}}
+    sast: {{semgrep scan --config auto --error}}
+    sca: {{npm audit --audit-level=high}}
+    containers: {{trivy fs --severity HIGH,CRITICAL .}}
+    dast: {{null}}             # solo contra staging
 skills:
   enabled: [{{enabled_skills}}]  # p. ej. [design]
 paths:
@@ -26,6 +36,7 @@ paths:
   architecture: docs/architecture.md
   roadmap: docs/roadmap.md
   deployment: docs/deployment.md
+  security: docs/security.md
   changelog: CHANGELOG.md
   specs: docs/specs
   adr: docs/adr
