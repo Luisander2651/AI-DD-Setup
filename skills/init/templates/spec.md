@@ -4,6 +4,7 @@ slug: {{slug}}
 status: {{draft|inferred|approved|implemented|released}}
 confidence: {{alta|media|baja}}   # solo si status=inferred
 created: {{date}}
+extends: []   # specs cuyo comportamiento cambia esta spec, p. ej. [005, 006]
 ---
 
 # {{NNN}} · {{nombre de la feature}}

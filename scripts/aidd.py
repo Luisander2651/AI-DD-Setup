@@ -17,7 +17,7 @@ import os
 import re
 import sys
 
-VERSION = "1.5.0"
+VERSION = "1.5.2"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -218,6 +218,15 @@ def validate_spec_dir(d, root):
         rep.err("spec: quedan {{placeholders}} sin sustituir")
     cas = spec_cas(s["spec"])
     ids = [c[0] for c in cas]
+    own = os.path.basename(os.path.normpath(d))[:3]
+    extends = re.findall(r"\d{3}", fm.get("extends", ""))
+    if extends and root:
+        existing = {os.path.basename(x)[:3] for x in spec_dirs(root)}
+        for n in extends:
+            if n == own:
+                rep.err("spec: extends se incluye a sí misma")
+            elif n not in existing:
+                rep.err(f"spec: extends apunta a {n}, que no existe en docs/specs/")
     if not cas:
         rep.err("spec: no hay criterios de aceptación numerados (CA1, CA2…)")
     dup = {i for i in ids if ids.count(i) > 1}

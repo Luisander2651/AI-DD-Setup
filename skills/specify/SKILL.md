@@ -63,6 +63,12 @@ Lee, en este orden y solo lo necesario:
 
 1. **Duplicados:** si una spec existente cubre total o parcialmente la idea, muéstrala y pregunta:
    (a) modificar esa spec (`--edit`), (b) crear una nueva que la extienda, (c) cancelar.
+   **Recomienda (b)** si la spec existente está `inferred`, `implemented` o `released`, o si el
+   cambio cruza varias specs: las inferidas documentan el estado actual y no se mezclan con el
+   cambio. Recomienda (a) solo si el cambio es local a una spec en `draft` o `approved`.
+   Con (b), registra en el frontmatter `extends: [NNN, …]` todas las specs cuyo comportamiento
+   cambia, y en la spec nueva deja explícito qué criterios de cada una se modifican (p. ej. en
+   "Notas para /plan" o en el propio criterio: "reemplaza 006 CA5").
 2. **Tamaño:** una spec debe poder entregarse de forma independiente. Si la idea contiene varias
    capacidades que se pueden liberar por separado (señal: > 6 historias de usuario, o historias sin
    relación entre sí), propone dividirla y lista las specs resultantes. Crea solo las que el
@@ -153,8 +159,9 @@ antes de aprobar; si ya está aprobada, `/plan NNN`.
 ## Modo `--edit`
 
 1. Lee la spec y su `status`.
-2. Si está en `implemented` o `released`, **no la modifiques**: propone crear una spec nueva que
-   la extienda y enlázalas entre sí ("Extiende: NNN").
+2. Si está en `implemented`, `released` o `inferred` y el cambio **añade o altera**
+   comportamiento, **no la modifiques**: propone crear una spec nueva con `extends: [NNN]`.
+   (En una `inferred`, `--edit` solo valida o corrige lo que documenta del sistema actual.)
 3. Si está en `approved` y ya existe `plan.md`, avisa que el cambio invalida el plan: la spec
    vuelve a `draft` y el plan deberá regenerarse con `/plan`.
 4. Registra el cambio al final de la spec:

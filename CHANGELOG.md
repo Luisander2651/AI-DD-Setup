@@ -3,6 +3,17 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.2] - 2026-09-24
+### Added
+- Specs que extienden otras: campo `extends: [NNN, …]` en el frontmatter de la spec.
+  - `specify` recomienda una spec nueva con `extends` cuando el cambio afecta a specs
+    `inferred`, `implemented` o `released`, o cruza varias specs.
+  - El validador comprueba que las specs referenciadas existan.
+  - `analyze` detecta contradicciones no declaradas con las specs extendidas y specs afectadas
+    que faltan en `extends`.
+  - `release` anota el cambio en el Historial de cada spec extendida y marca como resueltos sus
+    criterios **HOY NO SE CUMPLE**, sin cambiar su estado.
+
 ## [1.5.1] - 2026-09-24
 ### Added
 - Conciliación de brechas con el roadmap (`references/brownfield.md` §4) en `init` y

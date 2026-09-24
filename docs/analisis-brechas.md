@@ -6,7 +6,8 @@ spec-driven development (GitHub Spec Kit, guías de SDD 2026) y con los modelos 
 publicados para agentes de código.
 
 **Estado (2026-09-24):** implementadas 1.3.1, 1.4.0, 1.4.1, 1.4.2 (hallazgos de campo 8.1–8.5 y
-8.7) y 1.5.0 (observabilidad y auditoría, sección 9). Siguiente: 1.6.0.
+8.7) 1.5.0 (observabilidad y auditoría, sección 9), 1.5.1 (conciliación con el roadmap) y 1.5.2
+(`extends`, hallazgo 8.8). Siguiente: 1.6.0.
 
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
@@ -180,6 +181,7 @@ decisiones que el plugin no define y que deben quedar escritas para que no depen
 | 8.5 | La plantilla de CI revisa **todo el repo** en seguridad (Semgrep con `--error`, audits, gitleaks del historial): en brownfield puede fallar en todos los PRs por deuda previa. | Modo *baseline* para brownfield: Semgrep con `--baseline-commit`, audits contra excepciones registradas en `security.md`, gitleaks sobre los commits del PR; imágenes y acciones fijadas por versión o SHA. |
 | 8.6 | El validador necesitó `PYTHONIOENCODING=utf-8` en Windows. | ✅ Corregido en 1.4.1. |
 | 8.7 | Tras actualizar el plugin no hay una forma ligera de poner al día un proyecto (solo re-sincronizar todo con `init`). | Modo `/init --upgrade`: solo reemplaza `.ai/bin/aidd.py`, plantillas cambiadas (con diff) y `skills_version`, sin re-explorar. |
+| 8.8 | Un cambio que cruza varias specs inferidas (control de acceso sobre 005, 006, 007 y 009) no tenía forma definida de enlazarse con ellas ni de actualizarlas al liberarse. | ✅ 1.5.2: `extends` en el frontmatter, validado, revisado por `analyze` y aplicado por `release`. |
 
 ---
 

@@ -57,7 +57,9 @@ en estado `approved` y este encargo:
 >    verificarse.
 > 2. **Inconsistencia:** el plan contradice la spec (alcance extra, comportamiento distinto);
 >    las tareas contradicen el plan (orden, archivos, módulos); terminología distinta para el
->    mismo concepto; entidades o campos con nombres distintos entre artefactos.
+>    mismo concepto; entidades o campos con nombres distintos entre artefactos. Si la spec tiene
+>    `extends`, criterios de las specs extendidas que la nueva contradice **sin declararlo**, y
+>    specs cuyo comportamiento cambia pero no están en `extends`.
 > 3. **Ambigüedad:** adjetivos sin métrica, criterios no verificables, marcadores o supuestos
 >    que afectan al diseño.
 > 4. **Constitución:** evalúa **de nuevo y por tu cuenta** cada principio contra el plan y las

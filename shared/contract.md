@@ -65,6 +65,12 @@ revisa todas las skills afectadas.
   `/review` verifica que los eventos se emiten y que no hay datos sensibles en logs, y
   `/release` usa el `request_id` en la verificación post-deploy. Una herramienta *presente* no
   cuenta como capacidad cubierta hasta estar *en uso*.
+- **Specs que extienden otras:** un cambio de comportamiento sobre specs `inferred`,
+  `implemented` o `released` va en una spec nueva con `extends: [NNN, …]` en el frontmatter. El
+  validador comprueba que existan. `/analyze` revisa contradicciones no declaradas y specs
+  afectadas que falten en `extends`. `/release` anota el cambio en el Historial de cada spec
+  extendida y marca como resueltos sus criterios **HOY NO SE CUMPLE** que la nueva cumple, sin
+  cambiar su estado.
 - **El roadmap es del usuario:** ninguna skill añade, renumera ni reescribe objetivos sin su
   confirmación. Las brechas detectadas se concilian con los objetivos existentes (enlazar si ya
   están cubiertas, proponer si son parciales o nuevas) según
