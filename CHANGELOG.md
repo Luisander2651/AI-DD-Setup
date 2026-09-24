@@ -3,6 +3,15 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.5] - 2026-09-24
+### Added
+- Re-sincronizar sin perder decisiones (`references/brownfield.md` §5): el contenido marcado
+  `(confirmado por el usuario, …)` o `(decisión del usuario, …)`, las excepciones, retenciones y
+  responsables, y las secciones Aclaraciones/Historial/Enmiendas nunca se reescriben; los
+  documentos `approved` solo reciben propuestas por sección; las contradicciones se preguntan.
+- `init` escribe esos marcadores cada vez que el usuario confirma o decide algo.
+- `--force` avisa de que se pierden las confirmaciones y pide confirmación explícita.
+
 ## [1.5.4] - 2026-09-24
 ### Fixed
 - `init` tomaba `.env.example` y los valores por defecto de `config/` como la configuración real.

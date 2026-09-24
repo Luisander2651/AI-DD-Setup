@@ -72,6 +72,10 @@ revisa todas las skills afectadas.
   configuración declarada. Lo que depende de la configuración real no versionada es *no
   determinado* hasta que el usuario lo confirme (esos valores se preguntan; `.env` no se lee). Ninguna
   skill reporta como hecho, ni como brecha con severidad, algo no determinado.
+- **Lo confirmado o decidido por el usuario se preserva:** se marca `(confirmado por el usuario,
+  AAAA-MM-DD)` o `(decisión del usuario, AAAA-MM-DD)`. Ninguna skill lo elimina ni lo reescribe al
+  re-sincronizar; ante una contradicción con evidencia nueva, pregunta. Los documentos
+  `approved` solo reciben propuestas por sección (`skills/init/references/brownfield.md` §5).
 - **Specs que extienden otras:** un cambio de comportamiento sobre specs `inferred`,
   `implemented` o `released` va en una spec nueva con `extends: [NNN, …]` en el frontmatter. El
   validador comprueba que existan. `/analyze` revisa contradicciones no declaradas y specs

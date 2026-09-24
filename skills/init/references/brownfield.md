@@ -82,3 +82,28 @@ sin su confirmación.
    actual) y no se trata como error.
 5. Registra la conciliación en el resumen: cubiertas (con su enlace), propuestas aplicadas,
    propuestas rechazadas y diferencias del punto 4.
+
+## 5. Re-sincronizar sin perder lo que el usuario confirmó o decidió
+
+Al re-sincronizar, la exploración nueva solo ve el código y la configuración declarada; no sabe
+lo que el usuario confirmó ni decidió. Para no perderlo:
+
+1. **Contenido protegido.** Nunca propongas eliminar ni reescribir:
+   - frases o filas con el marcador `(confirmado por el usuario, …)` o `(decisión del usuario, …)`;
+   - excepciones aceptadas, retenciones, responsables y cualquier valor que no pueda deducirse
+     del código (plazos legales, quién aprueba, quién puede leer);
+   - las secciones "Aclaraciones", "Historial" y "Enmiendas" de cualquier documento.
+2. **Documentos aprobados.** Un documento con `status: approved` no se regenera. Solo recibe
+   propuestas **por sección** (texto actual → propuesto, con evidencia) que el usuario acepta o
+   rechaza una por una.
+3. **Documentos inferidos** (`status: inferred` o `proposed`): puedes proponer cambios en el
+   resto del contenido, mostrando el diff por archivo antes de escribir.
+4. **Contradicciones.** Si la exploración nueva contradice algo protegido (p. ej. detecta
+   `single` en `.env.example` y el documento dice `stderr` confirmado por el usuario), **no lo
+   cambies**: pregunta al usuario si sigue siendo cierto, mostrando ambos valores y la evidencia.
+   Si lo reconfirma, actualiza la fecha del marcador.
+5. **Brechas.** Una brecha resuelta desde la última sincronización (el código ya la corrige) se
+   propone como resuelta con su evidencia, no se borra en silencio; una nueva sigue las reglas de
+   §4 y de "declarado ≠ real".
+6. **Resumen.** Lista por documento: cambios aplicados, rechazados, contenido protegido
+   conservado y contradicciones consultadas.

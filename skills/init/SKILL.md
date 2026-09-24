@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.5.4` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.5.5` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -34,6 +34,10 @@ todos los comandos posteriores leen y respetan.
 - **No hagas commit ni push.** El usuario revisa y confirma.
 - **Nunca despliegues.** `/init` documenta cómo se despliega; desplegar es trabajo de `/release`,
   y a producción solo con aprobación humana explícita.
+- **Registra lo que confirma o decide el usuario.** Cuando el usuario confirme un dato o tome una
+  decisión (en la entrevista o después), escríbelo en el documento con el marcador
+  `(confirmado por el usuario, AAAA-MM-DD)` o `(decisión del usuario, AAAA-MM-DD)`. Esos
+  marcadores protegen el contenido en re-sincronizaciones futuras (`references/brownfield.md` §5).
 - **Declarado ≠ real.** `.env.example`, los valores por defecto de `config/` y la documentación
   describen la configuración **declarada**, no la que corre. Como `.env` no se lee (secretos), toda
   conclusión que dependa de un valor real no versionado (canal o nivel de log, entorno, driver de
@@ -55,8 +59,11 @@ todos los comandos posteriores leen y respetan.
 1. **¿Ya inicializado?** Busca `.ai/project.yaml`, `AGENTS.md`, `docs/constitution.md`.
    - Si existe `.ai/project.yaml`: compara su `skills_version` con la versión de este archivo.
      Si es anterior, propone **(a)** `--upgrade` (recomendado). Si no, ofrece **(b)**
-     re-sincronizar (re-explorar y actualizar arquitectura, specs inferidas e inventario,
-     mostrando diff; sin tocar la constitución), **(c)** reiniciar con `--force` o **(d)** cancelar.
+     re-sincronizar (re-explorar y proponer cambios en los documentos inferidos siguiendo
+     `references/brownfield.md` §5: conserva lo confirmado o decidido por el usuario, no
+     reescribe documentos `approved` y pregunta ante contradicciones; sin tocar la constitución),
+     **(c)** reiniciar con `--force` (avisa de que se pierden las confirmaciones y decisiones
+     registradas, y pide confirmación explícita) o **(d)** cancelar.
    - Si existe `AGENTS.md` o `CLAUDE.md` sin `.ai/project.yaml`: léelos y trátalos como **insumo**
      de la entrevista; al final propone un merge con diff, no un reemplazo.
 2. **Metodologías o reglas de agentes en competencia.** Busca instrucciones para agentes que
