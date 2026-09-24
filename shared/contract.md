@@ -27,6 +27,9 @@ revisa todas las skills afectadas.
 - `/analyze` corre después de `/tasks` y antes de `/implement`, con un subagente independiente;
   escribe `analysis.md` con `result: pass | fail` y las huellas de spec, plan y tareas
   (`aidd.py hash`). Un análisis `fail` o desactualizado bloquea `/implement`.
+- **Intérprete de Python:** donde las skills dicen `python .ai/bin/aidd.py`, usa el primero de
+  `python3`, `python` o `py` que **ejecute** Python 3.8+ (`<cmd> --version` responde). En Windows,
+  `python3` puede ser un acceso directo de Microsoft Store que existe pero no funciona.
 - **Validación determinista:** `.ai/bin/aidd.py validate` es la fuente de verdad del formato y la
   consistencia de los artefactos; cada skill lo ejecuta al terminar y no deja errores.
   `aidd.py status` da el estado y el siguiente paso de cada spec.

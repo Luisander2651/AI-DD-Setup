@@ -58,7 +58,9 @@ así que no chocan con comandos integrados como `/init`.
   - Si el cliente no soporta la decisión "preguntar" de los hooks, usa `block`.
   - Un error interno del hook nunca bloquea: se ignora y se informa.
 
-**Requisito:** Python 3.8+ disponible como `python3` o `python` (solo biblioteca estándar).
+**Requisito:** Python 3.8+ disponible como `python3`, `python` o `py` (solo biblioteca estándar).
+El hook prueba cada uno y usa el primero que realmente ejecute Python, así que el acceso directo
+de Microsoft Store en Windows no lo rompe. Sin ningún Python válido, el hook no hace nada.
 
 ## Estructura del repositorio
 

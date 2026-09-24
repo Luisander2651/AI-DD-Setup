@@ -3,6 +3,14 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.3] - 2026-09-24
+### Fixed
+- Hook en Windows: `python3` puede ser el acceso directo de Microsoft Store, que existe pero no
+  ejecuta Python. El hook elegía ese comando y fallaba en cada acción ("hook error" no
+  bloqueante) y la guardia quedaba inactiva. Ahora prueba `python3`, `python` y `py` ejecutando
+  Python y usa el primero que funciona; sin ninguno, no hace nada. Detectado en uso real.
+- `init` y el contrato indican cómo elegir el intérprete que funciona.
+
 ## [1.5.2] - 2026-09-24
 ### Added
 - Specs que extienden otras: campo `extends: [NNN, …]` en el frontmatter de la spec.

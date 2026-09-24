@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.5.2` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.5.3` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -220,8 +220,11 @@ Cada skill condicional debe comprobar ese archivo al activarse (ver `../../share
 4. Comprueba que no quedan `{{placeholders}}` sin sustituir (excepto en `docs/templates/`, que
    los conserva a propósito, y las expresiones `${{ … }}` de GitHub Actions, que son sintaxis
    propia del workflow).
-5. Ejecuta `python .ai/bin/aidd.py validate` (o `python3`) y corrige los errores de formato. Si
-   Python no está disponible, avisa: los hooks y validadores del plugin lo necesitan (3.8+).
+5. Detecta el intérprete que funciona (el primero de `python3`, `python` o `py` cuyo `--version`
+   responda 3.8+; en Windows `python3` puede ser un acceso directo de Microsoft Store que no
+   funciona) y ejecuta con él `.ai/bin/aidd.py validate`; corrige los errores de formato. Si no
+   hay ninguno, avisa: sin Python el hook de guardia queda desactivado en silencio y los
+   validadores no corren.
 6. Explica al usuario el modo `workflow.enforcement` (por defecto `warn`: el hook pide aprobación
    antes de editar código sin spec activa, tocar rutas protegidas o añadir dependencias).
 
