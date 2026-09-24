@@ -52,3 +52,30 @@ Si el subagente B encuentra specs, diseños o planes previos (p. ej. `features/`
    `[NECESITA ACLARACIÓN]` (máximo 3) o a "Supuestos".
 4. No borres el original: anota en `docs/roadmap.md → Pendientes` que puede eliminarse cuando el
    usuario revise la migración.
+
+## 4. Conciliar brechas con el roadmap
+
+Aplica cuando `/init` o `/init --upgrade` detectan brechas (en `docs/observability.md`,
+`docs/security.md` → Riesgos, `docs/deployment.md` → Riesgos) y el proyecto ya tiene
+`docs/roadmap.md`. **El roadmap es del usuario:** nunca añadas, renumeres ni reescribas objetivos
+sin su confirmación.
+
+1. **Compara por significado, no por texto.** Para cada brecha, busca en el roadmap (objetivos y
+   "Pendientes y deuda") y en las specs existentes algo que ya la cubra, aunque use otras
+   palabras (p. ej. "registrar accesos a expedientes" cubre "sin eventos de auditoría de
+   lecturas de datos de salud").
+2. **Clasifica** cada brecha:
+   - **Cubierta:** un objetivo o spec existente la resuelve. En el documento de la brecha, enlaza
+     el objetivo (`→ roadmap objetivo N`) o la spec. No toques el roadmap.
+   - **Parcial:** un objetivo existente la cubre en parte. Propón añadir lo que falta a su
+     criterio de éxito, mostrando el texto actual y el propuesto.
+   - **Nueva:** nada la cubre. Propón una fila nueva con objetivo, criterio de éxito medible y
+     origen (documento y sección de la brecha).
+3. **Pregunta una sola vez** con la lista de propuestas (parciales y nuevas); el usuario elige
+   cuáles aplicar. Si la sesión es desatendida, no modifiques el roadmap: deja las propuestas en
+   el resumen final.
+4. **Informa también lo inverso:** lo que un objetivo del usuario menciona y la exploración **no**
+   detectó. Es una señal útil (la exploración se quedó corta o el objetivo va más allá del código
+   actual) y no se trata como error.
+5. Registra la conciliación en el resumen: cubiertas (con su enlace), propuestas aplicadas,
+   propuestas rechazadas y diferencias del punto 4.

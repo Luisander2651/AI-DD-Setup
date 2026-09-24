@@ -65,6 +65,10 @@ revisa todas las skills afectadas.
   `/review` verifica que los eventos se emiten y que no hay datos sensibles en logs, y
   `/release` usa el `request_id` en la verificación post-deploy. Una herramienta *presente* no
   cuenta como capacidad cubierta hasta estar *en uso*.
+- **El roadmap es del usuario:** ninguna skill añade, renumera ni reescribe objetivos sin su
+  confirmación. Las brechas detectadas se concilian con los objetivos existentes (enlazar si ya
+  están cubiertas, proponer si son parciales o nuevas) según
+  `skills/init/references/brownfield.md` §4.
 - **Actualización:** `/init --upgrade` pone al día un proyecto con la versión instalada del
   plugin (validador, plantillas, claves nuevas de `project.yaml`, documentos nuevos) sin tocar la
   constitución, que solo recibe propuestas de enmienda.

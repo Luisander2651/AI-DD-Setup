@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.5.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.5.1` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -169,8 +169,10 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
    - Greenfield: `status: proposed` con los eventos de auditoría acordados.
    - Brownfield: `status: inferred`, a partir del subagente F, marcando cada capacidad como
      presente / configurada / en uso. Los huecos (sin correlación, sin auditoría, datos
-     sensibles en logs, nivel `debug` por defecto) van a "Brechas" y al roadmap.
-9. `docs/roadmap.md` ← `templates/roadmap.md`
+     sensibles en logs, nivel `debug` por defecto) van a "Brechas".
+9. `docs/roadmap.md` ← `templates/roadmap.md`. Si el roadmap ya existe (re-sincronización),
+   no lo regeneres: concilia las brechas de observabilidad, seguridad y despliegue con
+   `references/brownfield.md` §4. Si es nuevo, las brechas prioritarias entran como objetivos.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
     `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
@@ -236,6 +238,9 @@ Entrega al usuario, sin recapitular los pasos:
   detectados en brownfield (sin detallar vectores de explotación).
 - Estado de `docs/observability.md`: qué capacidades están solo presentes y no en uso, y si
   falta el registro de auditoría de accesos a datos sensibles.
+- Conciliación con el roadmap (si ya existía): brechas cubiertas por objetivos existentes,
+  propuestas aplicadas o rechazadas y lo que los objetivos del usuario mencionan y la
+  exploración no detectó.
 - Siguiente paso sugerido: revisar y aprobar `docs/constitution.md`, luego `/specify` para la
   primera feature.
 

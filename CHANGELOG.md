@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.1] - 2026-09-24
+### Added
+- Conciliación de brechas con el roadmap (`references/brownfield.md` §4) en `init` y
+  `init --upgrade`: enlaza las brechas ya cubiertas por objetivos del usuario, propone con
+  confirmación las parciales y las nuevas, e informa lo que los objetivos mencionan y la
+  exploración no detectó. Regla en el contrato: el roadmap es del usuario.
+
+### Fixed
+- `init --upgrade` generaba `docs/observability.md` sin reflejar sus brechas en el roadmap.
+
 ## [1.5.0] - 2026-09-24
 ### Added
 - Observabilidad y auditoría en todo el flujo (hallazgo de la primera prueba real: el proyecto
