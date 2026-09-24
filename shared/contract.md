@@ -68,6 +68,10 @@ revisa todas las skills afectadas.
   `/review` verifica que los eventos se emiten y que no hay datos sensibles en logs, y
   `/release` usa el `request_id` en la verificación post-deploy. Una herramienta *presente* no
   cuenta como capacidad cubierta hasta estar *en uso*.
+- **Declarado ≠ real:** `.env.example`, los valores por defecto del código y la documentación son
+  configuración declarada. Lo que depende de la configuración real no versionada es *no
+  determinado* hasta que el usuario lo confirme (esos valores se preguntan; `.env` no se lee). Ninguna
+  skill reporta como hecho, ni como brecha con severidad, algo no determinado.
 - **Specs que extienden otras:** un cambio de comportamiento sobre specs `inferred`,
   `implemented` o `released` va en una spec nueva con `extends: [NNN, …]` en el frontmatter. El
   validador comprueba que existan. `/analyze` revisa contradicciones no declaradas y specs

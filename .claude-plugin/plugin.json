@@ -1,6 +1,6 @@
 {
   "name": "ai-dd",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Flujo de desarrollo guiado por especificaciones (AI-Driven Development): init, specify, plan, tasks, implement, review y release, con constitución, trazabilidad y puertas de aprobación humana.",
   "author": {
     "name": "luisander2651"

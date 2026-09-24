@@ -60,5 +60,14 @@ Separado de los logs técnicos: responde **quién hizo qué, sobre qué, cuándo
 
 ## Brechas
 <!-- En brownfield: lo que está presente pero no en uso, datos sensibles en logs, eventos de
-     auditoría faltantes. Cada brecha con prioridad y enlace al objetivo del roadmap. -->
+     auditoría faltantes. Solo hechos verificados en el código o confirmados por el usuario.
+     Cada brecha con prioridad y enlace al objetivo del roadmap. -->
+- {{…}}
+
+## Brechas por confirmar
+<!-- Dependen de configuración no versionada o de algo que no se pudo verificar. Sin severidad ni
+     entrada en el roadmap hasta confirmarlas. -->
+- {{brecha}} — depende de: {{valor o dato}} — cómo confirmarla: {{…}}
+
+## No determinado
 - {{…}}

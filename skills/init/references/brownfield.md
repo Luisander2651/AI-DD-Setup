@@ -60,6 +60,9 @@ Aplica cuando `/init` o `/init --upgrade` detectan brechas (en `docs/observabili
 `docs/roadmap.md`. **El roadmap es del usuario:** nunca añadas, renumeres ni reescribas objetivos
 sin su confirmación.
 
+0. **Solo brechas confirmadas.** Las "Brechas por confirmar" (dependen de configuración no
+   versionada o de algo no verificado) no se concilian ni generan propuestas: primero se
+   confirman con el usuario.
 1. **Compara por significado, no por texto.** Para cada brecha, busca en el roadmap (objetivos y
    "Pendientes y deuda") y en las specs existentes algo que ya la cubra, aunque use otras
    palabras (p. ej. "registrar accesos a expedientes" cubre "sin eventos de auditoría de

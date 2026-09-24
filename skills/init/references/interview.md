@@ -4,6 +4,13 @@ Hasta 4 preguntas por ronda; omite las rondas o preguntas cuya respuesta ya cono
 puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo inferido
 ("Detecté X — ¿correcto?").
 
+**Configuración no versionada:** antes de la primera ronda, reúne los puntos "No determinado"
+de la exploración que dependan de valores reales de `.env` o del entorno (canal y nivel de log,
+`APP_ENV`, `APP_DEBUG`, driver de colas y de caché, hosts de servicios). No son secretos:
+pregúntalos en una sola pregunta de respuesta libre ("¿qué valores tienen en tu entorno local y en
+producción?"). Nunca pidas valores de contraseñas, claves o tokens. Con la respuesta, confirma o
+descarta las brechas que dependían de ellos.
+
 **Ronda 1 — Identidad**
 1. ¿Qué problema resuelve el proyecto y para quién? (texto libre, 1–3 frases)
 2. Tipo: frontend · backend · fullstack · monorepo · library.

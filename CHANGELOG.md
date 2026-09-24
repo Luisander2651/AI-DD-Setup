@@ -3,6 +3,20 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.4] - 2026-09-24
+### Fixed
+- `init` tomaba `.env.example` y los valores por defecto de `config/` como la configuración real.
+  En un proyecto real concluyó "los logs no llegan a Loki" cuando el `.env` del usuario usaba
+  `LOG_CHANNEL=stderr`, y lo reportó como brecha confirmada aunque también lo había marcado como
+  no determinado.
+
+### Added
+- Regla "declarado ≠ real" en `init`, los subagentes de exploración y el contrato.
+- La entrevista pregunta en una sola pregunta los valores de configuración no versionados que no
+  son secretos (canal y nivel de log, entorno, colas…), sin abrir `.env`.
+- `observability.md` separa "Brechas", "Brechas por confirmar" (sin severidad) y "No
+  determinado"; la conciliación con el roadmap solo usa brechas confirmadas.
+
 ## [1.5.3] - 2026-09-24
 ### Fixed
 - Hook en Windows: `python3` puede ser el acceso directo de Microsoft Store, que existe pero no

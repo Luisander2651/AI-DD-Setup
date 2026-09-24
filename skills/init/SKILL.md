@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.5.3` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.5.4` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -34,6 +34,12 @@ todos los comandos posteriores leen y respetan.
 - **No hagas commit ni push.** El usuario revisa y confirma.
 - **Nunca despliegues.** `/init` documenta cómo se despliega; desplegar es trabajo de `/release`,
   y a producción solo con aprobación humana explícita.
+- **Declarado ≠ real.** `.env.example`, los valores por defecto de `config/` y la documentación
+  describen la configuración **declarada**, no la que corre. Como `.env` no se lee (secretos), toda
+  conclusión que dependa de un valor real no versionado (canal o nivel de log, entorno, driver de
+  colas, `APP_DEBUG`…) se marca **no determinada** y se pregunta al usuario en la entrevista: esos
+  valores no son secretos. Una brecha que depende de algo no determinado va a "Brechas por
+  confirmar", sin severidad, nunca como hecho.
 - **Presente ≠ en uso.** Toda herramienta detectada (logs, métricas, escáneres, CI, colas) se
   clasifica como *presente* (está instalada o declarada), *configurada* (tiene configuración para
   este proyecto) o *en uso* (el código o el pipeline la ejercita), con evidencia. Nunca des por
