@@ -14,7 +14,8 @@ como diff y se aplica solo con confirmación.
 3. **Plantillas.** Para cada archivo de `docs/templates/`, compáralo con `../templates/` (ignora
    finales de línea). Muestra el diff de los que cambiaron y reemplázalos tras confirmar. Si el
    usuario personalizó una plantilla, ofrece fusionar en lugar de reemplazar.
-4. **`project.yaml`.** Añade las claves nuevas de `../templates/project.yaml` que falten, con su
+4. **`.gitignore`.** Si falta `.ai/cache/`, propón añadirlo (lo usa `/analyze` delta desde 1.6.0).
+   **`project.yaml`.** Añade las claves nuevas de `../templates/project.yaml` que falten, con su
    valor por defecto o `TODO(init)`. Nunca cambies valores existentes.
 5. **Migración de formato.** Si `security.md`, `observability.md` o `deployment.md` no numeran
    sus riesgos y correcciones (`RS1`/`RS1.a`, `OB`, `RD`, desde 1.5.6), propone numerarlos con

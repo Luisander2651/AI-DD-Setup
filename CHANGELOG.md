@@ -3,6 +3,30 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.6.0] - 2026-09-24
+Iterar más barato: una spec real llegó a 3 versiones de plan, 3 de tareas y 3 análisis completos,
+cada vuelta regenerando ~70 KB y releyendo todo el código.
+
+### Added
+- `/analyze` en modo **delta** tras la primera ronda: solo verifica los hallazgos abiertos y el
+  diff desde el análisis anterior (`aidd.py changes`); vuelve a completo si cambió la
+  constitución, el alcance o más de ~40 % del plan o las tareas. Conserva cada ronda como
+  `analysis.r<N>.md`, numera los hallazgos de forma continua y separa "Seguimiento", "Hallazgos
+  nuevos" y "Decisiones pendientes del usuario". Propone aceptar BAJOS y MEDIOS no estructurales
+  para resolverlos en `/implement`.
+- `/plan --fix <IDs>` y `/tasks --fix <IDs>`: edición en su lugar de las secciones o tareas
+  afectadas, con diff por hallazgo; `--redo` queda para cambios estructurales.
+- `/plan` Paso 2b "Decisiones pendientes del usuario": antes de escribir el plan pregunta en una
+  ronda las excepciones o enmiendas de la constitución, el orden frente a otras specs en curso que
+  comparten archivos, cambios de alcance y contratos visibles que rompen tests existentes.
+- Límite de tamaño: `/specify` y `/plan` proponen dividir specs con más de ~10 criterios, dos
+  capacidades separables, más de 4 specs extendidas o más de 3 módulos; el validador avisa.
+- `aidd.py snapshot` y `aidd.py changes`.
+
+### Changed
+- Con git, las versiones anteriores de plan y tareas viven en commits; ya no se crean copias
+  `plan.v<N>.md` / `tasks.v<N>.md` (solo sin git).
+
 ## [1.5.6] - 2026-09-24
 ### Fixed
 - Pérdida de correcciones al resumir riesgos (detectado en uso real): `init` escribió un objetivo

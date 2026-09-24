@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.5.6` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.6.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -196,7 +196,7 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
     `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
-    plugin).
+    plugin). Propón añadir `.ai/cache/` al `.gitignore` (copias locales para `/analyze` delta).
 12. **CI (opcional, pregunta):** si el proyecto usa GitHub, propone
     `.github/workflows/ai-dd.yml` ← `templates/ci/github-actions-aidd.yml`, rellenado con los
     comandos de `AGENTS.md` y `security.tools`; quita los pasos de herramientas no configuradas.

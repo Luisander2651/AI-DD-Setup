@@ -6,18 +6,22 @@ Uso:
                                    Sin rutas valida todas. Código de salida 1 si hay errores.
   aidd.py status [--json]          Estado de todas las specs y siguiente paso sugerido.
   aidd.py hash RUTA                Huellas de spec/plan/tasks (las registra /analyze).
+  aidd.py snapshot RUTA            Guarda una copia de spec/plan/tasks en .ai/cache/ (la usa /analyze).
+  aidd.py changes RUTA             Diff de spec/plan/tasks contra la última copia guardada.
   aidd.py hook pre-tool            Hook PreToolUse: lee el evento JSON por stdin.
 
 Solo usa la biblioteca estándar de Python 3.8+. Se copia a cada proyecto como .ai/bin/aidd.py
 para que CI pueda ejecutarlo sin el plugin.
 """
+import difflib
 import hashlib
+import shutil
 import json
 import os
 import re
 import sys
 
-VERSION = "1.5.6"
+VERSION = "1.6.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -307,6 +311,12 @@ def validate_spec_dir(d, root):
         open_cas = [c[0] for c in cas if not c[1]]
         if open_cas:
             rep.err(f"spec: estado {st} con criterios sin marcar {sorted(set(open_cas))}")
+
+    # --- tamaño
+    n_ext = len(re.findall(r"\d{3}", fm.get("extends", "")))
+    if len(set(ids)) > 12 or n_ext > 4:
+        rep.warn(f"spec: grande ({len(set(ids))} criterios, extiende {n_ext} specs); considera dividirla "
+                 "antes de planear (más vueltas de /plan y /analyze)")
 
     # --- cobertura de riesgos
     risks = load_risks(root) if root else {}
@@ -737,6 +747,37 @@ def main(argv):
         d = os.path.dirname(d) if os.path.isfile(d) else d
         for k, v in fingerprints(load_spec_dir(d)).items():
             print(f"{k}: {v}")
+        return 0
+    if cmd in ("snapshot", "changes"):
+        if not args:
+            print(f"Uso: aidd.py {cmd} docs/specs/NNN-slug")
+            return 2
+        d = os.path.abspath(args[0])
+        d = os.path.dirname(d) if os.path.isfile(d) else d
+        root = find_root(d) or os.getcwd()
+        cache = os.path.join(root, ".ai", "cache", "analysis", os.path.basename(d))
+        kinds = ("spec.md", "plan.md", "tasks.md")
+        if cmd == "snapshot":
+            os.makedirs(cache, exist_ok=True)
+            for k in kinds:
+                if os.path.isfile(os.path.join(d, k)):
+                    shutil.copyfile(os.path.join(d, k), os.path.join(cache, k))
+            print(os.path.relpath(cache, root).replace("\\", "/"))
+            return 0
+        if not os.path.isdir(cache):
+            print("Sin copia previa: ejecuta un análisis completo.")
+            return 3
+        total = 0
+        for k in kinds:
+            old = os.path.join(cache, k)
+            new = os.path.join(d, k)
+            a = read(old).splitlines() if os.path.isfile(old) else []
+            b = read(new).splitlines() if os.path.isfile(new) else []
+            diff = list(difflib.unified_diff(a, b, f"anterior/{k}", f"actual/{k}", n=2, lineterm=""))
+            if diff:
+                total += sum(1 for x in diff if x[:1] in "+-" and x[:3] not in ("+++", "---"))
+                print("\n".join(diff))
+        print(f"\n# {total} líneas cambiadas desde el último análisis")
         return 0
     if cmd == "hook":
         try:

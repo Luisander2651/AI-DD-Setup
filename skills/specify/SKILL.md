@@ -72,10 +72,17 @@ Lee, en este orden y solo lo necesario:
    Con (b), registra en el frontmatter `extends: [NNN, …]` todas las specs cuyo comportamiento
    cambia, y en la spec nueva deja explícito qué criterios de cada una se modifican (p. ej. en
    "Notas para /plan" o en el propio criterio: "reemplaza 006 CA5").
-2. **Tamaño:** una spec debe poder entregarse de forma independiente. Si la idea contiene varias
-   capacidades que se pueden liberar por separado (señal: > 6 historias de usuario, o historias sin
-   relación entre sí), propone dividirla y lista las specs resultantes. Crea solo las que el
-   usuario confirme, una por una.
+2. **Tamaño:** una spec debe poder entregarse de forma independiente y ser barata de planear y
+   analizar. Propón dividirla y muestra el corte (qué capacidades van en cada spec, en qué orden
+   se liberan) si se cumple **alguna**:
+   - más de ~10 criterios de aceptación o más de 6 historias;
+   - dos o más capacidades que se pueden liberar por separado (p. ej. "control de acceso" y
+     "errores sin detalles internos");
+   - extiende más de 4 specs o toca más de 3 módulos.
+
+   Crea solo las que el usuario confirme, una por una. Si decide mantenerla junta, regístralo en
+   "Supuestos" como `(decisión del usuario, AAAA-MM-DD)`: cada spec grande multiplica las vueltas
+   de `/plan` y `/analyze` y su coste en tokens.
 
 ## Paso 3 — Identificador
 

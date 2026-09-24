@@ -22,7 +22,8 @@ forma de desplegar del proyecto. No escribe código.
 ```
 /plan <NNN|slug>
 /plan                 # toma la spec approved más antigua sin plan.md
-/plan <NNN> --redo    # regenera un plan existente
+/plan <NNN> --fix A3,A7   # corrige solo lo que piden esos hallazgos de /analyze (lo habitual)
+/plan <NNN> --redo        # regenera el plan completo (solo cambios estructurales)
 ```
 
 ## Reglas
@@ -46,8 +47,14 @@ forma de desplegar del proyecto. No escribe código.
    - `status: approved`. Si está en `draft` o `inferred`, detente y sugiere aprobarla con
      `/specify --edit`.
    - Sin marcadores `[NECESITA ACLARACIÓN]`. Si hay, detente.
-3. Si ya existe `plan.md` y no vino `--redo`, muestra su estado y pregunta si regenerarlo.
-4. Lee `docs/constitution.md`. Si está en `draft`, avisa que el Constitution Check se hará contra
+3. Si ya existe `plan.md` y no vino `--redo` ni `--fix`, muestra su estado y pregunta si
+   corregirlo (`--fix`) o regenerarlo (`--redo`).
+4. **Tamaño.** Si la spec tiene más de ~10 criterios, extiende más de 4 specs, o tras leer el
+   código resulta que toca más de 3 módulos o ~25 archivos, **propón dividirla antes de diseñar**
+   (muestra el corte: qué capacidades van en cada spec y cuáles se pueden liberar por separado).
+   Una spec grande multiplica las vueltas de `/plan` y `/analyze`. Si el usuario decide seguir,
+   regístralo en Decisiones como `(decisión del usuario, fecha)`.
+5. Lee `docs/constitution.md`. Si está en `draft`, avisa que el Constitution Check se hará contra
    una constitución no aprobada y continúa.
 
 ## Paso 1 — Contexto
@@ -79,8 +86,26 @@ Lista las incógnitas técnicas (cómo guardar X, qué librería para Y, dónde 
   antigüedad, reputación, licencia, scripts de instalación) **antes** de proponerla. Registra el
   resultado en la decisión. Si no se puede verificar, no la propongas: pregunta.
 
-Si una decisión depende de una preferencia del usuario y ambas opciones son razonables, pregúntale
-antes de seguir (máximo 3 preguntas, en una ronda).
+## Paso 2b — Decisiones pendientes del usuario
+
+Antes de escribir el plan, reúne **todo** lo que solo el usuario puede decidir y pregúntalo en una
+sola ronda (hasta ~6 preguntas, opción múltiple con una recomendada). Cada una descubierta después,
+en `/analyze`, cuesta una vuelta completa. Busca en particular:
+
+- **Constitución:** un principio que el diseño no puede cumplir tal cual o que no encaja con el caso
+  (¿excepción, enmienda PATCH o cambio de diseño?). Ejemplo: tests de acceso por actor en rutas cuya
+  autorización no cambia.
+- **Conflictos con otras specs en curso:** cruza los archivos que tocará este plan con los de los
+  planes y specs `approved` o `draft` (sección "Cambios por módulo" y "Notas para /plan"). Si
+  comparten archivos o contratos, pregunta el orden y qué comportamiento esperar tras la otra.
+- **Alcance:** correcciones de riesgos, criterios de specs extendidas o casos límite que el diseño
+  obliga a incluir o dejar fuera.
+- **Contratos visibles:** textos de error, códigos HTTP o formatos que cambian respuestas que hoy
+  asertan tests existentes o consumen clientes.
+- **Preferencias técnicas** con dos opciones razonables.
+
+Registra cada respuesta en Decisiones con `(decisión del usuario, AAAA-MM-DD)`. Si algo requiere
+cambiar la spec, detente y sugiere `/specify --edit` antes de seguir.
 
 ## Paso 3 — Diseño
 
@@ -220,9 +245,29 @@ Siguiente paso sugerido: `/tasks NNN`.
 
 ---
 
+## Modo `--fix <IDs>`
+
+Corrige solo lo que piden los hallazgos indicados de `analysis.md` (o todos los abiertos si no se
+indican IDs). Es la forma normal de responder a `/analyze`.
+
+1. Para cada hallazgo, identifica la sección o las líneas del plan afectadas y **edítalas en su
+   lugar**. No regeneres el resto del plan ni cambies redacción que no está en juego.
+2. Si la corrección toca otra parte (p. ej. un cambio en Contratos que afecta a Trazabilidad o al
+   Constitution Check), actualiza también esas referencias, y solo esas.
+3. Si un hallazgo requiere una decisión del usuario, pregúntala primero (Paso 2b).
+4. Muestra al usuario el diff por hallazgo y un resumen: hallazgo → cambio.
+5. Lista las tareas afectadas y sugiere `/tasks NNN --fix <IDs>`, no `--redo`.
+6. Repite la autoverificación (Paso 7) y el validador. El plan vuelve a `draft` si estaba
+   `approved`, y se aprueba de nuevo.
+
+Si al corregir descubres que el cambio es estructural (nuevo módulo, nuevo contrato, otro enfoque),
+detente y propone `--redo`.
+
 ## Modo `--redo`
 
 - Si existe `tasks.md` con tareas marcadas como hechas, avisa que regenerar el plan puede dejar
   código implementado fuera del nuevo diseño y pide confirmación.
-- Conserva el plan anterior como `plan.v<N>.md` antes de sobrescribir.
-- Tras aprobar el nuevo plan, `tasks.md` queda desactualizado: sugiere `/tasks NNN --redo`.
+- **Versión anterior:** si el proyecto usa git, asegúrate de que el plan actual está en un commit (o
+  pide al usuario que lo haga) y no crees copias. Solo sin git, guárdalo como `plan.v<N>.md`.
+- Tras aprobar el nuevo plan, `tasks.md` queda desactualizado: sugiere `/tasks NNN --redo`, o
+  `--fix` si las tareas afectadas son pocas.

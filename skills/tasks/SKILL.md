@@ -23,7 +23,9 @@ el problema está en el plan.
 ```
 /tasks <NNN|slug>
 /tasks                  # toma el plan approved más antiguo sin tasks.md
-/tasks <NNN> --redo     # regenera conservando las tareas ya hechas
+/tasks <NNN> --fix A5,A7        # corrige solo las tareas que piden esos hallazgos (lo habitual)
+/tasks <NNN> --fix T047,T065     # o las tareas indicadas, tras un /plan --fix
+/tasks <NNN> --redo             # regenera conservando las tareas ya hechas
 ```
 
 ## Reglas
@@ -157,4 +159,19 @@ Siguiente paso sugerido: `/analyze NNN` (idealmente antes de aprobar las tareas)
   números libres (nunca reutilices un número de una tarea eliminada).
 - Si una tarea hecha contradice el nuevo plan, añade una tarea para revertirla o adaptarla y
   avísale al usuario.
-- Guarda la versión anterior como `tasks.v<N>.md`.
+- **Versión anterior:** si el proyecto usa git, asegúrate de que `tasks.md` está en un commit y no
+  crees copias; solo sin git, guárdala como `tasks.v<N>.md`.
+
+## Modo `--fix <IDs>`
+
+Corrige solo lo indicado: hallazgos de `analysis.md` (`A…`) o tareas concretas (`T…`, p. ej. las
+que lista `/plan --fix`).
+
+1. Edita en su lugar las tareas afectadas (descripción, archivos, criterio de hecho, `cubre`,
+   `depende`). No renumeres ni reescribas las demás.
+2. Las tareas nuevas toman números libres; las que sobran se eliminan sin reutilizar su número.
+3. Actualiza solo las filas afectadas de las tablas de Cobertura y del Constitution Check.
+4. Muestra el diff por hallazgo o tarea, repite la autoverificación (Paso 5) y el validador.
+   `tasks.md` vuelve a `draft` si estaba `approved`.
+
+Si la corrección obliga a reordenar fases o cambia más de ~30 % de las tareas, propone `--redo`.

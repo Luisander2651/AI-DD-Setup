@@ -90,6 +90,13 @@ revisa todas las skills afectadas.
   afectadas que falten en `extends`. `/release` anota el cambio en el Historial de cada spec
   extendida y marca como resueltos sus criterios **HOY NO SE CUMPLE** que la nueva cumple, sin
   cambiar su estado.
+- **Iterar barato:** las correcciones responden a hallazgos concretos con `--fix` (edición en su
+  lugar de las secciones o tareas afectadas, con diff), no con `--redo`, salvo cambios
+  estructurales. `/analyze` es completo la primera vez y **delta** después (hallazgos abiertos +
+  `aidd.py changes`); conserva cada ronda como `analysis.r<N>.md`. Con git, las versiones
+  anteriores viven en commits, no en copias `.vN`. `/specify` y `/plan` proponen dividir specs
+  grandes (> ~10 criterios, > 4 specs extendidas, > 3 módulos) y `/plan` pregunta **todas** las
+  decisiones del usuario antes de escribir.
 - **El roadmap es del usuario:** ninguna skill añade, renumera ni reescribe objetivos sin su
   confirmación. Las brechas detectadas se concilian con los objetivos existentes (enlazar si ya
   están cubiertas, proponer si son parciales o nuevas) según
