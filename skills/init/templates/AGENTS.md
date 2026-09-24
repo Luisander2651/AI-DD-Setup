@@ -47,6 +47,7 @@ Nunca escribas secretos en el código, los logs ni los docs.
 - [Arquitectura](docs/architecture.md)
 - [Despliegue](docs/deployment.md) — entornos, deploy y rollback
 - [Seguridad](docs/security.md) — datos sensibles, auth, herramientas y excepciones
+- [Observabilidad](docs/observability.md) — logs, correlación, auditoría, métricas y alertas
 - [Roadmap](docs/roadmap.md) — etapa actual y objetivos
 - [Specs](docs/specs/README.md)
 - [ADRs](docs/adr/)

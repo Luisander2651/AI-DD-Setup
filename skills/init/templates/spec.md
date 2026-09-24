@@ -26,6 +26,13 @@ created: {{date}}
 - Casos de abuso (cada uno con su criterio `CA` marcado `(abuso)`):
   - Como {{atacante o usuario malintencionado}}, intento {{acción}} → {{resultado esperado: se rechaza, se limita, se registra}}
 
+<!-- if la feature toca datos sensibles, autenticación o permisos -->
+
+## Auditoría
+Eventos que deben quedar registrados, cada uno como criterio `CA` verificable:
+- {{evento}} → registra {{actor, acción, recurso, resultado}} (ver `docs/observability.md`)
+<!-- endif -->
+
 ## Requisitos no funcionales
 - {{performance, seguridad, accesibilidad}}
 

@@ -10,6 +10,14 @@ status: draft   # draft hasta que el usuario la apruebe → approved
 Principios innegociables. Toda spec, plan y tarea debe cumplirlos. `/plan` y `/tasks` incluyen un
 **Constitution Check** que evalúa cada principio; un incumplimiento sin justificación bloquea.
 
+<!-- if brownfield -->
+
+## Código previo
+El código existente anterior a esta constitución que no cumple un principio **no bloquea** por sí
+mismo: queda registrado como deuda en [roadmap.md](roadmap.md) y en las "Observaciones" de cada
+spec. Los principios se exigen a todo código **nuevo o modificado**.
+<!-- endif -->
+
 ## Principios
 
 ### P1. {{nombre}}

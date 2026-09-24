@@ -3,6 +3,39 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.0] - 2026-09-24
+### Added
+- Observabilidad y auditoría en todo el flujo (hallazgo de la primera prueba real: el proyecto
+  tenía la infraestructura de logs, pero la aplicación no emitía trazas ni eventos de auditoría):
+  - Plantilla `docs/observability.md`: logs, correlación por petición, registro de auditoría
+    (eventos, campos, solo anexado, retención, lectura restringida), métricas, alertas y brechas.
+  - `init`: subagente F de observabilidad, ronda de entrevista, bloque `observability` en
+    `project.yaml`, principios propuestos y regla general "presente ≠ configurada ≠ en uso".
+  - `specify`: sección "Auditoría" con criterios verificables. `plan`: sección "Observabilidad"
+    (Paso 3a). `review`: eventos de auditoría y datos sensibles en logs como bloqueantes.
+    `release`: verificación post-deploy por `request_id`.
+  - Checklist de seguridad, tema 9 ampliado (auditoría en uso, solo anexado, retención).
+  - Validador: avisos si falta "Auditoría" en la spec u "Observabilidad" en el plan cuando hay
+    datos sensibles.
+
+## [1.4.2] - 2026-09-24
+### Added
+- `init --upgrade` (`references/upgrade.md`): actualiza validador, plantillas, claves de
+  `project.yaml` y documentos nuevos sin re-explorar; la constitución solo recibe propuestas de
+  enmienda.
+- `init` Fase 0: detección de metodologías o reglas de agentes en competencia (AI-DLC, Spec Kit,
+  Cursor, Kiro, Windsurf, Copilot, Cline) con opciones pausar, migrar o convivir
+  (`references/brownfield.md` §1).
+- Migración de specs previas en otros formatos a `docs/specs/NNN/referencias/` (§3).
+- Bloque "Código previo" en la plantilla de constitución para brownfield.
+
+### Changed
+- Convenciones de specs inferidas formalizadas en el contrato: `[x]` = cubierto por un test,
+  detalles técnicos permitidos, marca **HOY NO SE CUMPLE** (el validador da error si va con `[x]`).
+- Plantilla de CI en modo baseline: seguridad solo sobre los cambios del PR y revisión completa
+  semanal informativa, para que la deuda previa no bloquee todos los PRs.
+- Formato Markdown normalizado en skills y plantillas.
+
 ## [1.4.1] - 2026-09-22
 ### Fixed
 - `aidd.py`: salida en UTF-8 en Windows (antes requería `PYTHONIOENCODING=utf-8`) y lectura del

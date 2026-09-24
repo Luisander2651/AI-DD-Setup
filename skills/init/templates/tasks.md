@@ -26,7 +26,7 @@ Formato:
 
 ## Integración y documentación
 - [ ] T090 Actualizar `docs/architecture.md` si cambió la estructura
-- [ ] T091 Actualizar `docs/deployment.md` si cambió variables, entornos o pasos de deploy
+- [ ] T091 Actualizar `docs/deployment.md` y `docs/observability.md` si cambiaron variables, entornos, pasos de deploy, logs, eventos de auditoría o métricas
 - [ ] T092 Marcar spec como `implemented`
 
 ## Despliegue (lo ejecuta `/release`)

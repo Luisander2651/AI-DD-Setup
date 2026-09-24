@@ -36,6 +36,7 @@ responde *qué* y *por qué*; el *cómo* es trabajo de `/plan`.
 - **Nunca apruebes por tu cuenta.** La spec nace en `draft`; solo el usuario la pasa a `approved`.
 - **No escribas código** ni crees `plan.md` o `tasks.md`.
 - Escribe en el idioma del proyecto (el de `AGENTS.md`).
+
 ---
 
 ## Paso 0 — Precondiciones
@@ -45,6 +46,7 @@ responde *qué* y *por qué*; el *cómo* es trabajo de `/plan`.
    aún no está aprobada y continúa.
 3. Localiza la plantilla en `.ai/project.yaml → paths.templates` (por defecto
    `docs/templates/spec.md`). Si no existe, detente y sugiere `/init` en modo re-sincronizar.
+
 ## Paso 1 — Contexto
 
 Lee, en este orden y solo lo necesario:
@@ -53,8 +55,10 @@ Lee, en este orden y solo lo necesario:
   compliance, performance).
 - `docs/roadmap.md` (¿esta feature está en los objetivos?).
 - `docs/security.md` (clasificación de datos y modelo de permisos), si existe.
+- `docs/observability.md` (eventos de auditoría obligatorios), si existe.
 - `docs/specs/README.md` y los títulos de las specs existentes.
 - `docs/architecture.md` solo para entender el dominio y el glosario, **no** para diseñar.
+
 ## Paso 2 — Duplicados y tamaño
 
 1. **Duplicados:** si una spec existente cubre total o parcialmente la idea, muéstrala y pregunta:
@@ -63,12 +67,14 @@ Lee, en este orden y solo lo necesario:
    capacidades que se pueden liberar por separado (señal: > 6 historias de usuario, o historias sin
    relación entre sí), propone dividirla y lista las specs resultantes. Crea solo las que el
    usuario confirme, una por una.
+
 ## Paso 3 — Identificador
 
 - `NNN` = siguiente número libre en `docs/specs/`, con 3 dígitos (`001`, `002`…). Nunca reutilices
   un número, aunque la carpeta se haya borrado (revisa también `docs/specs/README.md`).
 - `slug` = 2–4 palabras en kebab-case, sin artículos (`notificaciones-push`, no
   `las-notificaciones-push-del-usuario`).
+
 ## Paso 4 — Borrador
 
 Completa la plantilla. Guía por sección:
@@ -80,6 +86,7 @@ Completa la plantilla. Guía por sección:
 | Criterios de aceptación | Al menos uno por historia, más los casos límite: vacío, error, permisos, límites. |
 | Fuera de alcance | Lo que alguien razonablemente esperaría y **no** se hará. Nunca vacía. |
 | Seguridad y privacidad | Qué datos sensibles toca (según la clasificación de `docs/security.md`), quién puede hacer qué, y **casos de abuso**: "Como atacante/usuario malintencionado, intento X → se rechaza/limita/registra". Cada caso de abuso genera un criterio `CA` marcado `(abuso)`. Sin tecnología: describe el comportamiento, no el mecanismo. Si la feature no toca datos sensibles, permisos ni entradas externas, escribe "No aplica" y el motivo. |
+| Auditoría | Solo si la feature toca datos sensibles, autenticación o permisos. Qué eventos deben quedar registrados (según `docs/observability.md`), cada uno como criterio `CA` verificable: "Dado X, cuando Y, entonces queda registrado quién, qué, sobre qué recurso y con qué resultado". Sin mecanismo técnico. |
 | Requisitos no funcionales | Solo los que apliquen, medibles. Incluye los que exija la constitución según el tipo (p. ej. WCAG AA en frontend). |
 | Preguntas abiertas | Marcadores `[NECESITA ACLARACIÓN]`. **Máximo 3.** |
 
@@ -117,6 +124,8 @@ Antes de escribir, confirma cada punto; corrige lo que falle:
 - [ ] Máximo 3 `[NECESITA ACLARACIÓN]`.
 - [ ] Si toca datos sensibles, permisos o entradas externas: al menos un caso de abuso con su
       `CA (abuso)` (acceso a datos de otro usuario, entradas maliciosas, abuso de volumen…).
+- [ ] Si toca datos sensibles, autenticación o permisos: sección "Auditoría" con sus `CA`.
+
 ## Paso 7 — Escritura
 
 Después de escribir, ejecuta `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) y corrige todo error de
@@ -128,6 +137,7 @@ autoverificación manual y avísalo.
    `| NNN | [nombre](NNN-slug/spec.md) | draft | fecha |`.
 3. Si la feature corresponde a un objetivo de `docs/roadmap.md`, enlaza la spec en la columna
    "Spec" de ese objetivo.
+
 ## Paso 8 — Aprobación
 
 Muestra al usuario un resumen: problema en una frase, historias, número de criterios, supuestos y
@@ -154,8 +164,15 @@ antes de aprobar; si ya está aprobada, `/plan NNN`.
    |---|---|---|
    ```
 5. Repite los Pasos 6 a 8.
+
 ## Specs inferidas por /init
 
 Si la spec tiene `status: inferred`, `/specify --edit` sirve para validarla: revisa con el usuario
 la sección "Observaciones", decide qué es requisito real y qué es deuda, y al aprobarla cambia a
 `approved`. Elimina `confidence` al aprobar.
+
+Convenciones de las specs inferidas (`../init/references/brownfield.md` §2): `[x]` = cubierto por
+un test existente; los criterios pueden citar detalles técnicos del sistema actual; los casos de
+abuso marcados **HOY NO SE CUMPLE** no son requisitos cumplidos. Al aprobar, pregunta si cada
+"HOY NO SE CUMPLE" se corrige en esta spec (queda `[ ]` y pasa por `/plan`) o en una spec de
+corrección aparte (enlázala).

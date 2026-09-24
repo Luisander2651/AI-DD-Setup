@@ -4,8 +4,8 @@ Reglas compartidas por todas las skills del plugin. Cada skill las lee antes de 
 skill contradice este archivo, prevalece este archivo. Al cambiarlo, sube la versión del plugin y
 revisa todas las skills afectadas.
 
-- **Todas** leen `.ai/project.yaml`, `docs/constitution.md` y `docs/security.md` (si existe)
-  antes de actuar.
+- **Todas** leen `.ai/project.yaml`, `docs/constitution.md`, `docs/security.md` y
+  `docs/observability.md` (si existen) antes de actuar.
 - `/specify` crea `docs/specs/NNN-<slug>/spec.md` desde `docs/templates/spec.md`
   (NNN = siguiente número libre, 3 dígitos, nunca reutilizado). Máximo 3
   `[NECESITA ACLARACIÓN]`; con alguno abierto la spec no puede pasar a `approved`.
@@ -55,3 +55,16 @@ revisa todas las skills afectadas.
   ubicación, impacto y corrección.
 - Cambiar la constitución requiere subir `version` y añadir una entrada en "Enmiendas".
 - Una spec `inferred` pasa a `approved` solo con confirmación explícita del usuario.
+- **Specs inferidas:** `[x]` en un criterio significa "cubierto por un test existente"; los
+  criterios pueden citar detalles técnicos del sistema actual; un caso de abuso que hoy no se
+  cumple lleva la marca **HOY NO SE CUMPLE** y no se marca `[x]`. Detalle en
+  `skills/init/references/brownfield.md` §2.
+- **Observabilidad y auditoría:** `docs/observability.md` define logs, correlación y eventos de
+  auditoría. Si una spec toca datos sensibles, autenticación o permisos: `/specify` añade la
+  sección "Auditoría" con criterios `CA`, `/plan` la sección "Observabilidad" con tests,
+  `/review` verifica que los eventos se emiten y que no hay datos sensibles en logs, y
+  `/release` usa el `request_id` en la verificación post-deploy. Una herramienta *presente* no
+  cuenta como capacidad cubierta hasta estar *en uso*.
+- **Actualización:** `/init --upgrade` pone al día un proyecto con la versión instalada del
+  plugin (validador, plantillas, claves nuevas de `project.yaml`, documentos nuevos) sin tocar la
+  constitución, que solo recibe propuestas de enmienda.

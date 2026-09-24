@@ -12,7 +12,7 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack, entrevista y genera la documentación base. En proyectos existentes explora el código con subagentes. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `roadmap.md`, plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes, entrevista y genera la documentación base. `--upgrade` pone al día un proyecto con la versión instalada del plugin. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -37,6 +37,10 @@ así que no chocan con comandos integrados como `/init`.
 - **Producción es humana.** Ningún deploy a producción sin confirmación explícita.
 - **Reglas ejecutables.** Un validador determinista revisa los artefactos y un hook del plugin
   hace cumplir el flujo mientras el agente trabaja.
+- **Presente no es lo mismo que en uso.** Una herramienta instalada (logs, escáneres, métricas)
+  no cuenta como capacidad cubierta hasta que el código o el pipeline la ejercitan.
+- **Trazabilidad operativa.** Registro de auditoría de accesos a datos sensibles, correlación por
+  petición y logs sin datos personales, desde la spec hasta la verificación post-deploy.
 - **El agente también es una superficie de ataque.** Contenido de terceros como dato,
   verificación de dependencias nuevas (slopsquatting), rutas y comandos protegidos.
 
@@ -90,5 +94,6 @@ Opciones habituales (revisa la documentación de tu cliente, los comandos pueden
    `skills/init/SKILL.md` (`Versión del paquete de skills`), y registra el cambio en `CHANGELOG.md`.
 3. Si cambias `scripts/aidd.py`, sube su `VERSION` y pruébalo con specs válidas e inválidas.
 4. Prueba el flujo completo en un proyecto nuevo y en uno existente antes de publicar.
-5. Los proyectos inicializados con una versión anterior se actualizan con `/ai-dd:init` en modo
-   re-sincronizar.
+5. Los proyectos inicializados con una versión anterior se actualizan con `/ai-dd:init --upgrade`:
+   reemplaza el validador y las plantillas cambiadas, añade claves y documentos nuevos y propone
+   (sin aplicar) enmiendas a la constitución.

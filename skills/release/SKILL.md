@@ -35,6 +35,7 @@ usuario** la lleva a producción. Sigue `docs/deployment.md` al pie de la letra.
 - **Nunca improvises el procedimiento.** Si `docs/deployment.md` no dice cómo desplegar o cómo
   revertir, detente y pide completarlo.
 - **Nada de secretos** en comandos, logs, changelog o mensajes.
+
 ---
 
 ## Paso 0 — Precondiciones
@@ -77,12 +78,14 @@ nivel más alto. Confirma la versión con el usuario antes de escribirla.
    entrada en lenguaje de usuario, con referencia a la spec (`(spec 004)`). Sin detalles internos.
 2. Actualiza la versión en los manifiestos del proyecto (`package.json`, `pyproject.toml`, etc.).
 3. Commit `chore(release): vX.Y.Z` (o la convención del proyecto).
+
 ## Paso 3 — Integración
 
 Según `docs/deployment.md`:
 - Si se libera desde un PR: créalo (título `Release vX.Y.Z`, cuerpo con el changelog y enlaces a
   specs y reviews). **No lo fusiones** sin confirmación del usuario.
 - Si se libera por tag: crea el tag anotado `vX.Y.Z` y súbelo solo tras confirmación.
+
 ## Paso 4 — Staging (T095)
 
 Si existe staging:
@@ -117,7 +120,9 @@ Pide la confirmación inequívoca. Registra en cada `tasks.md` bajo T096:
 ## Paso 6 — Producción (T097)
 
 1. Despliega con el procedimiento de `docs/deployment.md`.
-2. Verifica health check y smoke tests.
+2. Verifica health check y smoke tests. Toma el `request_id` de una petición de los smoke tests y
+   confirma que sus logs y, si aplica, sus eventos de auditoría llegan al destino de
+   `docs/observability.md`.
 3. Vigila las métricas del Rollout durante la ventana definida en `docs/deployment.md` (por
    defecto 15 minutos) y reporta.
 4. Marca T097.
@@ -134,6 +139,7 @@ Para cada spec:
 3. En `docs/roadmap.md`, marca los objetivos cumplidos.
 4. Si hay feature flags, añade en `docs/roadmap.md → Pendientes` la limpieza del flag y, si
    aplica, la migración *contract* para una versión posterior.
+
 ## Paso 8 — Informe
 
 Versión liberada, specs incluidas, estado de staging y producción, métricas observadas, enlaces al
@@ -149,6 +155,7 @@ PR/tag y tareas de seguimiento añadidas al roadmap.
 4. Verifica health check y métricas.
 5. Las specs afectadas vuelven de `released` a `implemented`, con una nota en su "Historial";
    añade la entrada `## [X.Y.Z] - revertida el <fecha>` en `CHANGELOG.md`.
+
 ## Library
 
 Si `project.type: library`, "producción" es la publicación en el registro (npm, PyPI,

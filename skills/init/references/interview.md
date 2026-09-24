@@ -1,6 +1,6 @@
 # Guía de entrevista
 
-Máximo 5 rondas de hasta 4 preguntas. Opción múltiple siempre que se pueda; el usuario siempre
+Hasta 4 preguntas por ronda; omite las rondas o preguntas cuya respuesta ya conozcas. Opción múltiple siempre que se pueda; el usuario siempre
 puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo inferido
 ("Detecté X — ¿correcto?").
 
@@ -31,7 +31,18 @@ puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo 
 4. Herramientas: proponer un set según el stack (secretos, SAST, SCA, contenedores); el usuario
    confirma cuáles adoptar. Registrar los comandos en `docs/security.md` y `.ai/project.yaml`.
 
-**Ronda 5 — Operación** (solo si falta información)
+**Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
+1. Eventos que **deben** quedar registrados (multi): logins exitosos y fallidos · accesos
+   denegados · lecturas de datos sensibles · cambios de datos sensibles · cambios de permisos y
+   roles · acciones administrativas · exportaciones.
+2. ¿Hay obligación legal o contractual de registrar accesos a datos personales o de salud?
+   Si la hay, ¿cuánto tiempo se conservan los registros? (no se sabe → `TODO(init)` y riesgo).
+3. ¿Quién puede leer los registros de auditoría y cómo se protegen contra modificación?
+   (solo administradores · equipo de seguridad · almacenamiento de solo anexado · por definir).
+4. Nivel de log por defecto en producción e identificador de correlación por petición
+   (proponer `info` y cabecera `X-Request-Id` devuelta en la respuesta).
+
+**Ronda 6 — Operación** (solo si falta información)
 1. Convenciones de ramas y commits (proponer Conventional Commits si no hay).
 2. Versionado y changelog (proponer SemVer + `CHANGELOG.md` si no hay).
 3. Próximos 3 objetivos (→ roadmap).
@@ -51,6 +62,11 @@ puede escribir su propia respuesta. En brownfield, cada pregunta arranca con lo 
 - Ninguna vulnerabilidad crítica o alta llega a producción sin excepción aprobada y con fecha de
   vencimiento en `docs/security.md`.
 - Toda feature que toca datos sensibles o autenticación tiene modelo de amenazas en su plan.
+- Los accesos y cambios a datos sensibles, los logins (incluidos los fallidos) y los accesos
+  denegados se registran como eventos de auditoría con actor, acción, recurso, resultado y fecha.
+- Cada petición lleva un identificador de correlación presente en sus logs y en la respuesta.
+- Ningún log contiene datos personales, de salud, credenciales ni tokens; nivel por defecto `info`
+  en producción.
 
 Rechaza principios no verificables ("código limpio", "buen rendimiento") y propón una versión
 medible ("funciones ≤ 50 líneas salvo justificación", "p95 < 300 ms en endpoints públicos").

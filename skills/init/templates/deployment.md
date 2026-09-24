@@ -51,7 +51,9 @@ flowchart LR
 ## Verificación post-deploy
 - Health check: {{endpoint o prueba}}
 - Smoke tests: {{…}}
-- Logs: {{dónde}} · Métricas: {{dónde}} · Alertas: {{dónde}}
+- Logs: {{dónde}} · Métricas: {{dónde}} · Alertas: {{dónde}} (ver [observability.md](observability.md))
+- Trazabilidad: busca por `request_id` una petición de los smoke tests y confirma que sus logs
+  y eventos de auditoría llegan al destino esperado.
 
 ## Riesgos conocidos
 - {{…}}

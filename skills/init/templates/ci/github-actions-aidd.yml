@@ -1,9 +1,15 @@
 # Generado por /init (ai-dd). Valida el flujo y la seguridad en cada PR.
-# Fija cada acción a un SHA de commit completo en lugar de una etiqueta (cadena de suministro).
+# Modo baseline: los pasos de seguridad solo fallan por problemas NUEVOS del PR, para que la deuda
+# previa (registrada en docs/security.md) no bloquee todos los PRs. Un job semanal revisa el repo
+# completo y reporta sin bloquear.
+# Fija cada acción a un SHA de commit completo y cada imagen a una versión (cadena de suministro).
 name: ai-dd
 
 on:
   pull_request:
+  schedule:
+    - cron: "0 6 * * 1"   # revisión completa semanal
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,6 +17,7 @@ permissions:
 jobs:
   flujo:
     name: Artefactos del flujo
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4   # TODO: fijar a SHA
@@ -22,26 +29,49 @@ jobs:
 
   calidad:
     name: Tests y lint
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4   # TODO: fijar a SHA
-      # {{pasos de setup del runtime del proyecto}}
+      # {{pasos de setup del runtime del proyecto; omitir el job si otro workflow ya corre los tests}}
       - run: {{install}}
-      - run: {{lint}}
+      - run: {{lint}}   # en brownfield, limitarlo a los archivos cambiados del PR
       - run: {{test}}
       - run: {{build}}
 
-  seguridad:
-    name: Seguridad
+  seguridad-pr:
+    name: Seguridad (solo cambios del PR)
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4   # TODO: fijar a SHA
         with:
           fetch-depth: 0
-      # Solo los pasos cuyas herramientas están en .ai/project.yaml → security.tools
-      - name: Secretos
-        run: {{security.tools.secrets}}
-      - name: SAST
-        run: {{security.tools.sast}}
-      - name: Dependencias (SCA)
-        run: {{security.tools.sca}}
+      - name: Secretos en los commits del PR
+        # ejemplo: gitleaks git --log-opts="origin/${{ github.base_ref }}..HEAD" --no-banner
+        run: {{secrets_pr}}
+      - name: SAST, solo hallazgos nuevos
+        # ejemplo: semgrep scan --config p/php --baseline-commit "$(git merge-base origin/${{ github.base_ref }} HEAD)" --error
+        run: {{sast_pr}}
+      - name: Dependencias, solo si el PR cambia lockfiles
+        # sustituye LOCKFILES por la expresión de los lockfiles del proyecto, p. ej. '(composer\.lock|package-lock\.json)$'
+        run: |
+          if git diff --name-only "origin/${{ github.base_ref }}"...HEAD | grep -qE 'LOCKFILES'; then
+            {{security.tools.sca}}
+          else
+            echo "El PR no cambia dependencias"
+          fi
+
+  seguridad-completa:
+    name: Seguridad (repo completo, informativo)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    continue-on-error: true   # reporta la deuda sin bloquear; cada hallazgo alto va a docs/security.md
+    steps:
+      - uses: actions/checkout@v4   # TODO: fijar a SHA
+        with:
+          fetch-depth: 0
+      - run: {{security.tools.secrets}}
+      - run: {{security.tools.sast}}
+      - run: {{security.tools.sca}}
+      - run: {{security.tools.containers}}

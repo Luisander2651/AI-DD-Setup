@@ -45,6 +45,11 @@ human_signoff: {{pending|<nombre> <fecha>|no requerido}}
 |---|---|---|
 | {{A01:año Control de acceso}} | ✅ / ➖ / ❌ | |
 
+## Observabilidad
+- Eventos de auditoría de la spec emitidos y probados: {{sí/no + evidencia}}
+- Datos sensibles en logs del código tocado: {{ninguno / hallazgos}}
+- `request_id` presente en los logs nuevos: {{…}}
+
 ## Hallazgos
 | ID | Severidad | Archivo:línea | Hallazgo | Sugerencia |
 |---|---|---|---|---|

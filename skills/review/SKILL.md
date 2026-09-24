@@ -40,6 +40,7 @@ para desplegarse. Produce un veredicto que `/release` exige.
     dice), pero no incumple un criterio.
   - `menor`: estilo, nombres, legibilidad.
 - Escribe en el idioma del proyecto.
+
 ---
 
 ## Paso 0 — Precondiciones
@@ -50,6 +51,7 @@ para desplegarse. Produce un veredicto que `/release` exige.
    la primera tarea), `head` = commit actual. Si hay cambios sin commitear, pregunta si incluirlos.
 3. Si ya existe `review.md` y no vino `--rerun`, muestra su veredicto y pregunta si iniciar una
    nueva ronda.
+
 ## Paso 1 — Verificación automática
 
 Ejecuta los comandos de `AGENTS.md`: tests (suite completa), lint, type-check y build. Compara con
@@ -91,6 +93,10 @@ Revisa tú mismo, contra la sección Rollout del plan y `docs/deployment.md`:
 - Existen los feature flags que el plan pide, y su valor por defecto es seguro.
 - `docs/architecture.md` y `docs/deployment.md` reflejan los cambios (T090, T091).
 - No hay vulnerabilidades críticas o altas de SCA sin excepción vigente en `docs/security.md`.
+- **Observabilidad:** los eventos de auditoría del plan se emiten y sus tests los verifican; los
+  logs nuevos llevan `request_id`; ningún log del código tocado contiene datos sensibles
+  (`docs/observability.md`). Un evento de auditoría obligatorio que falta o un dato sensible en
+  logs es `bloqueante`. Registra el resultado en la sección "Observabilidad" de `review.md`.
 Lo que falle aquí es `bloqueante` si impide revertir, `importante` en otro caso.
 
 ## Paso 4 — Consolidación

@@ -34,6 +34,13 @@ security:
   agent:
     min_package_age_days: 7
     protected_paths: []        # además de las de shared/agent-security.md
+observability:
+  log_level_prod: {{info}}
+  correlation_header: {{X-Request-Id}}
+  audit:
+    required: {{true|false}}
+    events: [{{login, login_failed, access_denied, sensitive_read, sensitive_write, role_change}}]
+    retention: {{TODO(init)}}
 skills:
   enabled: [{{enabled_skills}}]  # p. ej. [design]
 paths:
@@ -42,6 +49,7 @@ paths:
   roadmap: docs/roadmap.md
   deployment: docs/deployment.md
   security: docs/security.md
+  observability: docs/observability.md
   changelog: CHANGELOG.md
   specs: docs/specs
   adr: docs/adr

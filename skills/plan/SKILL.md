@@ -36,6 +36,7 @@ forma de desplegar del proyecto. No escribe código.
   `/specify --edit`.
 - **Nunca apruebes por tu cuenta.** El plan nace en `draft`.
 - Escribe en el idioma del proyecto.
+
 ---
 
 ## Paso 0 — Precondiciones
@@ -48,12 +49,14 @@ forma de desplegar del proyecto. No escribe código.
 3. Si ya existe `plan.md` y no vino `--redo`, muestra su estado y pregunta si regenerarlo.
 4. Lee `docs/constitution.md`. Si está en `draft`, avisa que el Constitution Check se hará contra
    una constitución no aprobada y continúa.
+
 ## Paso 1 — Contexto
 
 Lee:
 - La spec completa, incluidas "Supuestos" y "Notas para /plan".
 - `.ai/project.yaml`: tipo, stack, `deploy`, `skills.enabled`.
-- `docs/constitution.md`, `docs/architecture.md`, `docs/deployment.md`, `docs/security.md`.
+- `docs/constitution.md`, `docs/architecture.md`, `docs/deployment.md`, `docs/security.md`,
+  `docs/observability.md`.
 - `../../shared/security-checklist.md` (relativo a este archivo) para el modelo de amenazas.
 - ADRs vigentes en `docs/adr/` (ignora los `superseded`).
 - Planes de specs relacionadas o que esta extiende.
@@ -113,6 +116,21 @@ Añade siempre esta sección, aunque la plantilla no la traiga:
 Todo criterio de la spec (incluidos los `(abuso)`) y toda amenaza `TM#` deben aparecer. Un criterio
 o amenaza sin test es un error del plan.
 
+## Paso 3a — Observabilidad
+
+Completa la sección "Observabilidad" del plan. **Obligatoria** si la spec toca datos sensibles,
+autenticación o permisos; en otro caso, una línea con el motivo.
+- **Logs** que la feature añade: evento, nivel y campos, siempre con `request_id` y sin datos
+  sensibles (reglas de `docs/observability.md`).
+- **Eventos de auditoría:** uno por cada criterio de la sección "Auditoría" de la spec, con dónde
+  se emite y el test que verifica que se registra (va también a Trazabilidad).
+- **Métricas y alertas** nuevas o afectadas.
+- **Verificación post-deploy:** qué consulta o dashboard demuestra que funciona.
+
+Si `docs/observability.md` marca como *presente* pero no *en uso* una capacidad que la feature
+necesita (p. ej. no hay correlación ni registro de auditoría), inclúyela en el plan como
+prerrequisito o detente y sugiere una spec previa.
+
 ## Paso 3b — Modelo de amenazas
 
 **Obligatorio** si la spec toca datos sensibles, autenticación, permisos, pagos, archivos subidos,
@@ -170,6 +188,7 @@ habría que considerar al configurarlo.
 - **No edites** `docs/architecture.md` todavía: los cambios de arquitectura se reflejan cuando la
   feature se implementa (tarea T090 de `/tasks`). Lista en el plan qué secciones habrá que
   actualizar.
+
 ## Paso 7 — Autoverificación
 
 - [ ] Todos los criterios de aceptación están en Trazabilidad con cambio y test.
@@ -178,10 +197,12 @@ habría que considerar al configurarlo.
 - [ ] Las rutas de "Cambios por módulo" existen, o están marcadas como nuevas.
 - [ ] Las dependencias nuevas tienen ADR.
 - [ ] Rollout completo o justificado como no aplicable.
+- [ ] Observabilidad completa (o motivo de no aplicar); cada criterio de Auditoría con su test.
 - [ ] Modelo de amenazas completo (o motivo de no aplicar); cada `TM#` con control y test; cada
       `CA (abuso)` cubierto.
 - [ ] No se modificó la spec.
 - [ ] Tras escribir el plan, `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) sin errores.
+
 ## Paso 8 — Escritura y aprobación
 
 1. Escribe `docs/specs/NNN-<slug>/plan.md` con `status: draft`.

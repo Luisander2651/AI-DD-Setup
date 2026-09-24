@@ -64,10 +64,16 @@ hallazgo necesita evidencia (`archivo:línea` o salida de una herramienta).
 - Webhooks y mensajes entrantes con firma verificada.
 - Artefactos de build y despliegue reproducibles y firmados cuando la plataforma lo permita.
 
-## 9. Registro y monitoreo
-- Se registran eventos de seguridad (login fallido, cambios de permisos, accesos denegados) sin
-  datos sensibles.
-- Logs estructurados con correlación; alertas definidas en `docs/deployment.md`.
+## 9. Registro, auditoría y monitoreo
+- Existe registro de auditoría **en uso** (no solo la herramienta instalada) para logins exitosos
+  y fallidos, accesos denegados, lecturas y cambios de datos sensibles y cambios de permisos, con
+  actor, acción, recurso, resultado y fecha (`docs/observability.md`).
+- El registro de auditoría es de solo anexado, con retención definida y lectura restringida.
+- Ningún log contiene datos personales, de salud, credenciales, tokens ni cuerpos completos de
+  petición; nivel por defecto `info` en producción.
+- Cada petición lleva un identificador de correlación en sus logs y en la respuesta.
+- Las excepciones se registran con contexto antes de responder con un error genérico.
+- Alertas definidas para errores, logins fallidos anómalos y colas atascadas.
 
 ## 10. Peticiones del lado del servidor (SSRF)
 - URLs proporcionadas por el usuario validadas contra lista de permitidos; bloqueo de direcciones

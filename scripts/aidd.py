@@ -17,7 +17,7 @@ import os
 import re
 import sys
 
-VERSION = "1.4.1"
+VERSION = "1.5.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -232,10 +232,18 @@ def validate_spec_dir(d, root):
         if section(body(s["spec"]), title) is None:
             rep.err(f"spec: falta la sección '{title}'")
     sec_sec = section(body(s["spec"]), "Seguridad y privacidad")
+    sensitive = sec_sec is not None and "no aplica" not in sec_sec.lower()
     if sec_sec is None:
         (rep.warn if st == "inferred" else rep.err)("spec: falta la sección 'Seguridad y privacidad'")
-    elif "no aplica" not in sec_sec.lower() and not any(c[2] for c in cas):
+    elif sensitive and not any(c[2] for c in cas):
         rep.warn("spec: la sección de seguridad no dice 'No aplica' y no hay criterios '(abuso)'")
+    if sensitive and st != "inferred" and section(body(s["spec"]), "Auditoría") is None:
+        rep.warn("spec: toca datos sensibles o permisos pero no tiene sección 'Auditoría' "
+                 "(eventos que deben registrarse)")
+    for line in (section(body(s["spec"]), "Criterios de aceptación") or "").splitlines():
+        m = CA_DEF_RE.match(line)
+        if m and m.group(1).lower() == "x" and "HOY NO SE CUMPLE" in line.upper():
+            rep.err(f"spec: {m.group(2)} está marcado [x] pero dice 'HOY NO SE CUMPLE'")
     if st in {"implemented", "released"}:
         open_cas = [c[0] for c in cas if not c[1]]
         if open_cas:
@@ -276,6 +284,9 @@ def validate_spec_dir(d, root):
             rep.warn("plan: no tiene sección 'Modelo de amenazas'")
         if section(body(ptext), "Rollout") is None:
             rep.err("plan: falta la sección 'Rollout'")
+        if sensitive and section(body(ptext), "Observabilidad") is None:
+            rep.warn("plan: la spec toca datos sensibles o permisos y el plan no tiene sección "
+                     "'Observabilidad' (logs, eventos de auditoría, métricas)")
 
     # --- tasks
     if s["tasks"]:

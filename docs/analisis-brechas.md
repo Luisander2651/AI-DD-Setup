@@ -5,10 +5,8 @@ Fecha: 2026-09-22. Objetivo: un flujo completo de desarrollo asistido por IA que
 spec-driven development (GitHub Spec Kit, guías de SDD 2026) y con los modelos de amenazas
 publicados para agentes de código.
 
-**Estado (2026-09-24):** implementadas 1.3.1, 1.4.0 y 1.4.1 (defectos 1.1, 1.2, 1.6, 1.7; secciones
-2.1, 3.1, 3.2 y 3.3; UTF-8 en Windows). Nuevas brechas detectadas en la primera prueba real
-(proyecto Laravel brownfield): sección 8 (hallazgos de campo) y sección 9 (observabilidad y
-auditoría). Siguiente: 1.4.2.
+**Estado (2026-09-24):** implementadas 1.3.1, 1.4.0, 1.4.1, 1.4.2 (hallazgos de campo 8.1–8.5 y
+8.7) y 1.5.0 (observabilidad y auditoría, sección 9). Siguiente: 1.6.0.
 
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
@@ -240,8 +238,8 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 | 1.3.1 | Defectos 1.1, 1.2, 1.6, 1.7 | ✅ |
 | 1.4.0 | Seguridad del agente (2.1), validadores + hooks + plantilla de CI (3.1), `/analyze`, `/clarify` | ✅ |
 | 1.4.1 | UTF-8 en Windows (8.6) | ✅ |
-| 1.4.2 | Hallazgos de campo 8.1–8.5 y 8.7 (`/init --upgrade`) | pendiente |
-| 1.5.0 | Observabilidad y auditoría (9) | pendiente |
+| 1.4.2 | Hallazgos de campo 8.1–8.5 y 8.7 (`/init --upgrade`) | ✅ |
+| 1.5.0 | Observabilidad y auditoría (9) | ✅ |
 | 1.6.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2) | pendiente |
 | 1.7.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
 | 1.8.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, `design`, numeración sin colisiones (1.3) | pendiente |

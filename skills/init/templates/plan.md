@@ -42,6 +42,14 @@ Evaluar **todos** los principios. ➖ = no aplica (con motivo). Un ❌ solo se a
 Todo criterio de la spec (incluidos los de abuso) y toda amenaza `TM#` deben aparecer; un criterio
 o amenaza sin test es un error del plan.
 
+## Observabilidad
+<!-- Obligatoria si la spec toca datos sensibles, autenticación o permisos; en otro caso, una
+     línea con el motivo. -->
+- Logs nuevos: {{evento → nivel → campos}} (sin datos sensibles; con `request_id`)
+- Eventos de auditoría: {{evento → dónde se emite → test}}
+- Métricas y alertas: {{…}}
+- Cómo se verifica tras el deploy: {{consulta o dashboard}}
+
 ## Rollout
 - Feature flag: {{nombre o "no aplica"}}
 - Orden de despliegue: {{migraciones → backend → frontend, etc.}}

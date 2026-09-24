@@ -28,6 +28,7 @@ flowchart LR
 {{servicios, APIs, auth}}
 
 <!-- if type=frontend|fullstack -->
+
 ## Frontend
 - Componentes y organización: {{…}}
 - Estado: {{…}}
@@ -37,14 +38,16 @@ flowchart LR
 <!-- endif -->
 
 <!-- if type=backend|fullstack -->
+
 ## Backend
 - Contratos de API: {{ruta al OpenAPI/GraphQL schema}}
 - Autenticación y autorización: {{…}}
-- Observabilidad: {{logs, métricas, trazas}}
+- Observabilidad: resumen; el detalle vive en [observability.md](observability.md)
 - Seguridad: {{…}}
 <!-- endif -->
 
 <!-- if type=fullstack|monorepo -->
+
 ## Contrato entre capas
 - Fuente de verdad: {{schema/tipos compartidos y su ubicación}}
 - Versionado: {{…}}
@@ -52,6 +55,7 @@ flowchart LR
 <!-- endif -->
 
 <!-- if type=library -->
+
 ## API pública
 - Superficie exportada: {{…}}
 - Política de compatibilidad: SemVer; {{…}}
