@@ -5,8 +5,10 @@ Fecha: 2026-09-22. Objetivo: un flujo completo de desarrollo asistido por IA que
 spec-driven development (GitHub Spec Kit, guías de SDD 2026) y con los modelos de amenazas
 publicados para agentes de código.
 
-**Estado:** 1.3.1 y 1.4.0 implementadas (defectos 1.1, 1.2, 1.6, 1.7; secciones 2.1, 3.1, 3.2 y
-3.3). Siguiente: 1.5.0.
+**Estado (2026-09-24):** implementadas 1.3.1, 1.4.0 y 1.4.1 (defectos 1.1, 1.2, 1.6, 1.7; secciones
+2.1, 3.1, 3.2 y 3.3; UTF-8 en Windows). Nuevas brechas detectadas en la primera prueba real
+(proyecto Laravel brownfield): sección 8 (hallazgos de campo) y sección 9 (observabilidad y
+auditoría). Siguiente: 1.4.2.
 
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
@@ -165,16 +167,85 @@ seguridad o más de N archivos).
 
 ---
 
+## 8. Hallazgos de la primera prueba real — P1
+
+Prueba de `/init` en un proyecto Laravel brownfield grande (módulos hexagonales, ~440 tests, otra
+metodología de agentes instalada). El resultado fue bueno; el agente **improvisó bien** varias
+decisiones que el plugin no define y que deben quedar escritas para que no dependan de la suerte:
+
+| # | Hallazgo | Cambio en el plugin |
+|---|---|---|
+| 8.1 | El `CLAUDE.md` tenía otra metodología (AI-DLC) que se declaraba "prioritaria sobre cualquier otro flujo". El agente la movió a `AIDLC.md` y la dejó en pausa. | `init` Fase 0: detectar metodologías o reglas de agentes que compiten (AI-DLC, Spec Kit `.specify/`, `.cursor/rules`, `.kiro/`, `.windsurfrules`, secciones de `CLAUDE.md`/`AGENTS.md`) y proponer pausarlas, migrarlas o convivir, con confirmación y movimiento literal (sin reescribir). |
+| 8.2 | La constitución incluyó una cláusula: el código previo que no cumple un principio no bloquea; los principios se exigen al código nuevo o modificado. | Añadirla a la plantilla de constitución para brownfield. |
+| 8.3 | En specs inferidas, `[x]` se usó como "cubierto por un test existente" y los casos de abuso incumplidos se marcaron **HOY NO SE CUMPLE**. | Formalizar ambas convenciones en el contrato y en `specify`; permitir detalles técnicos en los `CA` de specs `inferred` (describen el código actual), no en las nuevas. |
+| 8.4 | Specs previas en otro formato (`features/QRModule/`) se migraron como `draft` con los originales en `referencias/`. | Procedimiento de migración en `init`. |
+| 8.5 | La plantilla de CI revisa **todo el repo** en seguridad (Semgrep con `--error`, audits, gitleaks del historial): en brownfield puede fallar en todos los PRs por deuda previa. | Modo *baseline* para brownfield: Semgrep con `--baseline-commit`, audits contra excepciones registradas en `security.md`, gitleaks sobre los commits del PR; imágenes y acciones fijadas por versión o SHA. |
+| 8.6 | El validador necesitó `PYTHONIOENCODING=utf-8` en Windows. | ✅ Corregido en 1.4.1. |
+| 8.7 | Tras actualizar el plugin no hay una forma ligera de poner al día un proyecto (solo re-sincronizar todo con `init`). | Modo `/init --upgrade`: solo reemplaza `.ai/bin/aidd.py`, plantillas cambiadas (con diff) y `skills_version`, sin re-explorar. |
+
+---
+
+## 9. Observabilidad y auditoría — P1
+
+**Hallazgo de campo:** el proyecto tenía la infraestructura de logs (Loki, Grafana, Alloy), pero la
+aplicación **no emitía** logs útiles: sin identificador de petición, sin eventos de auditoría
+(logins fallidos, accesos denegados, lecturas de expedientes), con datos personales en algunos logs
+y nivel `debug` por defecto. `init` vio los servicios y lo dio por bueno. El usuario lo detectó al
+revisar el roadmap y añadió un objetivo propio de trazabilidad.
+
+**Por qué es una brecha del plugin y no solo del proyecto:**
+- `init` comprueba que las herramientas **existen**, no que estén **conectadas** ni que se usen.
+- La observabilidad solo aparecía en `review` (tema 9 de la checklist) y en la 1.6.0 como parte de
+  "escalabilidad". Pero la auditoría de accesos es un requisito de **seguridad** (ASVS, OWASP
+  "fallos de registro y monitoreo") y a menudo **legal** (registro de accesos a datos personales o
+  de salud según la normativa aplicable).
+- Sin trazas correlacionadas, `/release` no puede verificar un despliegue ni diagnosticar un rollback.
+
+**Cambios propuestos:**
+1. **`init` — exploración:** el subagente de tooling o el de seguridad verifica la **emisión real**:
+   configuración de logging (canales, nivel por entorno, formato), si el código escribe logs con
+   contexto, si existe un identificador de petición o correlación, qué eventos de seguridad se
+   registran, si hay datos sensibles en logs y si hay métricas o alertas. Regla general: toda
+   herramienta detectada se clasifica como *presente*, *configurada* o *en uso*, con evidencia.
+2. **`init` — nuevo documento `docs/observability.md`** (plantilla): logs (niveles por entorno,
+   formato estructurado, campos obligatorios, retención), correlación (ID por petición en logs y en
+   la respuesta), **registro de auditoría** (eventos obligatorios, campos actor · acción · recurso ·
+   resultado · fecha, almacenamiento, retención, quién puede leerlo, protección contra
+   modificación), métricas, alertas y reglas de redacción de datos sensibles.
+3. **`init` — entrevista:** pregunta sobre obligaciones de auditoría (qué accesos deben quedar
+   registrados, cuánto tiempo, marco legal) dentro de la ronda de seguridad.
+4. **Constitución — principios propuestos:** eventos de auditoría obligatorios para datos
+   sensibles; ID de correlación en cada petición; ningún dato sensible en logs; nivel por defecto
+   `info` en producción.
+5. **`specify`:** si la feature toca datos sensibles o autenticación, sección "Auditoría" con los
+   eventos que deben registrarse, expresados como criterios `CA` verificables.
+6. **`plan`:** sección "Observabilidad" obligatoria (logs, eventos de auditoría, métricas y
+   alertas de la feature) y tests que verifiquen los eventos de auditoría.
+7. **`review`:** verificar que los eventos de auditoría existen y que no hay datos sensibles en los
+   logs del código tocado. **`release`:** usar el ID de correlación y las métricas en la
+   verificación post-deploy.
+8. **Validador:** exigir la sección "Observabilidad" del plan cuando la spec declara datos
+   sensibles.
+
+Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
+
+---
+
 ## 7. Hoja de ruta sugerida
 
 | Versión | Contenido |
 |---|---|
-| 1.3.1 | Defectos 1.1, 1.2, 1.6, 1.7 |
-| 1.4.0 | Seguridad del agente (2.1), validadores + hooks + plantilla de CI (3.1), `/analyze`, `/clarify` |
-| 1.5.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2) |
-| 1.6.0 | Escalabilidad (5.1): NFR cuantificados, capacidad y observabilidad en `plan`, carga en `release`, fitness functions |
-| 1.7.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, `design` |
-| 2.0.0 | Equipos y repos grandes (5.2, 5.3), `/security-audit`, evals del plugin |
+| Versión | Contenido | Estado |
+|---|---|---|
+| 1.3.1 | Defectos 1.1, 1.2, 1.6, 1.7 | ✅ |
+| 1.4.0 | Seguridad del agente (2.1), validadores + hooks + plantilla de CI (3.1), `/analyze`, `/clarify` | ✅ |
+| 1.4.1 | UTF-8 en Windows (8.6) | ✅ |
+| 1.4.2 | Hallazgos de campo 8.1–8.5 y 8.7 (`/init --upgrade`) | pendiente |
+| 1.5.0 | Observabilidad y auditoría (9) | pendiente |
+| 1.6.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2) | pendiente |
+| 1.7.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
+| 1.8.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, `design`, numeración sin colisiones (1.3) | pendiente |
+| 2.0.0 | Equipos y repos grandes (5.2, 5.3), `/security-audit`, evals del plugin (6) | pendiente |
 
 ## Fuentes
 - GitHub Spec Kit — https://github.com/github/spec-kit
