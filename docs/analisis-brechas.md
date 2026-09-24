@@ -231,7 +231,7 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 
 ---
 
-## 7. Hoja de ruta sugerida
+## 10. Hoja de ruta sugerida
 
 | Versión | Contenido |
 |---|---|
