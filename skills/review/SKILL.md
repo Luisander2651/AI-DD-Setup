@@ -93,6 +93,9 @@ Revisa tú mismo, contra la sección Rollout del plan y `docs/deployment.md`:
 - Existen los feature flags que el plan pide, y su valor por defecto es seguro.
 - `docs/architecture.md` y `docs/deployment.md` reflejan los cambios (T090, T091).
 - No hay vulnerabilidades críticas o altas de SCA sin excepción vigente en `docs/security.md`.
+- **Cobertura de riesgos:** cada corrección declarada "dentro" en la spec está implementada y
+  probada; los cambios de estado en `security.md`, `observability.md` o `deployment.md` son por
+  corrección y ningún riesgo figura como mitigado con correcciones pendientes (`bloqueante`).
 - **Observabilidad:** los eventos de auditoría del plan se emiten y sus tests los verifican; los
   logs nuevos llevan `request_id`; ningún log del código tocado contiene datos sensibles
   (`docs/observability.md`). Un evento de auditoría obligatorio que falta o un dato sensible en

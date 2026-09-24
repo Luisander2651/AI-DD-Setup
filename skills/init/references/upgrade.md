@@ -16,20 +16,25 @@ como diff y se aplica solo con confirmación.
    usuario personalizó una plantilla, ofrece fusionar en lugar de reemplazar.
 4. **`project.yaml`.** Añade las claves nuevas de `../templates/project.yaml` que falten, con su
    valor por defecto o `TODO(init)`. Nunca cambies valores existentes.
-5. **Documentos nuevos del paquete.** Si la versión nueva introduce un documento que el proyecto
+5. **Migración de formato.** Si `security.md`, `observability.md` o `deployment.md` no numeran
+   sus riesgos y correcciones (`RS1`/`RS1.a`, `OB`, `RD`, desde 1.5.6), propone numerarlos con
+   diff, sin cambiar su contenido. Después revisa los objetivos del roadmap y las specs que citan
+   riesgos ("riesgo 1", "riesgos 1 y 3"…) y **reporta** las correcciones que no cubren ni
+   excluyen de forma explícita; propone cómo declararlas, sin aplicarlo sin confirmación.
+6. **Documentos nuevos del paquete.** Si la versión nueva introduce un documento que el proyecto
    no tiene (p. ej. `docs/observability.md` desde 1.5.0), ofrece generarlo. Para hacerlo, ejecuta
    **solo** el subagente de exploración correspondiente de `explore-agents.md` y las preguntas de
    entrevista de ese bloque; no repitas el resto de `/init`. Después **concilia** las brechas
    del documento nuevo con el roadmap existente según `brownfield.md` §4: enlaza las que ya cubre
    un objetivo, propone (con confirmación) las parciales y las nuevas, e informa lo que los
    objetivos del usuario mencionan y la exploración no detectó.
-6. **Constitución.** No la modifiques. Si la versión nueva propone principios nuevos (p. ej. de
+7. **Constitución.** No la modifiques. Si la versión nueva propone principios nuevos (p. ej. de
    observabilidad), preséntalos como **propuesta de enmienda** con su versión nueva (MINOR) para
    que el usuario decida; si acepta, añádelos y registra la enmienda.
-7. **CI.** Si existe `.github/workflows/ai-dd.yml` y la plantilla cambió, muestra el diff; es una
+8. **CI.** Si existe `.github/workflows/ai-dd.yml` y la plantilla cambió, muestra el diff; es una
    ruta protegida: solo con confirmación explícita.
-8. **Enlaces.** Si hay documentos nuevos, añádelos a la sección "Documentación" de `AGENTS.md`.
-9. **Cierre.** Actualiza `skills_version`, añade una entrada en `CHANGELOG.md` del proyecto
+9. **Enlaces.** Si hay documentos nuevos, añádelos a la sección "Documentación" de `AGENTS.md`.
+10. **Cierre.** Actualiza `skills_version`, añade una entrada en `CHANGELOG.md` del proyecto
    (`### Changed — flujo AI-DD actualizado a X.Y.Z`), ejecuta `python .ai/bin/aidd.py validate` y
    resume qué se cambió, qué se ofreció y se rechazó, la conciliación con el roadmap y qué queda
    pendiente.

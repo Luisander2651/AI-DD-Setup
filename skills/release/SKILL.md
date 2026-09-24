@@ -139,7 +139,10 @@ Para cada spec:
 3. En `docs/roadmap.md`, marca los objetivos cumplidos.
 4. Si hay feature flags, añade en `docs/roadmap.md → Pendientes` la limpieza del flag y, si
    aplica, la migración *contract* para una versión posterior.
-5. **Specs extendidas** (`extends` en el frontmatter): en cada una, sin cambiar su `status`:
+5. **Riesgos:** en `security.md`, `observability.md` y `deployment.md`, marca como
+   `mitigada (vX.Y.Z)` solo las correcciones que la spec liberada declara "dentro". El riesgo pasa
+   a mitigado únicamente si todas sus correcciones están mitigadas o aceptadas como excepción.
+6. **Specs extendidas** (`extends` en el frontmatter): en cada una, sin cambiar su `status`:
    - Añade al Historial: `| AAAA-MM-DD | Comportamiento modificado por NNN en vX.Y.Z | /release |`.
    - Los criterios marcados **HOY NO SE CUMPLE** que la spec liberada resuelve pasan a
      `[x]` y su marca se sustituye por `resuelto por NNN (vX.Y.Z)`. Si no está claro cuáles

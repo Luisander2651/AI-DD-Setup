@@ -51,4 +51,15 @@ Reglas base en `shared/agent-security.md` del plugin. Específicas de este proye
 |---|---|---|---|---|---|
 
 ## Riesgos conocidos
-- {{…}}
+<!-- Cada riesgo con ID `RS<n>` y cada corrección con ID `RS<n>.<letra>`. Los objetivos del
+     roadmap y las specs citan estos IDs y declaran cada corrección como dentro o fuera de su
+     alcance (ver shared/contract.md, "Cobertura de riesgos"). Estados de una corrección:
+     pendiente · en curso (spec NNN) · mitigada (vX.Y.Z) · aceptada (excepción EX<n>).
+     Un riesgo solo está mitigado cuando todas sus correcciones están mitigadas o aceptadas. -->
+
+### RS1 · {{Alta}} — {{título}} ({{categoría OWASP}})
+{{descripción e impacto}}
+
+Correcciones:
+- RS1.a {{corrección}} — estado: pendiente
+- RS1.b {{corrección}} — estado: pendiente

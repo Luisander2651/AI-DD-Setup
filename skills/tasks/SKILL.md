@@ -130,6 +130,9 @@ Registra el resultado en la sección "Constitution Check" con el mismo formato q
 - [ ] Tablas de cobertura completas.
 - [ ] T090–T098 presentes.
 - [ ] Cada `TM#` y cada `CA (abuso)` con sus tareas.
+- [ ] Las tareas que actualizan `security.md`, `observability.md` o `deployment.md` cambian el
+      estado **por corrección** (`RS1.a → mitigada`), nunca el riesgo completo si alguna corrección
+      queda fuera.
 - [ ] Tras escribir, `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) sin errores (el script revisa
       formato, rangos, dependencias, ciclos y cobertura).
 

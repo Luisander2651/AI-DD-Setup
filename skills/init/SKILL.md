@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.5.5` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.5.6` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -178,6 +178,9 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
      contenedores) sin instalarlas.
    - Brownfield: `status: inferred`, a partir del subagente E.
    - Registra la edición vigente del OWASP Top 10 en "Referencias".
+   - Numera cada riesgo (`RS1`, `RS2`…) y cada corrección que propone (`RS1.a`, `RS1.b`…), con su
+     estado. Haz lo mismo con las brechas de `observability.md` (`OB`) y los riesgos de
+     `deployment.md` (`RD`).
 8. `docs/observability.md` ← `templates/observability.md`
    - Greenfield: `status: proposed` con los eventos de auditoría acordados.
    - Brownfield: `status: inferred`, a partir del subagente F, marcando cada capacidad como
@@ -186,6 +189,10 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
 9. `docs/roadmap.md` ← `templates/roadmap.md`. Si el roadmap ya existe (re-sincronización),
    no lo regeneres: concilia las brechas de observabilidad, seguridad y despliegue con
    `references/brownfield.md` §4. Si es nuevo, las brechas prioritarias entran como objetivos.
+   Un objetivo que nace de un riesgo **cita cada corrección** en su criterio de éxito: las que
+   cubre y las que deja fuera con su destino (otro objetivo, spec o excepción). No resumas: si el
+   riesgo propone cuatro correcciones, el objetivo nombra las cuatro. Pregunta al usuario por
+   las que propones dejar fuera.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
     `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del

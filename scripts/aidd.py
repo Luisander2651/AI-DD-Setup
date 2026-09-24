@@ -17,7 +17,7 @@ import os
 import re
 import sys
 
-VERSION = "1.5.2"
+VERSION = "1.5.6"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -191,6 +191,56 @@ def analysis_state(s):
     return "pass" if afm.get("result") == "pass" else "fail"
 
 
+RISK_DOCS = ("security.md", "observability.md", "deployment.md")
+RISK_RE = r"(?:RS|OB|RD)\d+"
+
+
+def load_risks(root):
+    """{riesgo: [correcciones]} a partir de los documentos de riesgos del proyecto."""
+    risks = {}
+    for name in RISK_DOCS:
+        p = os.path.join(root, "docs", name)
+        if not os.path.isfile(p):
+            continue
+        for line in read(p).splitlines():
+            m = re.match(r"^###\s+(" + RISK_RE + r")\b", line)
+            if m:
+                risks.setdefault(m.group(1), [])
+                continue
+            m = re.match(r"^\s*-\s+((" + RISK_RE + r")\.[a-z])\b", line)
+            if m:
+                risks.setdefault(m.group(2), [])
+                if m.group(1) not in risks[m.group(2)]:
+                    risks[m.group(2)].append(m.group(1))
+    return {k: v for k, v in risks.items() if v}
+
+
+def cited_risks(text, risks):
+    ids = set(re.findall(r"\b(" + RISK_RE + r")(?:\.[a-z])?\b", text))
+    return sorted(i for i in ids if i in risks)
+
+
+def coverage_rows(spec_text):
+    """{corrección: 'dentro' | 'fuera'} según la sección 'Cobertura de riesgos'."""
+    sec = section(body(spec_text), "Cobertura de riesgos") or ""
+    rows = {}
+    for line in sec.splitlines():
+        for cid in re.findall(r"\b((?:RS|OB|RD)\d+\.[a-z])\b", line):
+            low = line.lower()
+            rows[cid] = "fuera" if "fuera" in low else ("dentro" if "dentro" in low else None)
+    return rows
+
+
+def mitigation_claims(text, risk):
+    """Líneas que declaran mitigado el riesgo completo (no una corrección) sin decir 'parcial'."""
+    out = []
+    for line in text.splitlines():
+        if re.search(r"\b" + risk + r"\b(?!\.[a-z])", line) and re.search(r"mitigad", line, re.I) \
+                and not re.search(r"parcial", line, re.I):
+            out.append(line.strip()[:80])
+    return out
+
+
 def constitution_principles(root):
     p = os.path.join(root, "docs", "constitution.md")
     if not os.path.isfile(p):
@@ -257,6 +307,32 @@ def validate_spec_dir(d, root):
         open_cas = [c[0] for c in cas if not c[1]]
         if open_cas:
             rep.err(f"spec: estado {st} con criterios sin marcar {sorted(set(open_cas))}")
+
+    # --- cobertura de riesgos
+    risks = load_risks(root) if root else {}
+    covered_all = {}
+    if risks:
+        cited = cited_risks(body(s["spec"]), risks)
+        rows = coverage_rows(s["spec"])
+        if cited and section(body(s["spec"]), "Cobertura de riesgos") is None:
+            rep.err(f"spec: cita {cited} pero no tiene sección 'Cobertura de riesgos'")
+        for r in cited:
+            missing = [c for c in risks[r] if rows.get(c) is None]
+            if missing:
+                rep.err(f"spec: {r} tiene correcciones sin declarar dentro o fuera: {missing}")
+            fuera = [c for c in risks[r] if rows.get(c) == "fuera"]
+            covered_all[r] = not missing and not fuera
+            if fuera and not re.search(r"parcial", section(body(s["spec"]), "Problema") or "", re.I):
+                rep.warn(f"spec: deja fuera {fuera} y el Problema no dice que atiende {r} parcialmente")
+        if re.search(r"\briesgos?\s+\d", body(s["spec"]), re.I):
+            rep.warn("spec: cita riesgos por número ('riesgo 1'); usa sus IDs (RS1…) y declara sus correcciones")
+    for kind in ("plan", "tasks"):
+        if s[kind] and risks:
+            for r in cited_risks(body(s[kind]), risks):
+                if covered_all.get(r):
+                    continue
+                for line in mitigation_claims(body(s[kind]), r):
+                    rep.err(f"{kind}: declara {r} mitigado pero la spec no cubre todas sus correcciones: '{line}'")
 
     # --- plan
     threats = []
@@ -392,6 +468,27 @@ def validate_spec_dir(d, root):
     return rep
 
 
+def validate_roadmap(root):
+    p = os.path.join(root, "docs", "roadmap.md")
+    risks = load_risks(root)
+    if not os.path.isfile(p) or not risks:
+        return 0
+    rep = Report("docs/roadmap.md")
+    for line in read(p).splitlines():
+        if not line.startswith("|"):
+            continue
+        num = (line.split("|") + ["", ""])[1].strip()
+        for r in cited_risks(line, risks):
+            missing = [c for c in risks[r] if not re.search(r"\b" + re.escape(c) + r"\b", line)]
+            if missing:
+                rep.err(f"objetivo {num}: cita {r} sin declarar las correcciones {missing} (dentro o fuera con destino)")
+        if re.search(r"\briesgos?\s+\d", line, re.I):
+            rep.warn(f"objetivo {num}: cita riesgos por número; usa sus IDs (RS1…) y todas sus correcciones")
+    if rep.errors or rep.warnings:
+        rep.print()
+    return len(rep.errors)
+
+
 def spec_dirs(root):
     base = os.path.join(root, "docs", "specs")
     if not os.path.isdir(base):
@@ -422,6 +519,7 @@ def cmd_validate(args):
         errors += len(rep.errors)
         num = os.path.basename(d)[:3]
         nums.setdefault(num, []).append(os.path.basename(d))
+    errors += validate_roadmap(root)
     for num, names in nums.items():
         if len(names) > 1:
             print(f"✗ número de spec repetido {num}: {names}")

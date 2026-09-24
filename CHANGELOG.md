@@ -3,6 +3,27 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.5.6] - 2026-09-24
+### Fixed
+- Pérdida de correcciones al resumir riesgos (detectado en uso real): `init` escribió un objetivo
+  del roadmap que citaba un riesgo de `security.md` con cuatro correcciones y recogía solo dos;
+  la spec heredó el recorte (una corrección quedó solo como nota técnica, sin decidir) y el plan
+  iba a declarar el riesgo mitigado. Solo `/analyze` lo detectó.
+
+### Added
+- Cobertura de riesgos: IDs para riesgos y correcciones (`RS1`/`RS1.a` en `security.md`, `OB` en
+  `observability.md`, `RD` en `deployment.md`). Todo objetivo, spec, plan o tarea que cite un
+  riesgo declara **cada** corrección dentro o fuera (con motivo y destino); un riesgo solo pasa a
+  mitigado con todas sus correcciones mitigadas o aceptadas.
+- Sección "Cobertura de riesgos" en la plantilla de spec; `specify` lee el riesgo en su documento
+  de origen, no el resumen del roadmap.
+- Validador: errores si una spec o un objetivo del roadmap cita un riesgo sin declarar todas sus
+  correcciones, o si un plan o una tarea lo declara mitigado sin cubrirlas; avisos si se citan
+  riesgos por número o falta "parcialmente" en el Problema.
+- `analyze` (categoría 7), `review` y `release` revisan y actualizan el estado por corrección.
+- `init --upgrade` propone numerar riesgos existentes y reporta objetivos y specs con cobertura
+  incompleta.
+
 ## [1.5.5] - 2026-09-24
 ### Added
 - Re-sincronizar sin perder decisiones (`references/brownfield.md` §5): el contenido marcado

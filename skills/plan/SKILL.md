@@ -198,6 +198,11 @@ habría que considerar al configurarlo.
 - [ ] Las dependencias nuevas tienen ADR.
 - [ ] Rollout completo o justificado como no aplicable.
 - [ ] Observabilidad completa (o motivo de no aplicar); cada criterio de Auditoría con su test.
+- [ ] Riesgos: el plan nunca dice que un riesgo queda "mitigado" si la spec deja alguna de sus
+      correcciones fuera; habla por corrección ("RS1.a y RS1.d mitigadas; RS1.b y RS1.c
+      pendientes → destino"). Las decisiones de diseño que cubren una corrección de forma
+      indirecta (p. ej. un middleware que compensa un provider sin fijar) se registran en
+      Decisiones con el ID de la corrección y su estado.
 - [ ] Modelo de amenazas completo (o motivo de no aplicar); cada `TM#` con control y test; cada
       `CA (abuso)` cubierto.
 - [ ] No se modificó la spec.

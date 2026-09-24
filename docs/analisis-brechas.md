@@ -182,6 +182,7 @@ decisiones que el plugin no define y que deben quedar escritas para que no depen
 | 8.6 | El validador necesitó `PYTHONIOENCODING=utf-8` en Windows. | ✅ Corregido en 1.4.1. |
 | 8.7 | Tras actualizar el plugin no hay una forma ligera de poner al día un proyecto (solo re-sincronizar todo con `init`). | Modo `/init --upgrade`: solo reemplaza `.ai/bin/aidd.py`, plantillas cambiadas (con diff) y `skills_version`, sin re-explorar. |
 | 8.8 | Un cambio que cruza varias specs inferidas (control de acceso sobre 005, 006, 007 y 009) no tenía forma definida de enlazarse con ellas ni de actualizarlas al liberarse. | ✅ 1.5.2: `extends` en el frontmatter, validado, revisado por `analyze` y aplicado por `release`. |
+| 8.9 | Al pasar de un riesgo de `security.md` a un objetivo del roadmap, y de ahí a una spec y un plan, se perdieron dos de cuatro correcciones; el plan iba a declarar el riesgo mitigado. Solo `/analyze` lo detectó. | ✅ 1.5.6: IDs de riesgo y corrección, sección "Cobertura de riesgos", reglas en todo el flujo y comprobación en el validador. |
 
 ---
 

@@ -69,6 +69,11 @@ en estado `approved` y este encargo:
 >    dependencias nuevas sin verificación registrada (`shared/agent-security.md` §2).
 > 6. **Duplicación y conflicto:** requisitos duplicados; solapamiento con otras specs en curso
 >    que toquen los mismos módulos o contratos.
+> 7. **Cobertura de riesgos:** para cada riesgo o brecha citado (`RS`, `OB`, `RD`, o "riesgo N"),
+>    compara con su documento de origen: cada corrección debe estar dentro (con criterio, cambio y
+>    test) o fuera (con motivo y destino). Es CRÍTICO que el plan o las tareas declaren mitigado un
+>    riesgo con correcciones fuera o sin decidir, o que una corrección aparezca solo como nota
+>    técnica sin decisión.
 >
 > Severidades: CRÍTICA (viola la constitución, requisito central sin cobertura, contradicción que
 > produciría código incorrecto), ALTA (riesgo real de retrabajo), MEDIA (inconsistencia que

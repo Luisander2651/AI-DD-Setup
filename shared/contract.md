@@ -76,6 +76,14 @@ revisa todas las skills afectadas.
   AAAA-MM-DD)` o `(decisión del usuario, AAAA-MM-DD)`. Ninguna skill lo elimina ni lo reescribe al
   re-sincronizar; ante una contradicción con evidencia nueva, pregunta. Los documentos
   `approved` solo reciben propuestas por sección (`skills/init/references/brownfield.md` §5).
+- **Cobertura de riesgos:** los riesgos y brechas llevan ID (`RS<n>` en `security.md`, `OB<n>` en
+  `observability.md`, `RD<n>` en `deployment.md`) y cada corrección un subíndice (`RS1.a`). Todo
+  objetivo del roadmap, spec, plan o tarea que cite un riesgo declara **cada** corrección como
+  dentro o fuera de su alcance (fuera: con motivo y destino). Nunca se resume un riesgo citando solo
+  su número. Si alguna corrección queda fuera, se dice "atiende RS1 **parcialmente**".
+  Un riesgo solo pasa a mitigado cuando **todas** sus correcciones están mitigadas o aceptadas
+  como excepción; mientras tanto se actualiza el estado de cada corrección. El validador lo
+  comprueba en specs, planes, tareas y roadmap; `/analyze` y `/review` lo revisan.
 - **Specs que extienden otras:** un cambio de comportamiento sobre specs `inferred`,
   `implemented` o `released` va en una spec nueva con `extends: [NNN, …]` en el frontmatter. El
   validador comprueba que existan. `/analyze` revisa contradicciones no declaradas y specs

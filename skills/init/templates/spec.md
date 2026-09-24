@@ -27,6 +27,18 @@ extends: []   # specs cuyo comportamiento cambia esta spec, p. ej. [005, 006]
 - Casos de abuso (cada uno con su criterio `CA` marcado `(abuso)`):
   - Como {{atacante o usuario malintencionado}}, intento {{acción}} → {{resultado esperado: se rechaza, se limita, se registra}}
 
+<!-- if la spec atiende riesgos o brechas documentados (RS/OB/RD) -->
+
+## Cobertura de riesgos
+Cada corrección de cada riesgo citado, dentro o fuera de alcance. Si alguna queda fuera, el
+Problema dice que la spec atiende el riesgo **parcialmente**.
+
+| Corrección | Alcance | Criterios / motivo y destino |
+|---|---|---|
+| {{RS1.a — texto}} | dentro | {{CA3, CA5}} |
+| {{RS1.b — texto}} | fuera | {{motivo}} → {{spec, objetivo o excepción}} |
+<!-- endif -->
+
 <!-- if la feature toca datos sensibles, autenticación o permisos -->
 
 ## Auditoría

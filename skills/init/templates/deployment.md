@@ -56,4 +56,7 @@ flowchart LR
   y eventos de auditoría llegan al destino esperado.
 
 ## Riesgos conocidos
-- {{…}}
+<!-- IDs `RD<n>` y correcciones `RD<n>.<letra>`, con el mismo formato que docs/security.md. -->
+### RD1 · {{prioridad}} — {{riesgo}}
+Correcciones:
+- RD1.a {{corrección}} — estado: pendiente

@@ -74,6 +74,9 @@ sin su confirmación.
      criterio de éxito, mostrando el texto actual y el propuesto.
    - **Nueva:** nada la cubre. Propón una fila nueva con objetivo, criterio de éxito medible y
      origen (documento y sección de la brecha).
+   - En cualquier caso, un objetivo que atiende un riesgo o brecha con correcciones (`RS1.a`…)
+     las cita **todas**: las que cubre y las que quedan fuera con su destino. Una propuesta que
+     omite correcciones se marca como **parcial** y se dice cuáles faltan.
 3. **Pregunta una sola vez** con la lista de propuestas (parciales y nuevas); el usuario elige
    cuáles aplicar. Si la sesión es desatendida, no modifiques el roadmap: deja las propuestas en
    el resumen final.

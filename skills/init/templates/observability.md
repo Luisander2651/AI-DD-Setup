@@ -61,8 +61,10 @@ Separado de los logs técnicos: responde **quién hizo qué, sobre qué, cuándo
 ## Brechas
 <!-- En brownfield: lo que está presente pero no en uso, datos sensibles en logs, eventos de
      auditoría faltantes. Solo hechos verificados en el código o confirmados por el usuario.
-     Cada brecha con prioridad y enlace al objetivo del roadmap. -->
-- {{…}}
+     Cada brecha con ID `OB<n>`, prioridad, correcciones `OB<n>.<letra>` y enlace al roadmap. -->
+### OB1 · {{prioridad}} — {{brecha}}
+Correcciones:
+- OB1.a {{corrección}} — estado: pendiente
 
 ## Brechas por confirmar
 <!-- Dependen de configuración no versionada o de algo que no se pudo verificar. Sin severidad ni
