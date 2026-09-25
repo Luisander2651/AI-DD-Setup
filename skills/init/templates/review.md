@@ -62,3 +62,6 @@ human_signoff: {{pending|<nombre> <fecha>|no requerido}}
 
 ## Tareas añadidas
 - {{T0xx ← R1}}
+
+## Aceptados sin tarea
+- {{**R8** → roadmap: resumen}}

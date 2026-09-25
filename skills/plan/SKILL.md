@@ -67,6 +67,12 @@ Lee:
 - `../../shared/security-checklist.md` (relativo a este archivo) para el modelo de amenazas.
 - ADRs vigentes en `docs/adr/` (ignora los `superseded`).
 - Planes de specs relacionadas o que esta extiende.
+**Línea base de dependencias:** ejecuta la herramienta SCA de `.ai/project.yaml → security.tools`
+(p. ej. `npm audit`, `composer audit`, `pip-audit`). Si ya hay vulnerabilidades críticas o altas sin
+excepción vigente en `docs/security.md`, **no son de esta spec pero bloquearán `/release`**:
+llévalas al Paso 2b (actualizar dentro de esta spec, o excepción con motivo, aprobador y
+vencimiento, con su riesgo `RS`). Descubrirlas en `/review` cuesta una ronda más.
+
 **Código existente:** identifica los módulos que la feature probablemente toca y léelos. Si son
 muchos o no está claro dónde encaja, lanza **un** subagente de solo lectura con este encargo:
 
@@ -102,6 +108,7 @@ en `/analyze`, cuesta una vuelta completa. Busca en particular:
   obliga a incluir o dejar fuera.
 - **Contratos visibles:** textos de error, códigos HTTP o formatos que cambian respuestas que hoy
   asertan tests existentes o consumen clientes.
+- **Vulnerabilidades previas** de la línea base de dependencias (Paso 1).
 - **Preferencias técnicas** con dos opciones razonables.
 
 Registra cada respuesta en Decisiones con `(decisión del usuario, AAAA-MM-DD)`. Si algo requiere
@@ -127,6 +134,11 @@ Completa `docs/templates/plan.md`. Guía por sección:
 - `frontend` / `fullstack`: pantallas y componentes nuevos o modificados, estados (carga, vacío,
   error, éxito), manejo de estado, accesibilidad. Si `design` está en `skills.enabled`, añade la
   nota: "Revisar con la skill `design` antes de `/implement`".
+- **Si cambian permisos o roles** y hay interfaz: una tabla **"Qué ve cada rol"** por pantalla
+  afectada (saludos y textos, menús, columnas, botones y enlaces, estados vacíos). Ocultar un
+  control no basta: los textos que prometen una acción ("gestiona", "ver y editar"), las columnas
+  que quedan vacías y los mensajes pensados para otro rol también cambian, y cada fila lleva su
+  test. Es la fuente habitual de hallazgos de `/review` en specs de control de acceso.
 - `fullstack` / `monorepo`: dónde vive el contrato compartido y cómo se regenera.
 - `library`: cambios en la API pública y su impacto en SemVer (patch, minor o major).
 Añade siempre esta sección, aunque la plantilla no la traiga:
@@ -267,7 +279,8 @@ detente y propone `--redo`.
 
 - Si existe `tasks.md` con tareas marcadas como hechas, avisa que regenerar el plan puede dejar
   código implementado fuera del nuevo diseño y pide confirmación.
-- **Versión anterior:** si el proyecto usa git, asegúrate de que el plan actual está en un commit (o
-  pide al usuario que lo haga) y no crees copias. Solo sin git, guárdalo como `plan.v<N>.md`.
+- **Versión anterior:** antes de regenerar, archívala con
+  `python .ai/bin/aidd.py rotate docs/specs/NNN-<slug> plan` (copia a `history/plan.v<N>.md`). Las
+  versiones archivadas no se borran, tampoco en un upgrade; ninguna skill las lee.
 - Tras aprobar el nuevo plan, `tasks.md` queda desactualizado: sugiere `/tasks NNN --redo`, o
   `--fix` si las tareas afectadas son pocas.

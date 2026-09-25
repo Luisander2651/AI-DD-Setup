@@ -47,9 +47,18 @@ para desplegarse. Produce un veredicto que `/release` exige.
 
 1. La spec está en `status: implemented` y T001–T092 de `tasks.md` están marcadas. Si no,
    detente y sugiere `/implement`.
-2. Determina el rango a revisar: `base` = merge-base con la rama principal (o el commit anterior a
-   la primera tarea), `head` = commit actual. Si hay cambios sin commitear, pregunta si incluirlos.
-3. Si ya existe `review.md` y no vino `--rerun`, muestra su veredicto y pregunta si iniciar una
+2. Determina el rango a revisar: `base` = `impl_base` del frontmatter de `tasks.md` (lo registra
+   `/implement`); si falta, el commit que aprobó `tasks.md`. **No uses el merge-base con la rama
+   principal**: suele incluir commits de `/init`, upgrades y specs que no son de esta
+   implementación (en un caso real, 5.600 líneas de documentación ajenas por revisor). `head` =
+   commit actual. Si hay cambios sin commitear, pregunta si incluirlos.
+3. Prepara el **paquete de review**, que comparten todos los revisores:
+   `python .ai/bin/aidd.py review-pack docs/specs/NNN-<slug>` (añade `--base`/`--head` si hace
+   falta). Deja en `.ai/cache/review/NNN-<slug>/`: `code.diff` (código sin `docs/`, `.ai/`,
+   Markdown ni lockfiles), `docs.stat`, `deps.stat` (lockfiles cambiados), `scope.md` (archivos
+   cambiados sin tarea que los cite y tareas sin diff) y `context.md` (criterios, modelo de
+   amenazas, trazabilidad y observabilidad del plan). Informa el tamaño estimado en tokens.
+4. Si ya existe `review.md` y no vino `--rerun`, muestra su veredicto y pregunta si iniciar una
    nueva ronda.
 
 ## Paso 1 — Verificación automática
@@ -69,17 +78,38 @@ no está configurada, anótalo como hallazgo `menor` ("sin SAST configurado"), s
 
 ## Paso 2 — Revisiones en paralelo
 
-Lanza estos subagentes de solo lectura en paralelo. A cada uno pásale: rutas de la spec, del plan,
-de `tasks.md`, de la constitución, el rango `base..head` y el formato de hallazgo
-(`severidad | archivo:línea | hallazgo | sugerencia`).
+Lanza estos subagentes de solo lectura en paralelo. **Cada uno recibe solo lo que necesita**, no
+todos los artefactos: el costo de una review lo decide lo que cada revisor lee, multiplicado por
+el número de revisores.
+
+| Subagente | Recibe |
+|---|---|
+| A. Spec | `context.md` (criterios), `code.diff`; abre los tests que cite |
+| C. Constitución + D. Calidad (un solo agente) | `docs/constitution.md`, `AGENTS.md` (convenciones), `code.diff` |
+| S. Seguridad | `context.md` (modelo de amenazas, observabilidad), `code.diff`, `deps.stat`, los temas de `shared/security-checklist.md` que apliquen al diff, resultados de las herramientas |
+| Accesibilidad (si aplica) | solo las vistas y el JS del diff |
+
+Ninguno lee `tasks.md` completo, las rondas de `history/` ni documentación fuera de su encargo;
+si necesitan un archivo concreto, lo abren. Todos devuelven **solo** la tabla de hallazgos
+(`severidad | archivo:línea | hallazgo | sugerencia`), sin resumen ni recorrido de lo revisado.
+
+**B. Plan y alcance** no es un subagente: lo haces tú con `scope.md` (archivos cambiados sin
+tarea → alcance extra si no tienen nota que lo justifique; tareas sin diff → ¿sin implementar?) y
+la sección "Cambios por módulo" del plan.
+
+**Diff grande** (`code.diff` > ~150 KB): en lugar de dar el diff completo a cada revisor, repártelo
+por módulo (un subagente por módulo con los mismos encargos A, C+D y S) o pide a cada revisor que
+empiece por los archivos de su encargo según `scope.md`.
+
+Encargos:
 
 | Subagente | Revisa |
 |---|---|
 | A. Spec | Por cada `CA`: existe un test que lo prueba de verdad (no solo que existe), el test pasa, y el comportamiento implementado coincide con el texto del criterio. Revisa también los casos límite y los requisitos no funcionales. |
-| B. Plan y alcance | Los cambios coinciden con "Cambios por módulo" y "Contratos y datos". Lista archivos modificados que no aparecen en ninguna tarea (alcance extra) y partes del plan sin implementar. |
+| B. Plan y alcance (tú, con `scope.md`) | Los cambios coinciden con "Cambios por módulo" y "Contratos y datos". Archivos modificados que no aparecen en ninguna tarea (alcance extra) y partes del plan sin implementar. |
 | C. Constitución | Cada principio evaluado sobre el **código real**, no sobre el plan. Dependencias nuevas sin ADR. |
 | S. Seguridad (OWASP) | Recorre **cada tema** de `shared/security-checklist.md` aplicable al diff y reporta ✅ / ➖ / ❌ con evidencia, mapeado a la edición del OWASP Top 10 de `docs/security.md`. Verifica que cada control del modelo de amenazas del plan exista y que su test realmente lo pruebe. Incluye los resultados de las herramientas para confirmar o descartar sus hallazgos. Revisa también el **proceso**: dependencias nuevas en el lockfile sin verificación registrada en el plan, cambios en rutas protegidas (`../../shared/agent-security.md` §4) sin tarea aprobada, instrucciones sospechosas dirigidas a agentes en el código o los comentarios. No escribe exploits: describe ubicación, impacto y corrección. |
-| D. Calidad y tests | Convenciones de `AGENTS.md`, legibilidad, duplicación, manejo de errores. Calidad de los tests: aserciones significativas, sin `skip`, sin mocks que vacíen la prueba, sin tests que pasarían con cualquier implementación. |
+| D. Calidad y tests | Convenciones de `AGENTS.md`, legibilidad, duplicación, manejo de errores. Calidad de los tests: aserciones significativas, sin `skip`, sin mocks que vacíen la prueba, sin tests que pasarían con cualquier implementación. Para cada aserción positiva nueva, pregúntate si seguiría pasando con lo protegido roto (regex que cruzan secciones, búsquedas sobre toda la página, datos que coinciden con otro caso). |
 
 Si `design` está en `skills.enabled` y la spec toca UI, añade un subagente de accesibilidad que revise
 accesibilidad y consistencia con el sistema de diseño.
@@ -116,8 +146,14 @@ Lo que falle aquí es `bloqueante` si impide revertir, `importante` en otro caso
 
 ## Paso 5 — Escritura
 
-Escribe `docs/specs/NNN-<slug>/review.md` desde `docs/templates/review.md`. En `--rerun`, conserva
-la ronda anterior renombrándola `review.r<N>.md` y sube `round`.
+Escribe `docs/specs/NNN-<slug>/review.md` desde `docs/templates/review.md`. En `--rerun`, archiva
+antes la ronda anterior con `python .ai/bin/aidd.py rotate docs/specs/NNN-<slug> review` (la mueve
+a `history/review.r<N>.md`; nunca se borra) y sube `round`.
+
+Los hallazgos que el usuario acepta sin tarea (normalmente los menores) van en la sección
+"Aceptados sin tarea" con el formato `- **R8** → roadmap: <resumen>`. No se quedan solo aquí:
+`/release` los lleva al roadmap como deuda con la clave `NNN/R8` (el validador lo comprueba en
+specs `released`).
 
 Muestra al usuario: veredicto, conteo por severidad y los bloqueantes e importantes con su
 sugerencia. Para cada importante pregunta: corregir ahora o aceptar (con motivo).
@@ -128,6 +164,13 @@ sugerencia. Para cada importante pregunta: corregir ahora o aceptar (con motivo)
 1. Por cada hallazgo a corregir, añade una tarea a `tasks.md` con el siguiente número libre
    (≤ T089) y la nota `añadida por /review: R3`. Si no quedan números libres, no desbordes el
    rango: propone crear una spec de seguimiento para esas correcciones.
+   **Las tareas cumplen las reglas de `/tasks` desde el principio**, para que no haga falta otra
+   ronda de `/analyze`: si la corrección cambia comportamiento, primero una tarea de test que
+   falle hoy (P2) y la de implementación `depende:` de ella; ≤ 3 archivos; `hecho cuando:`
+   verificable, con una sola solución (no "A o B"); revisión con `design` si toca UI; `cubre:` los
+   criterios afectados; filas en las tablas de Cobertura. Una decisión que solo el usuario puede
+   tomar (actualizar una dependencia, fecha de una excepción) se pregunta aquí, no se deja abierta
+   en la tarea.
 2. Desmarca T092 y cambia la spec a `status: approved`.
 3. Registra en "Tareas añadidas" de `review.md` la relación tarea ← hallazgo.
 4. Siguiente paso: `/implement NNN`, y luego `/review NNN --rerun`.
@@ -143,3 +186,7 @@ sugerencia. Para cada importante pregunta: corregir ahora o aceptar (con motivo)
 Revisa solo: los hallazgos abiertos de la ronda anterior (¿se corrigieron?), el diff desde el
 `head` anterior y la verificación automática completa. No reabras hallazgos ya aceptados salvo que
 el código nuevo los empeore.
+
+`--rerun` es barato por diseño: `review-pack --base <head anterior>`, y si `code.diff` es pequeño
+(< ~30 KB) haz la revisión tú mismo, sin subagentes, releyendo los archivos desde cero; con uno
+mayor, un único subagente con los encargos A, C+D y S juntos.

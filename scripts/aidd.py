@@ -7,7 +7,17 @@ Uso:
   aidd.py status [--json]          Estado de todas las specs y siguiente paso sugerido.
   aidd.py hash RUTA                Huellas de spec/plan/tasks (las registra /analyze).
   aidd.py snapshot RUTA            Guarda una copia de spec/plan/tasks en .ai/cache/ (la usa /analyze).
-  aidd.py changes RUTA             Diff de spec/plan/tasks contra la última copia guardada.
+  aidd.py changes RUTA [--since REF]
+                                   Diff de spec/plan/tasks contra la última copia guardada o
+                                   contra un commit (REF).
+  aidd.py rotate RUTA KIND         Archiva en history/ la ronda o versión vigente
+                                   (KIND: analysis | review | plan | tasks).
+  aidd.py history RUTA [--write] [--migrate]
+                                   Índice de rondas y versiones; --write escribe history/README.md;
+                                   --migrate mueve a history/ los *.rN.md / *.vN.md sueltos.
+  aidd.py review-pack RUTA [--base REF] [--head REF]
+                                   Prepara el paquete compartido de /review en .ai/cache/review/:
+                                   diff de código filtrado, alcance (archivos vs tareas) y contexto.
   aidd.py hook pre-tool            Hook PreToolUse: lee el evento JSON por stdin.
 
 Solo usa la biblioteca estándar de Python 3.8+. Se copia a cada proyecto como .ai/bin/aidd.py
@@ -19,9 +29,10 @@ import shutil
 import json
 import os
 import re
+import subprocess
 import sys
 
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -195,6 +206,73 @@ def analysis_state(s):
     return "pass" if afm.get("result") == "pass" else "fail"
 
 
+def task_notes(tasks_text):
+    """{tarea: texto de sus líneas '- nota:'}."""
+    notes, cur = {}, None
+    for line in body(tasks_text).splitlines():
+        m = TASK_RE.match(line)
+        if m:
+            cur = m.group(2)
+            continue
+        if cur and re.match(r"^\s+- nota:", line):
+            notes[cur] = notes.get(cur, "") + " " + line.strip()
+        elif line.strip() and not line.startswith((" ", "\t")):
+            cur = None
+    return notes
+
+
+ACCEPTED_NOTE_RE = re.compile(r"^\s*-\s*\*\*([A-Z]\d+):?\*\*:?\s*(?:→|->)\s*nota de\s+((?:T\d{3}[\s,y]*)+)")
+ROUND_FILE_RE = re.compile(r"^(analysis|review)\.r(\d+)\.md$|^(plan|tasks)\.v(\d+)\.md$")
+
+
+def history_dir(d):
+    return os.path.join(d, "history")
+
+
+def analysis_texts(d):
+    """analysis.md y sus rondas archivadas (en history/ o sueltas)."""
+    out = []
+    for base in (d, history_dir(d)):
+        if not os.path.isdir(base):
+            continue
+        for f in sorted(os.listdir(base)):
+            if f == "analysis.md" and base == d or re.match(r"^analysis\.r\d+\.md$", f):
+                out.append(read(os.path.join(base, f)))
+    return out
+
+
+def accepted_as_notes(d):
+    """{(hallazgo, tarea)} de los aceptados con formato '- **ID** → nota de Txxx'."""
+    pairs = set()
+    for text in analysis_texts(d):
+        for line in (section(body(text), "Aceptados") or "").splitlines():
+            m = ACCEPTED_NOTE_RE.match(line)
+            if m:
+                for t in re.findall(r"T\d{3}", m.group(2)):
+                    pairs.add((m.group(1), t))
+    return pairs
+
+
+def rounds(s):
+    a = frontmatter(s["analysis"]).get("round") if s["analysis"] else None
+    r = frontmatter(s["review"]).get("round") if s["review"] else None
+    parts = []
+    if a:
+        parts.append("a" + a)
+    if r:
+        parts.append("r" + r)
+    return " ".join(parts) or None
+
+
+def git(root, *args):
+    env = dict(os.environ, GIT_OPTIONAL_LOCKS="0")
+    try:
+        p = subprocess.run(["git"] + list(args), cwd=root, capture_output=True, env=env)
+    except OSError:
+        return 127, ""
+    return p.returncode, p.stdout.decode("utf-8", "replace")
+
+
 RISK_DOCS = ("security.md", "observability.md", "deployment.md")
 RISK_RE = r"(?:RS|OB|RD)\d+"
 
@@ -334,7 +412,8 @@ def validate_spec_dir(d, root):
             covered_all[r] = not missing and not fuera
             if fuera and not re.search(r"parcial", section(body(s["spec"]), "Problema") or "", re.I):
                 rep.warn(f"spec: deja fuera {fuera} y el Problema no dice que atiende {r} parcialmente")
-        if re.search(r"\briesgos?\s+\d", body(s["spec"]), re.I):
+        no_hist = re.sub(r"^##\s+Historial\b.*?(?=^##\s|\Z)", "", body(s["spec"]), flags=re.M | re.S)
+        if re.search(r"\briesgos?\s+\d", no_hist, re.I):
             rep.warn("spec: cita riesgos por número ('riesgo 1'); usa sus IDs (RS1…) y declara sus correcciones")
     for kind in ("plan", "tasks"):
         if s[kind] and risks:
@@ -452,6 +531,12 @@ def validate_spec_dir(d, root):
                 rep.err(f"spec {st} con tareas abiertas {sorted(open_t)}")
         if st == "released" and "T098" in flat and not flat["T098"]["done"]:
             rep.err("spec released con T098 sin marcar")
+        notes = task_notes(s["tasks"])
+        for fid, tid in sorted(accepted_as_notes(d)):
+            if tid not in flat:
+                rep.err(f"analysis: el aceptado {fid} va como nota de {tid}, que no existe")
+            elif flat[tid]["done"] and not re.search(r"\b" + fid + r"\b", notes.get(tid, "")):
+                rep.err(f"tasks: {tid} está hecha sin la nota del aceptado {fid} (analysis → Aceptados)")
     elif st in {"implemented", "released"}:
         rep.err(f"spec {st} sin tasks.md")
 
@@ -460,12 +545,26 @@ def validate_spec_dir(d, root):
         ast = analysis_state(s)
         if frontmatter(s["analysis"]).get("result") not in {"pass", "fail"}:
             rep.err("analysis: result inválido o ausente (pass | fail)")
-        elif ast == "stale" and st == "approved":
+        elif ast == "stale" and st == "approved" and not (
+                s["review"] and frontmatter(s["review"]).get("verdict") == "changes_requested"):
             rep.warn("analysis: desactualizado (spec, plan o tareas cambiaron después de /analyze)")
+
+    # --- historial
+    loose = sorted(f for f in os.listdir(d) if ROUND_FILE_RE.match(f))
+    if loose:
+        rep.warn(f"rondas o versiones anteriores sueltas {loose}: van en history/ "
+                 "(python .ai/bin/aidd.py history <ruta> --migrate)")
 
     # --- review
     if s["review"]:
         rfm = frontmatter(s["review"])
+        deferred = re.findall(r"^\s*-\s*\*\*(R\d+)", section(body(s["review"]), "Aceptados sin tarea") or "", re.M)
+        if deferred and st == "released" and root:
+            rm = os.path.join(root, "docs", "roadmap.md")
+            rtext = read(rm) if os.path.isfile(rm) else ""
+            lost = [r for r in deferred if not re.search(re.escape(own) + r"/" + r + r"\b", rtext)]
+            if lost:
+                rep.warn(f"review: aceptados sin tarea que no están en el roadmap como {own}/Rn: {lost}")
         verdict = rfm.get("verdict")
         if verdict not in VERDICTS:
             rep.err(f"review: verdict inválido o ausente ({verdict!r})")
@@ -562,6 +661,8 @@ def next_step(s):
         if tst != "approved":
             return "aprobar las tareas"
         ast = analysis_state(s)
+        if ast == "stale" and verdict == "changes_requested":
+            return "/implement (tareas de /review) y /review --rerun"
         if ast in (None, "stale"):
             return "/analyze" if ast is None else "/analyze (desactualizado)"
         if ast == "fail":
@@ -596,6 +697,7 @@ def cmd_status(args):
             "plan": frontmatter(s["plan"]).get("status") if s["plan"] else None,
             "tasks": f"{sum(t['done'] for t in work)}/{len(work)}" if s["tasks"] else None,
             "review": frontmatter(s["review"]).get("verdict") if s["review"] else None,
+            "rondas": rounds(s),
             "next": next_step(s),
         })
     if "--json" in args:
@@ -604,11 +706,341 @@ def cmd_status(args):
     if not rows:
         print("No hay specs todavía. Siguiente paso: /specify")
         return 0
-    cols = ["spec", "status", "plan", "tasks", "review", "next"]
+    cols = ["spec", "status", "plan", "tasks", "review", "rondas", "next"]
     print("| " + " | ".join(cols) + " |")
     print("|" + "---|" * len(cols))
     for r in rows:
         print("| " + " | ".join(str(r[c] or "—") for c in cols) + " |")
+    return 0
+
+
+# ---------------------------------------------------------------- copias, historial y review
+
+KINDS = ("spec.md", "plan.md", "tasks.md")
+LOCKFILES = ("package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lockb", "composer.lock", "poetry.lock",
+             "Pipfile.lock", "uv.lock", "Cargo.lock", "go.sum", "Gemfile.lock", "packages.lock.json",
+             "pubspec.lock")
+
+
+def spec_arg(args, usage):
+    paths = [a for a in args if not a.startswith("--")]
+    if not paths:
+        print("Uso: aidd.py " + usage)
+        return None, None
+    d = os.path.abspath(paths[0])
+    d = os.path.dirname(d) if os.path.isfile(d) else d
+    return d, find_root(d) or os.getcwd()
+
+
+def opt(args, name):
+    if name in args:
+        i = args.index(name)
+        if i + 1 < len(args):
+            return args[i + 1]
+    return None
+
+
+def cmd_snapshot(args):
+    d, root = spec_arg(args, "snapshot docs/specs/NNN-slug")
+    if not d:
+        return 2
+    cache = os.path.join(root, ".ai", "cache", "analysis", os.path.basename(d))
+    os.makedirs(cache, exist_ok=True)
+    for k in KINDS:
+        if os.path.isfile(os.path.join(d, k)):
+            shutil.copyfile(os.path.join(d, k), os.path.join(cache, k))
+    code, head = git(root, "rev-parse", "HEAD")
+    with open(os.path.join(cache, "COMMIT"), "w", encoding="utf-8") as f:
+        f.write(head.strip() if code == 0 else "")
+    print(os.path.relpath(cache, root).replace("\\", "/"))
+    return 0
+
+
+def cmd_changes(args):
+    d, root = spec_arg(args, "changes docs/specs/NNN-slug [--since REF]")
+    if not d:
+        return 2
+    since = opt(args, "--since")
+    cache = os.path.join(root, ".ai", "cache", "analysis", os.path.basename(d))
+    rel = os.path.relpath(d, root).replace("\\", "/")
+    old_texts = {}
+    if since:
+        for k in KINDS:
+            code, out = git(root, "show", f"{since}:{rel}/{k}")
+            old_texts[k] = out if code == 0 else ""
+        print(f"# base: commit {since}")
+    else:
+        if not os.path.isdir(cache):
+            print("Sin copia previa: usa --since <commit del último análisis> o ejecuta un análisis completo.")
+            return 3
+        for k in KINDS:
+            old = os.path.join(cache, k)
+            old_texts[k] = read(old) if os.path.isfile(old) else ""
+        s = load_spec_dir(d)
+        if s["analysis"]:
+            afm = frontmatter(s["analysis"])
+            cached = {k[:-3] + "_sha": fingerprint(old_texts[k]) for k in KINDS}
+            if any(afm.get(k) and afm.get(k) != v for k, v in cached.items()):
+                print("# AVISO: la copia guardada no coincide con las huellas de analysis.md; usa "
+                      "--since <commit del último análisis>.")
+        cf = os.path.join(cache, "COMMIT")
+        if os.path.isfile(cf) and read(cf).strip():
+            print(f"# base: copia del commit {read(cf).strip()[:10]}")
+    total = 0
+    for k in KINDS:
+        new = os.path.join(d, k)
+        a = old_texts[k].splitlines()
+        b = read(new).splitlines() if os.path.isfile(new) else []
+        diff = list(difflib.unified_diff(a, b, f"anterior/{k}", f"actual/{k}", n=2, lineterm=""))
+        if diff:
+            total += sum(1 for x in diff if x[:1] in "+-" and x[:3] not in ("+++", "---"))
+            print("\n".join(diff))
+    print(f"\n# {total} líneas cambiadas desde el último análisis")
+    return 0
+
+
+def cmd_rotate(args):
+    d, root = spec_arg(args, "rotate docs/specs/NNN-slug analysis|review|plan|tasks")
+    kinds = [a for a in args[1:] if not a.startswith("--")]
+    if not d or not kinds or kinds[0] not in ("analysis", "review", "plan", "tasks"):
+        print("Uso: aidd.py rotate docs/specs/NNN-slug analysis|review|plan|tasks")
+        return 2
+    kind = kinds[0]
+    src = os.path.join(d, kind + ".md")
+    if not os.path.isfile(src):
+        print(f"No existe {kind}.md: nada que archivar.")
+        return 0
+    h = history_dir(d)
+    os.makedirs(h, exist_ok=True)
+    if kind in ("analysis", "review"):
+        n = frontmatter(read(src)).get("round") or "1"
+        dst = os.path.join(h, f"{kind}.r{n}.md")
+        if os.path.exists(dst):
+            print(f"Ya existe {os.path.relpath(dst, root)}: sube 'round' antes de archivar.")
+            return 1
+        shutil.move(src, dst)
+    else:
+        n = 1 + sum(1 for f in os.listdir(h) if re.match(r"^" + kind + r"\.v\d+\.md$", f))
+        dst = os.path.join(h, f"{kind}.v{n}.md")
+        shutil.copyfile(src, dst)
+    fix_links(dst, d)
+    print(os.path.relpath(dst, root).replace("\\", "/"))
+    return 0
+
+
+def fix_links(moved, d):
+    """En un archivo movido a history/, los enlaces relativos suben un nivel (salvo a otras rondas)."""
+    text = read(moved)
+
+    def sub(m):
+        t = m.group(1)
+        if re.match(r"^([a-z]+:|/|#)", t) or ("/" not in t and ROUND_FILE_RE.match(t.split("#")[0])):
+            return m.group(0)
+        return "](../" + t + ")"
+
+    new = re.sub(r"\]\(([^)\s]+)\)", sub, text)
+    if new != text:
+        with open(moved, "w", encoding="utf-8", newline="\n") as f:
+            f.write(new)
+
+
+def history_rows(d):
+    h = history_dir(d)
+    rows = []
+    for base in (h, d):
+        if not os.path.isdir(base):
+            continue
+        for f in os.listdir(base):
+            m = ROUND_FILE_RE.match(f)
+            if not m:
+                continue
+            text = read(os.path.join(base, f))
+            fm = frontmatter(text)
+            kind = m.group(1) or m.group(3)
+            num = int(m.group(2) or m.group(4))
+            cm = re.search(r"Conteo[^:]*:\s*([^\n.]+)", text)
+            rows.append({"file": os.path.relpath(os.path.join(base, f), d).replace("\\", "/"), "kind": kind,
+                         "n": num, "date": fm.get("date", ""), "mode": fm.get("mode", ""),
+                         "result": fm.get("result") or fm.get("verdict") or fm.get("status", ""),
+                         "count": (cm.group(1).strip().rstrip(".") if cm else "")})
+    s = load_spec_dir(d)
+    for kind in ("analysis", "review"):
+        if s[kind]:
+            fm = frontmatter(s[kind])
+            cm = re.search(r"Conteo[^:]*:\s*([^\n.]+)", s[kind])
+            rows.append({"file": kind + ".md", "kind": kind, "n": int(fm.get("round") or 1),
+                         "date": fm.get("date", ""), "mode": fm.get("mode", ""),
+                         "result": fm.get("result") or fm.get("verdict", ""),
+                         "count": (cm.group(1).strip().rstrip(".") if cm else "") + " (vigente)"})
+    order = {"plan": 0, "tasks": 1, "analysis": 2, "review": 3}
+    return sorted(rows, key=lambda r: (order[r["kind"]], r["n"]))
+
+
+def cmd_history(args):
+    d, root = spec_arg(args, "history docs/specs/NNN-slug [--write] [--migrate]")
+    if not d:
+        return 2
+    if "--migrate" in args:
+        h = history_dir(d)
+        moved = []
+        for f in sorted(os.listdir(d)):
+            if ROUND_FILE_RE.match(f):
+                os.makedirs(h, exist_ok=True)
+                if os.path.exists(os.path.join(h, f)):
+                    print(f"Ya existe history/{f}; no se mueve.")
+                    continue
+                shutil.move(os.path.join(d, f), os.path.join(h, f))
+                fix_links(os.path.join(h, f), d)
+                moved.append(f)
+        for f in os.listdir(d):
+            if f.endswith(".md") and moved:
+                p = os.path.join(d, f)
+                text = read(p)
+                new = re.sub(r"\]\((" + "|".join(re.escape(m) for m in moved) + r")\)", r"](history/\1)", text)
+                if new != text:
+                    with open(p, "w", encoding="utf-8", newline="\n") as fh:
+                        fh.write(new)
+        print(f"Movidos a history/: {moved or 'ninguno'}")
+    rows = history_rows(d)
+    lines = [f"# Historial · {os.path.basename(d)}", "",
+             "Rondas de /analyze y /review y versiones anteriores de plan y tareas. Nunca se borran; "
+             "las skills no las leen salvo la ronda inmediatamente anterior.", "",
+             "| Archivo | Tipo | N.º | Fecha | Modo | Resultado | Conteo |", "|---|---|---|---|---|---|---|"]
+    for r in rows:
+        f = r["file"]
+        target = f[len("history/"):] if f.startswith("history/") else "../" + f
+        lines.append(f"| [{os.path.basename(f)}]({target}) | {r['kind']} | {r['n']} | {r['date']} | {r['mode']} | "
+                     f"{r['result']} | {r['count']} |")
+    na = sum(1 for r in rows if r["kind"] == "analysis")
+    nr = sum(1 for r in rows if r["kind"] == "review")
+    lines += ["", f"Total: {na} rondas de /analyze, {nr} de /review."]
+    out = "\n".join(lines) + "\n"
+    if "--write" in args:
+        os.makedirs(history_dir(d), exist_ok=True)
+        with open(os.path.join(history_dir(d), "README.md"), "w", encoding="utf-8", newline="\n") as f:
+            f.write(out)
+        print(os.path.relpath(os.path.join(history_dir(d), "README.md"), root).replace("\\", "/"))
+    else:
+        print(out)
+    return 0
+
+
+def expand_braces(p):
+    m = re.search(r"\{([^{}]*)\}", p)
+    if not m:
+        return [p]
+    return [x for alt in m.group(1).split(",") for x in expand_braces(p[:m.start()] + alt.strip() + p[m.end():])]
+
+
+def task_paths(tasks_text):
+    """Rutas citadas en las tareas (campo de archivos y rutas entre comillas invertidas)."""
+    tasks, _ = parse_tasks(tasks_text)
+    out = {}
+    for tid, vs in tasks.items():
+        v = vs[0]
+        cands = set(re.findall(r"`([^`\s]+/[^`\s]*|[^`\s]+\.[A-Za-z]{1,5})`", v["text"])) | set(v["files"])
+        for c in cands:
+            c = c.strip(" `").split(" ")[0]
+            if "/" not in c and "." not in c:
+                continue
+            for e in expand_braces(c):
+                out.setdefault(e.lstrip("./"), set()).add(tid)
+    return out
+
+
+def in_scope(f, paths):
+    import fnmatch
+    hits = set()
+    for p, tids in paths.items():
+        # las tareas suelen abreviar rutas (alias como `ApCtl/…`): basta con que coincida el nombre
+        same_name = "." in os.path.basename(p) and os.path.basename(f) == os.path.basename(p)
+        if f == p or f.endswith("/" + p) or same_name or fnmatch.fnmatch(f, p) \
+                or fnmatch.fnmatch(os.path.basename(f), os.path.basename(p)) \
+                or (p.endswith("/") and f.startswith(p)):
+            hits |= tids
+    return hits
+
+
+def impl_base(root, d, s):
+    b = frontmatter(s["tasks"] or "").get("impl_base")
+    if b:
+        return b, "tasks.md → impl_base"
+    rel = os.path.relpath(os.path.join(d, "tasks.md"), root).replace("\\", "/")
+    code, out = git(root, "log", "--reverse", "--format=%H", "--", rel)
+    if code != 0:
+        return None, ""
+    for h in out.split():
+        c, text = git(root, "show", f"{h}:{rel}")
+        if c == 0 and frontmatter(text).get("status") == "approved":
+            return h[:10], "commit que aprobó tasks.md"
+    return None, ""
+
+
+def cmd_review_pack(args):
+    d, root = spec_arg(args, "review-pack docs/specs/NNN-slug [--base REF] [--head REF]")
+    if not d:
+        return 2
+    s = load_spec_dir(d)
+    if not s["tasks"]:
+        print("La spec no tiene tasks.md.")
+        return 2
+    base, why = (opt(args, "--base"), "--base") if opt(args, "--base") else impl_base(root, d, s)
+    head = opt(args, "--head") or "HEAD"
+    if not base:
+        print("No se pudo determinar la base: pasa --base <commit en que se aprobaron las tareas>.")
+        return 2
+    code, _ = git(root, "rev-parse", "--verify", base)
+    if code != 0:
+        print(f"La base {base} no existe en git.")
+        return 2
+    rng = f"{base}..{head}"
+    excl = [":(exclude)docs", ":(exclude).ai", ":(exclude,glob)**/*.md"] + \
+           [f":(exclude,glob)**/{lf}" for lf in LOCKFILES]
+    out_dir = os.path.join(root, ".ai", "cache", "review", os.path.basename(d))
+    os.makedirs(out_dir, exist_ok=True)
+    _, code_diff = git(root, "diff", "-U3", rng, "--", ".", *excl)
+    _, names = git(root, "diff", "--name-status", rng, "--", ".", *excl)
+    _, docs_stat = git(root, "diff", "--stat=120", rng, "--", "docs", ".ai", "*.md")
+    _, locks = git(root, "diff", "--stat=120", rng, "--", *[f":(glob)**/{lf}" for lf in LOCKFILES])
+    changed = [ln.split("\t")[-1] for ln in names.splitlines() if ln.strip()]
+    paths = task_paths(s["tasks"])
+    extra = [f for f in changed if not in_scope(f, paths)]
+    touched_tids = set()
+    for f in changed:
+        touched_tids |= in_scope(f, paths)
+    tasks, _ = parse_tasks(s["tasks"])
+    untouched = sorted(t for t, v in tasks.items() if int(t[1:]) < 90 and t not in touched_tids
+                       and any("/" in p for p in v[0]["files"]))
+
+    def write(name, text):
+        with open(os.path.join(out_dir, name), "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+        return len(text.encode("utf-8"))
+
+    sizes = {}
+    sizes["code.diff"] = write("code.diff", code_diff)
+    sizes["docs.stat"] = write("docs.stat", docs_stat or "(sin cambios de documentación)\n")
+    sizes["deps.stat"] = write("deps.stat", locks or "(sin cambios en lockfiles)\n")
+    scope = [f"# Alcance · {os.path.basename(d)} · {rng}", "",
+             f"Base: {base} ({why}). Archivos de código cambiados: {len(changed)}.", "",
+             "## Cambiados sin tarea que los cite (candidatos a alcance extra; verificar)", ""]
+    scope += [f"- {f}" for f in extra] or ["- ninguno"]
+    scope += ["", "## Tareas con rutas que no aparecen en el diff (¿sin implementar o solo docs?)", ""]
+    scope += [f"- {t}" for t in untouched] or ["- ninguna"]
+    scope += ["", "## Archivos cambiados", "", "```", names.strip(), "```"]
+    sizes["scope.md"] = write("scope.md", "\n".join(scope) + "\n")
+    cas = [ln.strip() for ln in (section(body(s["spec"] or ""), "Criterios de aceptación") or "").splitlines()
+           if CA_DEF_RE.match(ln)]
+    ctx = [f"# Contexto · {os.path.basename(d)}", "", "## Criterios de aceptación", ""] + cas
+    for title in ("Modelo de amenazas", "Trazabilidad", "Observabilidad"):
+        sec = section(body(s["plan"] or ""), title)
+        if sec:
+            ctx += ["", "## " + title + " (plan)", sec.strip()]
+    sizes["context.md"] = write("context.md", "\n".join(ctx) + "\n")
+    print(f"Paquete de review en {os.path.relpath(out_dir, root)}  (rango {rng}; base: {why})")
+    for k, v in sizes.items():
+        print(f"  {k:12} {v / 1024:8.1f} KB  ≈ {v // 4 // 1000}k tokens")
+    print(f"  alcance: {len(changed)} archivos de código, {len(extra)} sin tarea, {len(untouched)} tareas sin diff")
     return 0
 
 
@@ -748,37 +1180,16 @@ def main(argv):
         for k, v in fingerprints(load_spec_dir(d)).items():
             print(f"{k}: {v}")
         return 0
-    if cmd in ("snapshot", "changes"):
-        if not args:
-            print(f"Uso: aidd.py {cmd} docs/specs/NNN-slug")
-            return 2
-        d = os.path.abspath(args[0])
-        d = os.path.dirname(d) if os.path.isfile(d) else d
-        root = find_root(d) or os.getcwd()
-        cache = os.path.join(root, ".ai", "cache", "analysis", os.path.basename(d))
-        kinds = ("spec.md", "plan.md", "tasks.md")
-        if cmd == "snapshot":
-            os.makedirs(cache, exist_ok=True)
-            for k in kinds:
-                if os.path.isfile(os.path.join(d, k)):
-                    shutil.copyfile(os.path.join(d, k), os.path.join(cache, k))
-            print(os.path.relpath(cache, root).replace("\\", "/"))
-            return 0
-        if not os.path.isdir(cache):
-            print("Sin copia previa: ejecuta un análisis completo.")
-            return 3
-        total = 0
-        for k in kinds:
-            old = os.path.join(cache, k)
-            new = os.path.join(d, k)
-            a = read(old).splitlines() if os.path.isfile(old) else []
-            b = read(new).splitlines() if os.path.isfile(new) else []
-            diff = list(difflib.unified_diff(a, b, f"anterior/{k}", f"actual/{k}", n=2, lineterm=""))
-            if diff:
-                total += sum(1 for x in diff if x[:1] in "+-" and x[:3] not in ("+++", "---"))
-                print("\n".join(diff))
-        print(f"\n# {total} líneas cambiadas desde el último análisis")
-        return 0
+    if cmd == "snapshot":
+        return cmd_snapshot(args)
+    if cmd == "changes":
+        return cmd_changes(args)
+    if cmd == "rotate":
+        return cmd_rotate(args)
+    if cmd == "history":
+        return cmd_history(args)
+    if cmd == "review-pack":
+        return cmd_review_pack(args)
     if cmd == "hook":
         try:
             return cmd_hook(args)

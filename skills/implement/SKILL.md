@@ -56,16 +56,26 @@ siguiente. **Implementa exactamente lo que dice el plan**: no rediseña, no agre
 2. `analysis.md` con `result: pass` y **vigente**: ejecuta `python .ai/bin/aidd.py status` (o
    `python3`); si la spec indica `/analyze` o `/analyze (desactualizado)`, detente y sugiere
    `/analyze NNN`. Si el usuario decide omitirlo, registra su decisión como nota en `tasks.md`.
-3. Lee los comandos de `AGENTS.md` (test, lint, build, type-check). Si no están, detente y sugiere
+   Excepción: las tareas añadidas por `/review` no necesitan un `/analyze` nuevo (`status` indica
+   `/implement (tareas de /review)`).
+3. **Base de la implementación:** si el frontmatter de `tasks.md` no tiene `impl_base`, añade
+   `impl_base: <commit actual abreviado>` antes de la primera tarea. `/review` revisa desde ahí
+   (no desde la rama principal, que puede incluir commits de documentación del flujo). Cambiar el
+   frontmatter no invalida el análisis.
+4. **Aceptados de `/analyze`:** lee la sección "Aceptados" de `analysis.md` (y de las rondas en
+   `history/` si remite a ellas). Cada `**ID** → nota de T0xx` es obligatorio al hacer esa tarea:
+   aplícalo y deja una nota que cite el ID (`  - nota: C2 — …`). El validador falla si una tarea
+   hecha no la tiene.
+5. Lee los comandos de `AGENTS.md` (test, lint, build, type-check). Si no están, detente y sugiere
    `/init` en modo re-sincronizar.
-4. Revisa el estado de git:
+6. Revisa el estado de git:
    - Cambios sin commitear ajenos a esta spec → pregunta antes de seguir.
    - Si estás en la rama principal, propone crear una rama `feat/NNN-<slug>` (o la convención de
      `AGENTS.md`).
-5. **Política de commits** (pregunta una vez por sesión si no está en `AGENTS.md`):
+7. **Política de commits** (pregunta una vez por sesión si no está en `AGENTS.md`):
    (a) un commit por tarea, (b) un commit por fase, (c) sin commits, el usuario los hace.
    Mensajes con la convención del proyecto e incluyendo el ID: `feat(notificaciones): T020 …`.
-6. Ejecuta la suite de tests una vez. Si ya hay tests fallando antes de empezar, regístralos como
+8. Ejecuta la suite de tests una vez. Si ya hay tests fallando antes de empezar, regístralos como
    **línea base** (nota bajo el encabezado de `tasks.md`) y avísale al usuario; no son
    responsabilidad de esta spec, pero no deben aumentar.
 
@@ -80,7 +90,12 @@ Para la siguiente tarea pendiente cuyas dependencias estén hechas:
 
 1. **Anuncia** en una línea: `T012 — <descripción>`.
 2. **Si es de test:** escríbelo, ejecútalo y confirma que **falla por la razón esperada** (no por
-   un error de sintaxis o import).
+   un error de sintaxis o import). Los casos que **pasan desde el principio** (afirman algo que ya
+   se cumple, p. ej. "el administrador conserva la columna") no prueban nada hasta comprobarlos:
+   rompe a mano, un momento, el código que protegen (quita la cabecera, cambia el texto), confirma
+   que el caso falla, restaura, y anótalo (`  - nota: comprobado rompiendo <qué>`). Revisa también
+   que la aserción no pueda pasar por accidente: regex que cruzan secciones, búsquedas sobre toda
+   la página, datos de prueba que coinciden con los de otro caso.
 3. **Si es de implementación:** haz el cambio mínimo que cumple el criterio.
 4. **Verifica:**
    - Los tests relacionados con la tarea pasan.
@@ -109,9 +124,16 @@ Detente y consulta al usuario (no improvises) cuando:
 | Hace falta una dependencia que no está en el plan | Verificarla (`agent-security.md` §2) + ADR + actualizar plan |
 | Un cambio violaría un principio de la constitución | Detenerse; nunca seguir |
 | Se descubre un bug o deuda ajena a la spec | Anotarlo en `docs/roadmap.md` → Pendientes, sin arreglarlo |
+| Se ve un defecto **de esta spec** fuera de la tarea actual (texto que ya no corresponde, control que quedó a medias, caso que nadie cubre) | Preguntar **en ese momento**: tarea nueva ahora o aceptarlo con motivo |
 
-Si el usuario aprueba una tarea nueva, añádela a `tasks.md` con el siguiente número libre y la
-nota `añadida durante /implement: <motivo>`.
+**Hallazgos colaterales:** no los dejes "anotados para `/review`". Lo que se ve mientras se
+implementa se decide mientras se implementa: una tarea nueva ahora cuesta minutos; descubierto en
+`/review` cuesta una ronda más de review (y de correcciones). Agrúpalos si son varios y pregunta
+al terminar la tarea en curso.
+
+Si el usuario aprueba una tarea nueva, añádela a `tasks.md` con el siguiente número libre (≤ T089)
+y la nota `añadida durante /implement: <motivo>`, cumpliendo las reglas de `/tasks` (test antes
+que el cambio, ≤ 3 archivos, criterio de hecho, revisión con `design` si toca UI).
 
 ## Paso 4 — Paralelo (`--parallel`)
 
@@ -133,7 +155,7 @@ Cuando todas las tareas hasta **T089** estén hechas:
 4. Marca cada criterio `CA` de la spec como `[x]` solo si su test pasa.
 5. **T092:** cambia la spec a `status: implemented` y actualiza `docs/specs/README.md`.
 6. Ejecuta `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`): no debe haber errores (criterios sin
-   marcar, tareas abiertas).
+   marcar, tareas abiertas, aceptados de `/analyze` sin su nota).
 
 ## Paso 6 — Informe
 

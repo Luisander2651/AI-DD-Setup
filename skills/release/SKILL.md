@@ -142,7 +142,15 @@ Para cada spec:
 5. **Riesgos:** en `security.md`, `observability.md` y `deployment.md`, marca como
    `mitigada (vX.Y.Z)` solo las correcciones que la spec liberada declara "dentro". El riesgo pasa
    a mitigado únicamente si todas sus correcciones están mitigadas o aceptadas como excepción.
-6. **Specs extendidas** (`extends` en el frontmatter): en cada una, sin cambiar su `status`:
+6. **Aceptados sin tarea de `/review`** (sección "Aceptados sin tarea" de `review.md` y de las
+   rondas en `history/`): añádelos a `docs/roadmap.md → Pendientes y deuda` con la clave
+   `NNN/R8` y su resumen (agrupados en una fila por spec si son muchos, pero con todas las claves),
+   para que no se pierdan al cerrar la spec. Pide confirmación antes de escribir en el roadmap.
+7. **Historial:** `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate --write` (mueve a
+   `history/` cualquier ronda o versión suelta y escribe `history/README.md` con una línea por ronda:
+   fecha, modo, resultado y conteo). Muestra al usuario el total de rondas de `/analyze` y `/review`:
+   es la medida del costo de la spec.
+8. **Specs extendidas** (`extends` en el frontmatter): en cada una, sin cambiar su `status`:
    - Añade al Historial: `| AAAA-MM-DD | Comportamiento modificado por NNN en vX.Y.Z | /release |`.
    - Los criterios marcados **HOY NO SE CUMPLE** que la spec liberada resuelve pasan a
      `[x]` y su marca se sustituye por `resuelto por NNN (vX.Y.Z)`. Si no está claro cuáles

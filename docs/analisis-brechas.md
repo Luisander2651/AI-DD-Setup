@@ -7,7 +7,8 @@ publicados para agentes de código.
 
 **Estado (2026-09-24):** implementadas 1.3.1, 1.4.0, 1.4.1, 1.4.2 (hallazgos de campo 8.1–8.5 y
 8.7) 1.5.0 (observabilidad y auditoría, sección 9), 1.5.1 (conciliación con el roadmap) y 1.5.2
-(`extends`, hallazgo 8.8). Siguiente: 1.6.0.
+(`extends`, hallazgo 8.8), 1.5.3–1.5.6, 1.6.0 (iterar barato, 8.10) y 1.7.0 (primera spec
+completa, 8.11).
 
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
@@ -184,6 +185,7 @@ decisiones que el plugin no define y que deben quedar escritas para que no depen
 | 8.8 | Un cambio que cruza varias specs inferidas (control de acceso sobre 005, 006, 007 y 009) no tenía forma definida de enlazarse con ellas ni de actualizarlas al liberarse. | ✅ 1.5.2: `extends` en el frontmatter, validado, revisado por `analyze` y aplicado por `release`. |
 | 8.9 | Al pasar de un riesgo de `security.md` a un objetivo del roadmap, y de ahí a una spec y un plan, se perdieron dos de cuatro correcciones; el plan iba a declarar el riesgo mitigado. Solo `/analyze` lo detectó. | ✅ 1.5.6: IDs de riesgo y corrección, sección "Cobertura de riesgos", reglas en todo el flujo y comprobación en el validador. |
 | 8.10 | Una spec grande (16 criterios, 8 specs extendidas, ~50 controladores) necesitó 3 planes, 3 tareas y 3 análisis completos; cada vuelta regeneraba ~70 KB y releía todo. Causas: tamaño, afirmaciones sobre el código sin verificar, decisiones del usuario descubiertas tarde, detalle duplicado entre plan y tareas, y rehacer todo en cada vuelta. | ✅ 1.6.0: `/analyze` delta, `--fix`, decisiones pendientes en `/plan`, límite de tamaño. Pendiente: verificación contra el código en `/plan`, separar niveles plan/tareas, más reglas en el validador, conflictos entre specs más completos. |
+| 8.11 | Primera spec recorrida de punta a punta (014: 16 criterios, ~1.900 líneas en 115 archivos, 495 → 800 tests). La implementación fue lo barato (~2 h 40, tests en rojo primero); el costo estuvo en 7 rondas de `/analyze` y 3 de `/review`. Causas: (a) `/analyze` impuso un mecanismo y `/review` encontró su fallo (R1); (b) `/implement` vio un defecto de UI y lo dejó "para `/review`" (R4–R6: textos y columnas del rol sin permiso); (c) tests positivos que pasaban con lo protegido roto (R2, R3, R30); (d) las tareas que añadió `/review` no cumplían las reglas de `/tasks` y costaron 2 rondas de `/analyze`; (e) vulnerabilidades previas de npm descubiertas en `/review`; (f) aceptados "como nota" que `/implement` olvidó (R8) y 22 menores sin destino; (g) cada revisor leyó ~200k tokens: el rango partía del merge anterior a `/init` (5.600 líneas de docs ajenas) y todos recibían todos los artefactos; (h) rondas y versiones anteriores borradas o sueltas en la carpeta de la spec. | ✅ 1.7.0: recomendaciones como condición + test; hallazgos colaterales se preguntan al momento; comprobación rompiendo lo protegido; tareas de `/review` válidas sin `/analyze`; línea base SCA y tabla "qué ve cada rol" en `/plan`; aceptados con destino validados y menores al roadmap; `impl_base`, `aidd.py review-pack` y revisores con contexto mínimo; `history/` que nunca se borra, `rotate`, `history`, `changes --since`, rondas en `status`. |
 
 ---
 
@@ -235,8 +237,6 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 
 ## 10. Hoja de ruta sugerida
 
-| Versión | Contenido |
-|---|---|
 | Versión | Contenido | Estado |
 |---|---|---|
 | 1.3.1 | Defectos 1.1, 1.2, 1.6, 1.7 | ✅ |
@@ -244,9 +244,12 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 | 1.4.1 | UTF-8 en Windows (8.6) | ✅ |
 | 1.4.2 | Hallazgos de campo 8.1–8.5 y 8.7 (`/init --upgrade`) | ✅ |
 | 1.5.0 | Observabilidad y auditoría (9) | ✅ |
-| 1.6.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2) | pendiente |
-| 1.7.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
-| 1.8.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, `design`, numeración sin colisiones (1.3) | pendiente |
+| 1.5.1–1.5.6 | Conciliación con el roadmap, `extends` (8.8), intérprete de Python, declarado ≠ real, re-sincronizar preservando, cobertura de riesgos (8.9) | ✅ |
+| 1.6.0 | Iterar barato (8.10): `/analyze` delta, `--fix`, decisiones pendientes, límite de tamaño | ✅ |
+| 1.7.0 | Primera spec completa (8.11): review barata, historial, aceptados con destino, hallazgos colaterales | ✅ |
+| 1.8.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2); pendientes de 8.10 | pendiente |
+| 1.9.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
+| 1.10.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, `design`, numeración sin colisiones (1.3) | pendiente |
 | 2.0.0 | Equipos y repos grandes (5.2, 5.3), `/security-audit`, evals del plugin (6) | pendiente |
 
 ## Fuentes

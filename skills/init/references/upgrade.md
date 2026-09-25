@@ -22,6 +22,14 @@ como diff y se aplica solo con confirmación.
    diff, sin cambiar su contenido. Después revisa los objetivos del roadmap y las specs que citan
    riesgos ("riesgo 1", "riesgos 1 y 3"…) y **reporta** las correcciones que no cubren ni
    excluyen de forma explícita; propone cómo declararlas, sin aplicarlo sin confirmación.
+5b. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
+   carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
+   avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a
+   `history/` y corrige los enlaces). Si git registra versiones o rondas **borradas** de una spec
+   (`git log --diff-filter=D --name-only -- docs/specs/NNN-*/`), ofrece restaurarlas en `history/`
+   con `git show <commit>^:<ruta>`. **Nunca borres** archivos de historial durante un upgrade.
+   Si la spec está en curso (`approved` con tareas empezadas) y `tasks.md` no tiene `impl_base`,
+   propone el commit que aprobó las tareas.
 6. **Documentos nuevos del paquete.** Si la versión nueva introduce un documento que el proyecto
    no tiene (p. ej. `docs/observability.md` desde 1.5.0), ofrece generarlo. Para hacerlo, ejecuta
    **solo** el subagente de exploración correspondiente de `explore-agents.md` y las preguntas de

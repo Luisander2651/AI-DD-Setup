@@ -39,8 +39,9 @@ revisa todas las skills afectadas.
 - `/implement` exige `tasks.md` `approved`, ejecuta una tarea a la vez, se detiene en T092 y deja
   la spec en `implemented`.
 - `/review` exige spec `implemented`, escribe `review.md` con veredicto `approved`,
-  `changes_requested` o `blocked`. Con `changes_requested`, añade tareas a `tasks.md` y la spec
-  vuelve a `approved` hasta que `/implement` las cierre.
+  `changes_requested` o `blocked`. Con `changes_requested`, añade tareas a `tasks.md` que ya
+  cumplen las reglas de `/tasks` y la spec vuelve a `approved` hasta que `/implement` las cierre;
+  esas tareas no requieren otro `/analyze` salvo cambio de diseño.
 - `/release` lee `docs/deployment.md`, verifica que la spec tenga todas sus tareas cerradas y
   `review.md` con veredicto `approved`, sube versión, actualiza `CHANGELOG.md`, despliega a
   staging y **solo con confirmación explícita del usuario** despliega a producción. Al terminar
@@ -93,10 +94,25 @@ revisa todas las skills afectadas.
 - **Iterar barato:** las correcciones responden a hallazgos concretos con `--fix` (edición en su
   lugar de las secciones o tareas afectadas, con diff), no con `--redo`, salvo cambios
   estructurales. `/analyze` es completo la primera vez y **delta** después (hallazgos abiertos +
-  `aidd.py changes`); conserva cada ronda como `analysis.r<N>.md`. Con git, las versiones
-  anteriores viven en commits, no en copias `.vN`. `/specify` y `/plan` proponen dividir specs
+  `aidd.py changes`). `/specify` y `/plan` proponen dividir specs
   grandes (> ~10 criterios, > 4 specs extendidas, > 3 módulos) y `/plan` pregunta **todas** las
   decisiones del usuario antes de escribir.
+- **Historial de la spec:** las rondas anteriores de `/analyze` y `/review` y las versiones
+  anteriores de plan y tareas viven en `docs/specs/NNN-<slug>/history/` (`analysis.r<N>.md`,
+  `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`), archivadas con `aidd.py rotate`. **Nunca se
+  borran**, tampoco en un upgrade. En la raíz de la spec quedan solo los vigentes. Ninguna skill ni
+  subagente lee `history/`, salvo la ronda inmediatamente anterior para el seguimiento de
+  hallazgos. `/release` escribe `history/README.md` con el índice de rondas.
+- **Aceptados con destino:** un hallazgo aceptado de `/analyze` se registra como
+  `- **ID** → nota de T0xx: …` (o `→ spec`, `→ plan`, `→ roadmap`) y el validador comprueba que la
+  tarea hecha tenga la nota; uno aceptado sin tarea en `/review`, como `- **R#** → roadmap: …`, y
+  `/release` lo lleva al roadmap como `NNN/R#`.
+- **Hallazgos colaterales:** lo que una skill ve fuera de su tarea y es de la spec en curso se
+  pregunta en ese momento (tarea nueva o aceptado con motivo), no se difiere a la siguiente skill.
+- **Revisiones baratas:** los subagentes reciben solo lo que su encargo necesita (no todos los
+  artefactos) y devuelven solo hallazgos. `/review` revisa desde `impl_base` (lo registra
+  `/implement` en `tasks.md`) con el paquete de `aidd.py review-pack`, no desde el merge con la
+  rama principal.
 - **El roadmap es del usuario:** ninguna skill añade, renumera ni reescribe objetivos sin su
   confirmación. Las brechas detectadas se concilian con los objetivos existentes (enlazar si ya
   están cubiertas, proponer si son parciales o nuevas) según

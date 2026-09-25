@@ -26,9 +26,10 @@ corregir todavía es barato. **No modifica** spec, plan ni tareas: informa y blo
 
 ## Reglas
 
-- **Solo lectura** sobre los artefactos; solo escribe `analysis.md`, conserva las rondas
-  anteriores como `analysis.r<N>.md` y guarda una copia de los artefactos en `.ai/cache/`
-  (`aidd.py snapshot`).
+- **Solo lectura** sobre los artefactos; solo escribe `analysis.md`, archiva la ronda anterior en
+  `history/analysis.r<N>.md` (`aidd.py rotate`) y guarda una copia de los artefactos en
+  `.ai/cache/` (`aidd.py snapshot`). Las rondas archivadas **nunca se borran**; no las leas salvo
+  la inmediatamente anterior cuando la necesites para el seguimiento.
 - **No repitas trabajo:** tras la primera ronda, analiza solo lo que cambió y los hallazgos
   abiertos (modo delta). Un análisis completo cuesta leer spec, plan, tareas y código enteros.
 - **Revisión independiente:** el análisis lo hace un subagente de contexto limpio que no
@@ -54,7 +55,13 @@ corregir todavía es barato. **No modifica** spec, plan ni tareas: informa y blo
   cambió de alcance (criterios añadidos o eliminados), o `aidd.py changes` responde que no hay
   copia previa o reporta más de ~40 % de líneas cambiadas del plan o de las tareas.
 - **Delta** en otro caso. Ejecuta `python .ai/bin/aidd.py changes docs/specs/NNN-<slug>` para
-  obtener el diff contra la ronda anterior, y sigue el Paso 1b en lugar del Paso 1.
+  obtener el diff contra la ronda anterior, y sigue el Paso 1b en lugar del Paso 1. Si el comando
+  avisa que la copia guardada no coincide con las huellas de `analysis.md` (o no hay copia pero sí
+  commits), usa `--since <commit en que se registró la ronda anterior>` en lugar de la copia.
+- **Tras `/review`:** las tareas que añade `/review` (nota `añadida por /review`) ya cumplen las
+  reglas de `/tasks` y no necesitan `/analyze`. Solo se analiza si el usuario lo pide o si la
+  corrección cambia el diseño (módulo, contrato o criterio nuevos); en ese caso, delta sobre esas
+  tareas.
 
 ## Paso 1b — Análisis delta
 
@@ -113,8 +120,12 @@ en estado `approved` y este encargo:
 
 1. Verifica cada hallazgo abriendo el archivo citado; descarta los que no se sostienen.
 2. Numera los hallazgos nuevos continuando la serie de rondas anteriores (`A30, A31…`); los que
-   siguen abiertos conservan su ID. Asigna a cada uno la corrección **más pequeña** que lo
-   resuelve:
+   siguen abiertos conservan su ID. **La recomendación dice qué debe cumplirse y con qué test se
+   comprueba, no el mecanismo:** "toda excepción no capturada en `api/*` deja exactamente un log
+   saneado (test: `report()` manual con un dato de prueba)" en lugar de "detener el reporte por
+   defecto según la URL". Elegir el mecanismo es trabajo de `/plan --fix` o `/implement`, y un
+   mecanismo impuesto aquí sin ese test acaba revisado otra vez en `/review`. Asigna a cada uno la
+   corrección **más pequeña** que lo resuelve:
    - `/plan NNN --fix <IDs>` o `/tasks NNN --fix <IDs>` para correcciones localizadas (una o pocas
      secciones o tareas). Es lo habitual.
    - `/specify --edit` si el problema está en la spec.
@@ -123,14 +134,17 @@ en estado `approved` y este encargo:
      y pregúntalas juntas antes de cerrar el análisis.
 3. Los hallazgos BAJOS, y los MEDIOS que no cambian el diseño, se pueden **aceptar para resolver
    en `/implement`** como notas de tarea: propónlo al usuario en bloque en lugar de pedir otra
-   vuelta de plan y tareas.
+   vuelta de plan y tareas. Regístralos con el formato `- **C2** → nota de T052: <qué>` (uno por
+   línea; varias tareas separadas por comas): el validador comprueba que cada tarea hecha tenga
+   una nota que cite el ID. Los que no van a una tarea usan `→ spec`, `→ plan` o `→ roadmap`.
 4. **Resultado:**
    - `fail` si hay algún hallazgo CRÍTICO, o ALTO que el usuario decide corregir.
    - `pass` en otro caso (los ALTOS aceptados quedan registrados con motivo).
 
 ## Paso 3 — Escritura
 
-1. Si existe `analysis.md`, renómbralo a `analysis.r<N>.md` (N = su `round`).
+1. Si existe `analysis.md`, archívalo: `python .ai/bin/aidd.py rotate docs/specs/NNN-<slug> analysis`
+   (lo mueve a `history/analysis.r<N>.md` y ajusta sus enlaces). Nunca lo sobrescribas ni lo borres.
 2. Ejecuta `python .ai/bin/aidd.py hash docs/specs/NNN-<slug>` y escribe
    `docs/specs/NNN-<slug>/analysis.md`.
 3. Ejecuta `python .ai/bin/aidd.py snapshot docs/specs/NNN-<slug>` para que la próxima ronda pueda
@@ -173,7 +187,9 @@ tasks_sha: <…>
 - <A#: pregunta concreta y opciones>
 
 ## Aceptados
-- <A#: motivo, aceptado por el usuario el AAAA-MM-DD; se resuelve en /implement como nota de T0xx>
+Aceptados por el usuario el AAAA-MM-DD:
+- **A#** → nota de T0xx: <qué debe hacer o comprobar /implement>
+- **A#** → roadmap: <motivo>
 ```
 
 Las huellas permiten detectar si los artefactos cambian después del análisis: en ese caso

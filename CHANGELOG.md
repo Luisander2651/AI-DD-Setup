@@ -3,6 +3,41 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.7.0] - 2026-09-25
+Lecciones de la primera spec recorrida de punta a punta (7 rondas de `/analyze`, 3 de `/review`,
+~200k tokens por revisor en la primera review).
+
+### Added
+- `aidd.py review-pack`: paquete compartido de `/review` en `.ai/cache/review/` con el diff de
+  código filtrado (sin `docs/`, `.ai/`, Markdown ni lockfiles), `scope.md` (archivos sin tarea y
+  tareas sin diff), `context.md` (criterios, amenazas, trazabilidad) y tamaño estimado en tokens.
+- `impl_base` en `tasks.md`: lo registra `/implement`; `/review` revisa desde ahí y no desde el
+  merge con la rama principal.
+- Historial de la spec en `docs/specs/NNN/history/` (nunca se borra): `aidd.py rotate` archiva la
+  ronda o versión vigente; `aidd.py history [--write] [--migrate]` indexa las rondas y mueve las
+  sueltas corrigiendo enlaces. `/release` escribe `history/README.md`.
+- `aidd.py changes --since REF` y aviso cuando la copia en caché no coincide con el último análisis.
+- `aidd.py status` muestra las rondas de `/analyze` y `/review` (`a7 r3`).
+- Validador: aceptados `- **ID** → nota de T0xx` sin su nota en una tarea hecha (error); rondas o
+  versiones sueltas; aceptados sin tarea de `/review` que no llegaron al roadmap (`NNN/R#`).
+- `/plan`: línea base SCA (vulnerabilidades previas a decidir antes de implementar) y tabla
+  "Qué ve cada rol" cuando cambian permisos con interfaz.
+- `/implement`: hallazgos colaterales de la spec se preguntan al momento; los tests que pasan
+  desde el principio se comprueban rompiendo a mano lo que protegen.
+
+### Changed
+- `/review`: cada revisor recibe solo lo que su encargo necesita y devuelve solo hallazgos;
+  "Plan y alcance" lo hace el orquestador con `scope.md`; Constitución y Calidad en un solo
+  agente; `--rerun` sin subagentes si el diff es pequeño. Las tareas que añade cumplen las reglas
+  de `/tasks` y no requieren otro `/analyze` salvo cambio de diseño. Sección "Aceptados sin tarea".
+- `/analyze` recomienda la condición que debe cumplirse y su test, no el mecanismo; los aceptados
+  llevan destino explícito.
+- `--redo` de plan y tareas archiva la versión anterior en `history/` (antes: solo en commits).
+- `/init --upgrade` migra rondas sueltas a `history/` y ofrece restaurar las borradas desde git.
+
+### Fixed
+- El aviso "cita riesgos por número" ya no salta por el Historial de la spec.
+
 ## [1.6.0] - 2026-09-24
 Iterar más barato: una spec real llegó a 3 versiones de plan, 3 de tareas y 3 análisis completos,
 cada vuelta regenerando ~70 KB y releyendo todo el código.

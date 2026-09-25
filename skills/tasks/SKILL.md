@@ -159,8 +159,9 @@ Siguiente paso sugerido: `/analyze NNN` (idealmente antes de aprobar las tareas)
   números libres (nunca reutilices un número de una tarea eliminada).
 - Si una tarea hecha contradice el nuevo plan, añade una tarea para revertirla o adaptarla y
   avísale al usuario.
-- **Versión anterior:** si el proyecto usa git, asegúrate de que `tasks.md` está en un commit y no
-  crees copias; solo sin git, guárdala como `tasks.v<N>.md`.
+- **Versión anterior:** antes de regenerar, archívala con
+  `python .ai/bin/aidd.py rotate docs/specs/NNN-<slug> tasks` (copia a `history/tasks.v<N>.md`).
+  Las versiones archivadas no se borran; ninguna skill las lee.
 
 ## Modo `--fix <IDs>`
 
