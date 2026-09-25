@@ -1,8 +1,9 @@
 # Generado por /init. Lo leen todas las skills del flujo.
 name: {{project_name}}
-type: {{type}}                 # frontend | backend | fullstack | monorepo | library
+type: {{type}}                 # frontend | backend | fullstack | mobile | monorepo | library
 stage: {{stage}}               # prototype | mvp | production | maintenance
 origin: {{origin}}             # greenfield | brownfield
+language: {{language}}         # es | en | … idioma de los documentos (shared/vocabulary.md)
 initialized_at: {{date}}
 stack:
   languages: [{{languages}}]

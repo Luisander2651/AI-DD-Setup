@@ -175,6 +175,21 @@ PR/tag y tareas de seguimiento añadidas al roadmap.
 5. Las specs afectadas vuelven de `released` a `implemented`, con una nota en su "Historial";
    añade la entrada `## [X.Y.Z] - revertida el <fecha>` en `CHANGELOG.md`.
 
+## Mobile
+
+Si `project.type: mobile`:
+- **Staging** es el canal de pruebas (TestFlight, prueba interna o cerrada de Google Play). Los
+  criterios se verifican en dispositivos reales o emuladores de las versiones mínimas declaradas.
+- **Producción** es el envío a revisión de la tienda y la publicación, idealmente **escalonada**
+  (p. ej. 5 % → 20 % → 100 %) vigilando fallos y métricas del plan entre pasos. Sigue exigiendo la
+  puerta del Paso 5. La firma y el envío los hace el usuario o CI con claves que el agente nunca lee.
+- **Rollback:** un binario publicado no se puede retirar de los dispositivos. Las opciones son
+  detener la publicación escalonada, apagar la feature con su flag remoto, publicar un hotfix (con
+  otra revisión de la tienda) o, si el cambio fue solo de la capa web y hay actualizaciones en
+  vivo, volver a la versión web anterior. Si el plan no tiene flag remoto para una feature de
+  riesgo, dilo antes de publicar.
+- Número de versión y de build (`versionCode`/`CFBundleVersion`) suben en cada envío.
+
 ## Library
 
 Si `project.type: library`, "producción" es la publicación en el registro (npm, PyPI,

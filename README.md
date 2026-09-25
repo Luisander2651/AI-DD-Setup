@@ -99,8 +99,13 @@ Opciones habituales (revisa la documentación de tu cliente, los comandos pueden
 1. Toda regla que afecte a más de una skill va en `shared/contract.md`, no duplicada.
 2. Al cambiar una plantilla o el contrato, sube la versión en `plugin.json` **y** en
    `skills/init/SKILL.md` (`Versión del paquete de skills`), y registra el cambio en `CHANGELOG.md`.
-3. Si cambias `scripts/aidd.py`, sube su `VERSION` y pruébalo con specs válidas e inválidas.
-4. Prueba el flujo completo en un proyecto nuevo y en uno existente antes de publicar.
-5. Los proyectos inicializados con una versión anterior se actualizan con `/ai-dd:init --upgrade`:
+3. Si cambias `scripts/aidd.py`, sube su `VERSION` y ejecuta `python tests/run.py` (también corre en
+   CI, en Linux y Windows). Los proyectos de `tests/fixtures/` son a propósito distintos entre sí:
+   librería Python en inglés, app Ionic en español, CLI en Go, monorepo.
+4. **Contra el sobreajuste:** un hallazgo de un proyecto real se generaliza solo si se puede
+   formular sin su stack y queda cubierto por un caso en `tests/fixtures/` de **otro** tipo o
+   idioma. Si no, se queda como ejemplo en la documentación, no como regla.
+5. Prueba el flujo completo en un proyecto nuevo y en uno existente antes de publicar.
+6. Los proyectos inicializados con una versión anterior se actualizan con `/ai-dd:init --upgrade`:
    reemplaza el validador y las plantillas cambiadas, añade claves y documentos nuevos y propone
    (sin aplicar) enmiendas a la constitución.

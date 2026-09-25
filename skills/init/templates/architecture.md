@@ -54,6 +54,18 @@ flowchart LR
 - Cómo se regenera: {{comando}}
 <!-- endif -->
 
+<!-- if type=mobile -->
+
+## App móvil
+- Plataformas y versiones mínimas: {{iOS ≥ …, Android ≥ …}}
+- Framework y capa nativa: {{Ionic + Capacitor / React Native / Flutter…}}; plugins nativos: {{…}}
+- Navegación y estado: {{…}}
+- Almacenamiento local y offline: {{qué se guarda, dónde; datos sensibles solo en Keychain/Keystore}}
+- Permisos del dispositivo: {{cámara, ubicación, notificaciones… y por qué}}
+- Contrato con el backend y compatibilidad con versiones instaladas: {{…}}
+- Actualizaciones: {{tiendas · en vivo de la capa web · actualización forzada}}
+<!-- endif -->
+
 <!-- if type=library -->
 
 ## API pública

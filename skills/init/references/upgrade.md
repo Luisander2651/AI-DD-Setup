@@ -22,6 +22,9 @@ como diff y se aplica solo con confirmación.
    diff, sin cambiar su contenido. Después revisa los objetivos del roadmap y las specs que citan
    riesgos ("riesgo 1", "riesgos 1 y 3"…) y **reporta** las correcciones que no cubren ni
    excluyen de forma explícita; propone cómo declararlas, sin aplicarlo sin confirmación.
+5a. **Idioma (desde 1.8.0).** Si falta `language` en `project.yaml`, infiérelo de los documentos
+   existentes y pide confirmación. Los títulos y marcadores ya escritos siguen siendo válidos
+   (español o inglés, `shared/vocabulary.md`).
 5b. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
    carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
    avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.7.1"
+VERSION = "1.8.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -42,7 +42,44 @@ FIXED_TASKS = ["T090", "T091", "T092", "T095", "T096", "T097", "T098"]
 DEPLOY_TASKS = {"T095", "T096", "T097", "T098"}
 
 TASK_RE = re.compile(r"^\s*- \[( |x|X)\] (T\d{3})\b(.*)$")
-CA_DEF_RE = re.compile(r"^\s*- \[( |x|X)\] (CA\d+)\b(.*)$")
+CA_DEF_RE = re.compile(r"^\s*- \[( |x|X)\] ((?:CA|AC)\d+)\b(.*)$")
+CA_ID = r"(?:CA|AC)\d+"
+
+# Vocabulario canónico en español e inglés (shared/vocabulary.md). Los documentos pueden usar
+# cualquiera de los dos; el validador acepta ambos.
+VOCAB = {
+    "problem": ["Problema", "Problem"],
+    "criteria": ["Criterios de aceptación", "Acceptance criteria"],
+    "out_of_scope": ["Fuera de alcance", "Out of scope"],
+    "security": ["Seguridad y privacidad", "Security and privacy"],
+    "audit": ["Auditoría", "Audit"],
+    "risk_coverage": ["Cobertura de riesgos", "Risk coverage"],
+    "history": ["Historial", "History"],
+    "constitution_check": ["Constitution Check"],
+    "traceability": ["Trazabilidad", "Traceability"],
+    "threat_model": ["Modelo de amenazas", "Threat model"],
+    "rollout": ["Rollout"],
+    "observability": ["Observabilidad", "Observability"],
+    "accepted": ["Aceptados", "Accepted"],
+    "deferred": ["Aceptados sin tarea", "Accepted without task"],
+}
+W = {
+    "done_when": r"(?:hecho cuando|done when):",
+    "covers": r"(?:cubre|covers):",
+    "depends": r"(?:depende|depends(?: on)?):",
+    "note": r"^\s+- (?:nota|note):",
+    "abuse": r"\((?:abuso|abuse)\)",
+    "not_applicable": r"\b(?:no aplica|not applicable|n/a)\b",
+    "not_met": r"HOY NO SE CUMPLE|NOT MET TODAY",
+    "clarify": r"\[(?:NECESITA ACLARACIÓN|NEEDS CLARIFICATION)\]",
+    "accepted": r"\b(?:aceptad[oa]|accepted)\b",
+    "partial": r"\b(?:parcial\w*|partial\w*)\b",
+    "mitigated": r"\b(?:mitigad\w*|mitigated)\b",
+    "out": r"\b(?:fuera|out)\b",
+    "in": r"\b(?:dentro|in)\b",
+    "risk_by_number": r"\b(?:riesgos?|risks?)\s+\d",
+    "note_of": r"(?:nota de|note (?:on|for|of|in))",
+}
 PLACEHOLDER_RE = re.compile(r"\{\{[^}]*\}\}")
 COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
 
@@ -72,7 +109,14 @@ def body(text):
 
 
 def section(text, title):
-    """Contenido de la sección '## <title>' hasta la siguiente '## '."""
+    """Contenido de la sección '## <title>' hasta la siguiente '## '. `title` puede ser una clave de
+    VOCAB (acepta sus variantes en español e inglés) o un título literal."""
+    if title in VOCAB:
+        for t in VOCAB[title]:
+            r = section(text, t)
+            if r is not None:
+                return r
+        return None
     m = re.search(r"^##\s+" + re.escape(title) + r"\b.*?$(.*?)(?=^##\s|\Z)", text, re.M | re.S)
     return m.group(1) if m else None
 
@@ -140,17 +184,17 @@ def load_spec_dir(d):
 
 
 def spec_cas(spec_text):
-    sec = section(body(spec_text), "Criterios de aceptación") or ""
+    sec = section(body(spec_text), "criteria") or ""
     cas = []
     for line in sec.splitlines():
         m = CA_DEF_RE.match(line)
         if m:
-            cas.append((m.group(2), m.group(1).lower() == "x", "(abuso)" in line))
+            cas.append((m.group(2), m.group(1).lower() == "x", bool(re.search(W["abuse"], line, re.I))))
     return cas
 
 
 def plan_threats(plan_text):
-    sec = section(body(plan_text), "Modelo de amenazas") or ""
+    sec = section(body(plan_text), "threat_model") or ""
     return sorted(set(re.findall(r"\|\s*(TM\d+)\s*\|", sec)), key=lambda x: int(x[2:]))
 
 
@@ -163,8 +207,8 @@ def parse_tasks(tasks_text):
             continue
         tid, rest = m.group(2), m.group(3)
         parts = [p.strip() for p in rest.split(" — ")]
-        deps = re.findall(r"T\d{3}", (re.search(r"depende:\s*([^—]*)", rest) or [None, ""])[1] or "")
-        covers = re.findall(r"CA\d+", (re.search(r"cubre:\s*([^—]*)", rest) or [None, ""])[1] or "")
+        deps = re.findall(r"T\d{3}", (re.search(W["depends"] + r"\s*([^—]*)", rest, re.I) or [None, ""])[1] or "")
+        covers = re.findall(CA_ID, (re.search(W["covers"] + r"\s*([^—]*)", rest, re.I) or [None, ""])[1] or "")
         files = parts[1] if len(parts) > 1 else ""
         tasks.setdefault(tid, []).append({
             "id": tid,
@@ -174,7 +218,7 @@ def parse_tasks(tasks_text):
             "files": [f.strip(" `") for f in re.split(r",\s*", files) if f.strip()],
             "deps": deps,
             "covers": covers,
-            "has_done_when": "hecho cuando:" in rest,
+            "has_done_when": bool(re.search(W["done_when"], rest, re.I)),
         })
         order.append(tid)
     return tasks, order
@@ -186,7 +230,7 @@ def fingerprint(text):
         return None
     lines = []
     for line in body(text).splitlines():
-        if re.match(r"^\s+- nota:", line):
+        if re.match(W["note"], line):
             continue
         lines.append(re.sub(r"^(\s*)- \[[xX]\]", r"\1- [ ]", line).rstrip())
     return hashlib.sha256("\n".join(lines).strip().encode("utf-8")).hexdigest()[:12]
@@ -214,14 +258,15 @@ def task_notes(tasks_text):
         if m:
             cur = m.group(2)
             continue
-        if cur and re.match(r"^\s+- nota:", line):
+        if cur and re.match(W["note"], line):
             notes[cur] = notes.get(cur, "") + " " + line.strip()
         elif line.strip() and not line.startswith((" ", "\t")):
             cur = None
     return notes
 
 
-ACCEPTED_NOTE_RE = re.compile(r"^\s*-\s*\*\*([A-Z]\d+):?\*\*:?\s*(?:→|->)\s*nota de\s+((?:T\d{3}[\s,y]*)+)")
+ACCEPTED_NOTE_RE = re.compile(r"^\s*-\s*\*\*([A-Z]\d+):?\*\*:?\s*(?:→|->)\s*" + W["note_of"]
+                              + r"\s+((?:T\d{3}(?:\s*(?:,|y|and)\s*)?)+)", re.I)
 ROUND_FILE_RE = re.compile(r"^(analysis|review)\.r(\d+)\.md$|^(plan|tasks)\.v(\d+)\.md$")
 
 
@@ -245,7 +290,7 @@ def accepted_as_notes(d):
     """{(hallazgo, tarea)} de los aceptados con formato '- **ID** → nota de Txxx'."""
     pairs = set()
     for text in analysis_texts(d):
-        for line in (section(body(text), "Aceptados") or "").splitlines():
+        for line in (section(body(text), "accepted") or "").splitlines():
             m = ACCEPTED_NOTE_RE.match(line)
             if m:
                 for t in re.findall(r"T\d{3}", m.group(2)):
@@ -304,12 +349,16 @@ def cited_risks(text, risks):
 
 def coverage_rows(spec_text):
     """{corrección: 'dentro' | 'fuera'} según la sección 'Cobertura de riesgos'."""
-    sec = section(body(spec_text), "Cobertura de riesgos") or ""
+    sec = section(body(spec_text), "risk_coverage") or ""
     rows = {}
     for line in sec.splitlines():
         for cid in re.findall(r"\b((?:RS|OB|RD)\d+\.[a-z])\b", line):
-            low = line.lower()
-            rows[cid] = "fuera" if "fuera" in low else ("dentro" if "dentro" in low else None)
+            cells = [c.strip() for c in line.split("|")]
+            idx = next((i for i, c in enumerate(cells) if cid in c), None)
+            # Columna "Alcance / Scope": la celda siguiente a la de la corrección.
+            rest = cells[idx + 1] if idx is not None and idx + 1 < len(cells) else line.split(cid, 1)[1]
+            rows[cid] = "fuera" if re.search(W["out"], rest, re.I) else (
+                "dentro" if re.search(W["in"], rest, re.I) else None)
     return rows
 
 
@@ -317,8 +366,8 @@ def mitigation_claims(text, risk):
     """Líneas que declaran mitigado el riesgo completo (no una corrección) sin decir 'parcial'."""
     out = []
     for line in text.splitlines():
-        if re.search(r"\b" + risk + r"\b(?!\.[a-z])", line) and re.search(r"mitigad", line, re.I) \
-                and not re.search(r"parcial", line, re.I):
+        if re.search(r"\b" + risk + r"\b(?!\.[a-z])", line) and re.search(W["mitigated"], line, re.I) \
+                and not re.search(W["partial"], line, re.I):
             out.append(line.strip()[:80])
     return out
 
@@ -364,26 +413,26 @@ def validate_spec_dir(d, root):
     dup = {i for i in ids if ids.count(i) > 1}
     if dup:
         rep.err(f"spec: criterios duplicados {sorted(dup)}")
-    pending_q = len(re.findall(r"\[NECESITA ACLARACIÓN\]", text))
+    pending_q = len(re.findall(W["clarify"], text))
     if pending_q > 3:
         rep.err(f"spec: {pending_q} marcadores [NECESITA ACLARACIÓN] (máximo 3)")
     if st in {"approved", "implemented", "released"} and pending_q:
         rep.err("spec: aprobada con [NECESITA ACLARACIÓN] abiertos")
-    for title in ("Problema", "Criterios de aceptación", "Fuera de alcance"):
-        if section(body(s["spec"]), title) is None:
-            rep.err(f"spec: falta la sección '{title}'")
-    sec_sec = section(body(s["spec"]), "Seguridad y privacidad")
-    sensitive = sec_sec is not None and "no aplica" not in sec_sec.lower()
+    for key in ("problem", "criteria", "out_of_scope"):
+        if section(body(s["spec"]), key) is None:
+            rep.err(f"spec: falta la sección '{' / '.join(VOCAB[key])}'")
+    sec_sec = section(body(s["spec"]), "security")
+    sensitive = sec_sec is not None and not re.search(W["not_applicable"], sec_sec, re.I)
     if sec_sec is None:
         (rep.warn if st == "inferred" else rep.err)("spec: falta la sección 'Seguridad y privacidad'")
     elif sensitive and not any(c[2] for c in cas):
         rep.warn("spec: la sección de seguridad no dice 'No aplica' y no hay criterios '(abuso)'")
-    if sensitive and st != "inferred" and section(body(s["spec"]), "Auditoría") is None:
+    if sensitive and st != "inferred" and section(body(s["spec"]), "audit") is None:
         rep.warn("spec: toca datos sensibles o permisos pero no tiene sección 'Auditoría' "
                  "(eventos que deben registrarse)")
-    for line in (section(body(s["spec"]), "Criterios de aceptación") or "").splitlines():
+    for line in (section(body(s["spec"]), "criteria") or "").splitlines():
         m = CA_DEF_RE.match(line)
-        if m and m.group(1).lower() == "x" and "HOY NO SE CUMPLE" in line.upper():
+        if m and m.group(1).lower() == "x" and re.search(W["not_met"], line.upper()):
             rep.err(f"spec: {m.group(2)} está marcado [x] pero dice 'HOY NO SE CUMPLE'")
     if st in {"implemented", "released"}:
         open_cas = [c[0] for c in cas if not c[1]]
@@ -402,7 +451,7 @@ def validate_spec_dir(d, root):
     if risks:
         cited = cited_risks(body(s["spec"]), risks)
         rows = coverage_rows(s["spec"])
-        if cited and section(body(s["spec"]), "Cobertura de riesgos") is None:
+        if cited and section(body(s["spec"]), "risk_coverage") is None:
             rep.err(f"spec: cita {cited} pero no tiene sección 'Cobertura de riesgos'")
         for r in cited:
             missing = [c for c in risks[r] if rows.get(c) is None]
@@ -410,10 +459,10 @@ def validate_spec_dir(d, root):
                 rep.err(f"spec: {r} tiene correcciones sin declarar dentro o fuera: {missing}")
             fuera = [c for c in risks[r] if rows.get(c) == "fuera"]
             covered_all[r] = not missing and not fuera
-            if fuera and not re.search(r"parcial", section(body(s["spec"]), "Problema") or "", re.I):
+            if fuera and not re.search(W["partial"], section(body(s["spec"]), "problem") or "", re.I):
                 rep.warn(f"spec: deja fuera {fuera} y el Problema no dice que atiende {r} parcialmente")
-        no_hist = re.sub(r"^##\s+Historial\b.*?(?=^##\s|\Z)", "", body(s["spec"]), flags=re.M | re.S)
-        if re.search(r"\briesgos?\s+\d", no_hist, re.I):
+        no_hist = re.sub(r"^##\s+(?:Historial|History)\b.*?(?=^##\s|\Z)", "", body(s["spec"]), flags=re.M | re.S)
+        if re.search(W["risk_by_number"], no_hist, re.I):
             rep.warn("spec: cita riesgos por número ('riesgo 1'); usa sus IDs (RS1…) y declara sus correcciones")
     for kind in ("plan", "tasks"):
         if s[kind] and risks:
@@ -435,15 +484,15 @@ def validate_spec_dir(d, root):
             rep.err("plan: quedan {{placeholders}} sin sustituir")
         if pst == "approved" and st not in {"approved", "implemented", "released"}:
             rep.err(f"plan: aprobado sobre una spec en estado {st}")
-        cc = section(body(ptext), "Constitution Check") or ""
+        cc = section(body(ptext), "constitution_check") or ""
         if principles is not None:
             missing = [p for p in principles if not re.search(r"\b" + p + r"\b", cc)]
             if missing:
                 rep.err(f"plan: Constitution Check no evalúa {missing}")
         for line in cc.splitlines():
-            if "❌" in line and "aceptado" not in line and pst == "approved":
+            if "❌" in line and not re.search(W["accepted"], line, re.I) and pst == "approved":
                 rep.err("plan: aprobado con un ❌ sin aceptación registrada")
-        trace = section(body(ptext), "Trazabilidad")
+        trace = section(body(ptext), "traceability")
         if trace is None:
             rep.err("plan: falta la sección 'Trazabilidad'")
             trace = ""
@@ -454,11 +503,12 @@ def validate_spec_dir(d, root):
         missing_tm = [t for t in threats if not re.search(r"\b" + t + r"\b", trace)]
         if missing_tm:
             rep.err(f"plan: amenazas sin test en Trazabilidad {missing_tm}")
-        if section(body(ptext), "Modelo de amenazas") is None:
+        if section(body(ptext), "threat_model") is None:
             rep.warn("plan: no tiene sección 'Modelo de amenazas'")
-        if section(body(ptext), "Rollout") is None:
+        if section(body(ptext), "rollout") is None:
             rep.err("plan: falta la sección 'Rollout'")
-        if sensitive and section(body(ptext), "Observabilidad") is None:
+        ptype = yaml_scalar(read(os.path.join(root, ".ai", "project.yaml")), "type") if root else None
+        if sensitive and ptype != "library" and section(body(ptext), "observability") is None:
             rep.warn("plan: la spec toca datos sensibles o permisos y el plan no tiene sección "
                      "'Observabilidad' (logs, eventos de auditoría, métricas)")
 
@@ -558,7 +608,7 @@ def validate_spec_dir(d, root):
     # --- review
     if s["review"]:
         rfm = frontmatter(s["review"])
-        deferred = re.findall(r"^\s*-\s*\*\*(R\d+)", section(body(s["review"]), "Aceptados sin tarea") or "", re.M)
+        deferred = re.findall(r"^\s*-\s*\*\*(R\d+)", section(body(s["review"]), "deferred") or "", re.M)
         if deferred and st == "released" and root:
             rm = os.path.join(root, "docs", "roadmap.md")
             rtext = read(rm) if os.path.isfile(rm) else ""
@@ -591,7 +641,7 @@ def validate_roadmap(root):
             missing = [c for c in risks[r] if not re.search(r"\b" + re.escape(c) + r"\b", line)]
             if missing:
                 rep.err(f"objetivo {num}: cita {r} sin declarar las correcciones {missing} (dentro o fuera con destino)")
-        if re.search(r"\briesgos?\s+\d", line, re.I):
+        if re.search(W["risk_by_number"], line, re.I):
             rep.warn(f"objetivo {num}: cita riesgos por número; usa sus IDs (RS1…) y todas sus correcciones")
     if rep.errors or rep.warnings:
         rep.print()
@@ -1032,13 +1082,13 @@ def cmd_review_pack(args):
     scope += [f"- {t}" for t in untouched] or ["- ninguna"]
     scope += ["", "## Archivos cambiados", "", "```", names.strip(), "```"]
     sizes["scope.md"] = write("scope.md", "\n".join(scope) + "\n")
-    cas = [ln.strip() for ln in (section(body(s["spec"] or ""), "Criterios de aceptación") or "").splitlines()
+    cas = [ln.strip() for ln in (section(body(s["spec"] or ""), "criteria") or "").splitlines()
            if CA_DEF_RE.match(ln)]
     ctx = [f"# Contexto · {os.path.basename(d)}", "", "## Criterios de aceptación", ""] + cas
-    for title in ("Modelo de amenazas", "Trazabilidad", "Observabilidad"):
-        sec = section(body(s["plan"] or ""), title)
+    for key in ("threat_model", "traceability", "observability"):
+        sec = section(body(s["plan"] or ""), key)
         if sec:
-            ctx += ["", "## " + title + " (plan)", sec.strip()]
+            ctx += ["", "## " + VOCAB[key][0] + " (plan)", sec.strip()]
     sizes["context.md"] = write("context.md", "\n".join(ctx) + "\n")
     print(f"Paquete de review en {os.path.relpath(out_dir, root)}  (rango {rng}; base: {why})")
     for k, v in sizes.items():
@@ -1087,10 +1137,15 @@ def active_spec(root):
     return None
 
 
+SIGNING_EXT = (".keystore", ".jks", ".p12", ".p8", ".mobileprovision")
+
+
 def is_protected(rel, extra):
     base = os.path.basename(rel)
     if base.startswith(".env") and base not in (".env.example", ".env.sample", ".env.template"):
         return True
+    if base.lower().endswith(SIGNING_EXT) or base == "key.properties":
+        return True  # claves de firma (Android/iOS)
     for p in DEFAULT_PROTECTED + tuple(extra):
         p = p.replace("\\", "/")
         if rel == p.rstrip("/") or rel.startswith(p if p.endswith("/") else p + "/") or rel == p:

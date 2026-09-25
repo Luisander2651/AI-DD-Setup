@@ -1,0 +1,9 @@
+{
+  "errors": 1,
+  "contains": [
+"human_signoff pendiente"
+  ],
+  "warnings_contains": [
+"001/Rn: ['R2']"
+  ]
+}

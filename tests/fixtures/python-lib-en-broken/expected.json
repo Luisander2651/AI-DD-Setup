@@ -1,0 +1,9 @@
+{
+  "errors": 4,
+  "contains": [
+"[NECESITA ACLARACIÓN] abiertos",
+"no evalúa ['P2']",
+"criterios sin trazabilidad ['AC2']",
+"T002 sin 'hecho cuando:'"
+  ]
+}

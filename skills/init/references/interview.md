@@ -13,7 +13,7 @@ descarta las brechas que dependían de ellos.
 
 **Ronda 1 — Identidad**
 1. ¿Qué problema resuelve el proyecto y para quién? (texto libre, 1–3 frases)
-2. Tipo: frontend · backend · fullstack · monorepo · library.
+2. Tipo: frontend · backend · fullstack · mobile · monorepo · library.
 3. Stack (greenfield: proponer 2–3 opciones coherentes con el tipo; brownfield: confirmar).
 4. Etapa: prototipo · MVP · producción · mantenimiento.
 **Ronda 2 — Reglas**
@@ -23,7 +23,11 @@ descarta las brechas que dependían de ellos.
 3. Definición de terminado: tests pasan · lint limpio · docs actualizadas · revisión humana (multi).
 4. Restricciones: compliance (GDPR, HIPAA, PCI), performance, presupuesto, plataformas objetivo.
 **Ronda 3 — Despliegue** (obligatoria salvo `deploy.strategy: none`; en `library`,
-"desplegar" = publicar en el registro: npm, PyPI, crates.io…)
+"desplegar" = publicar en el registro: npm, PyPI, crates.io…; en `mobile`, publicar en las tiendas)
+   En `mobile`, además: tiendas (App Store, Google Play, otra), canal de pruebas (TestFlight, prueba
+   interna o cerrada de Play), quién guarda las claves de firma y dónde (nunca en el repo), versión
+   mínima de iOS/Android, publicación escalonada (% de usuarios) y si hay actualizaciones en vivo de
+   la capa web (Capacitor Live Updates, Appflow, Expo Updates) o actualización forzada.
 1. Entornos: solo local · dev + prod · dev + staging + prod · otro.
 2. Plataforma y disparador: ¿dónde corre y qué dispara un deploy (push, tag, manual)?
 3. Aprobación de producción: ¿quién la da? (por defecto: el usuario, siempre explícita).

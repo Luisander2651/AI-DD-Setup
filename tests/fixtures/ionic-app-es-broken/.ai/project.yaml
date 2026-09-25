@@ -1,0 +1,6 @@
+name: citas-movil
+type: mobile
+language: es
+stack:
+  languages: [typescript]
+  frameworks: [ionic, angular, capacitor]

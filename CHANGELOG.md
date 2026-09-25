@@ -3,6 +3,35 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.8.0] - 2026-09-25
+Contra el sobreajuste: hasta aquí todo se había probado en un solo proyecto (Laravel, brownfield,
+en español). Probado contra proyectos de otro tipo, el validador no aceptaba documentos en inglés y
+no había soporte para apps móviles.
+
+### Added
+- **Idioma:** `project.yaml → language` y `shared/vocabulary.md` con la forma española e inglesa de
+  cada título, ID y marcador que lee el validador (`Acceptance criteria`, `AC1`, `done when:`,
+  `covers:`, `(abuse)`, `NOT MET TODAY`…). El validador acepta ambas; `/init` traduce las
+  plantillas con ese vocabulario.
+- **Tipo `mobile`** (Ionic/Capacitor, React Native, Flutter): detección en `/init`, sección de
+  arquitectura, principios propuestos (MASVS, almacenamiento seguro, permisos mínimos,
+  compatibilidad con versiones instaladas), preguntas de despliegue (tiendas, canal de pruebas,
+  firma, publicación escalonada, actualizaciones en vivo), contratos y Rollout en `/plan`, y
+  `/release` para tiendas con su rollback real (detener el escalonado, flag remoto, hotfix).
+  Checklist MASVS ampliado. El hook protege claves de firma (`*.keystore`, `*.jks`, `*.p12`,
+  `*.p8`, `*.mobileprovision`, `key.properties`).
+- `tests/run.py` y `tests/fixtures/`: proyectos de prueba de otro tipo e idioma (librería Python en
+  inglés, app Ionic en español, CLI en Go, monorepo), válidos e inválidos, más escenarios de
+  `review-pack`, `history`/`rotate` y el hook. CI en Linux y Windows con Python 3.8 y 3.12.
+
+### Changed
+- El aviso de "Observabilidad" en el plan no aplica a `library`.
+- La columna Alcance de "Cobertura de riesgos" se lee en su celda, no en toda la fila (un motivo
+  que decía "fuera" marcaba como fuera una corrección "dentro").
+
+### Removed
+- `scripts/__pycache__/` del repositorio.
+
 ## [1.7.1] - 2026-09-25
 ### Fixed
 - `review-pack`: la coincidencia por nombre de archivo (para rutas abreviadas con alias en las

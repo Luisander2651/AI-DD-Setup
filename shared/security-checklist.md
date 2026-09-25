@@ -90,7 +90,13 @@ hallazgo necesita evidencia (`archivo:línea` o salida de una herramienta).
 - **Apps que usan LLMs:** revisa el OWASP Top 10 para aplicaciones LLM (inyección de prompt,
   salida no validada usada como código o consulta, filtración de datos en el contexto, agencia
   excesiva de herramientas).
-- **Mobile:** OWASP MASVS.
+- **Mobile (OWASP MASVS):** tokens, credenciales y datos sensibles solo en el almacenamiento
+  seguro del sistema (Keychain/Keystore; en Ionic/Capacitor, un plugin de almacenamiento seguro,
+  no `localStorage`, `Preferences` ni IndexedDB); sin secretos de API en el bundle (todo lo que va
+  en la app se puede extraer); TLS obligatorio y sin excepciones de tráfico en claro; permisos
+  mínimos; deep links y esquemas de URL validados como entrada externa; en apps híbridas, WebView
+  sin navegación a orígenes arbitrarios y CSP; logs sin datos personales (los de dispositivo los
+  leen otras herramientas); claves de firma fuera del repo.
 
 ## Severidad
 | Severidad | Criterio |

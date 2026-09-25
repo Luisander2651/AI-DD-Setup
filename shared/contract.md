@@ -113,6 +113,10 @@ revisa todas las skills afectadas.
   artefactos) y devuelven solo hallazgos. `/review` revisa desde `impl_base` (lo registra
   `/implement` en `tasks.md`) con el paquete de `aidd.py review-pack`, no desde el merge con la
   rama principal.
+- **Idioma y vocabulario:** los documentos se escriben en `.ai/project.yaml → language`. Los
+  títulos de sección, IDs y marcadores que lee el validador usan la forma española o inglesa de
+  `shared/vocabulary.md` (otros idiomas: inglesa). Al traducir una plantilla, traduce el contenido
+  y usa esos títulos exactos; no inventes variantes.
 - **El roadmap es del usuario:** ninguna skill añade, renumera ni reescribe objetivos sin su
   confirmación. Las brechas detectadas se concilian con los objetivos existentes (enlazar si ya
   están cubiertas, proponer si son parciales o nuevas) según

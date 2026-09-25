@@ -14,14 +14,14 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.7.1` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.8.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
 | Argumento | Efecto |
 |---|---|
 | `--upgrade` | Pone al día un proyecto ya inicializado con la versión instalada del plugin, sin re-explorar. Sigue `references/upgrade.md`. |
-| `--type <frontend\|backend\|fullstack\|monorepo\|library>` | Omite la pregunta de tipo de proyecto |
+| `--type <frontend\|backend\|fullstack\|mobile\|monorepo\|library>` | Omite la pregunta de tipo de proyecto |
 | `--force` | Permite sobrescribir archivos existentes (siempre mostrando diff antes) |
 | `--no-explore` | En brownfield, omite los subagentes y solo entrevista |
 | `--dry-run` | Muestra qué archivos se crearían sin escribirlos |
@@ -50,7 +50,9 @@ todos los comandos posteriores leen y respetan.
   cubierta una capacidad solo porque su herramienta existe.
 - `AGENTS.md` es un **índice corto** (objetivo: < 150 líneas). El detalle vive en `docs/`.
 - Todo contenido inferido de código lleva `status: inferred` y requiere revisión humana.
-- Escribe los documentos en el idioma que use el usuario.
+- Escribe los documentos en el idioma que use el usuario y regístralo en `project.yaml → language`.
+  Las plantillas están en español: si el idioma es otro, tradúcelas usando los títulos y marcadores
+  de `../../shared/vocabulary.md` (los que lee el validador), también las copias de `docs/templates/`.
 
 ---
 
@@ -87,6 +89,10 @@ todos los comandos posteriores leen y respetan.
    - Backend: `express`, `fastapi`, `django`, `spring`, `gin`, `nestjs`, carpetas `routes/`, `controllers/`, `migrations/`.
    - Fullstack: señales de ambos en un mismo paquete, o meta-frameworks con servidor (Next con API routes, Remix, Nuxt server, Laravel con vistas).
    - Monorepo: `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, `workspaces` en `package.json`, varios manifiestos. En monorepo, registra el tipo **por paquete**.
+   - Mobile: `ionic.config.json`, `capacitor.config.*`, `@ionic/*`, `@capacitor/*`, `react-native`,
+     `expo`, `pubspec.yaml` con `flutter`, carpetas `android/` e `ios/`. Una app híbrida (Ionic,
+     Capacitor) es `mobile` aunque su código sea web; si además tiene backend propio en el mismo
+     repo, es `monorepo` con un paquete `mobile`.
    - Library: sin punto de entrada de app, con `exports`/`main` publicable o `[project]` sin servidor.
 
 Informa en una línea qué detectaste antes de continuar.
@@ -217,6 +223,7 @@ Aplica según `project.type` (en monorepo, por paquete):
 | frontend | Componentes, estado, routing, design tokens, accesibilidad | WCAG AA, componentes con tests, sin lógica de negocio en vistas, preview por PR | `design` |
 | backend | API (contratos), modelo de datos, migraciones, observabilidad, seguridad | Contrato de API antes de implementar, migraciones reversibles y compatibles con la versión anterior, logs estructurados con correlación, auditoría de accesos a datos sensibles, health check | — |
 | fullstack | Ambas + **contrato entre capas** (tipos compartidos, versionado de API) | Unión de ambas + el contrato es la fuente de verdad entre capas | `design` |
+| mobile | Pantallas y navegación, estado, almacenamiento local y offline, permisos del dispositivo, plugins nativos, versiones mínimas de SO, contrato con el backend, actualizaciones (tiendas, en vivo, forzada) | OWASP MASVS L1; tokens y datos sensibles solo en almacenamiento seguro del sistema (Keychain/Keystore), nunca en `localStorage`/Preferences; permisos mínimos y justificados; accesibilidad de la plataforma; claves de firma fuera del repo; compatibilidad con versiones de la app ya instaladas (la API no rompe clientes antiguos) | `design` |
 | library | API pública, compatibilidad, versionado semántico | SemVer estricto, API pública documentada y testeada, publicación solo desde CI con tag | — |
 
 Las skills no se cargan ni descargan desde aquí: se registran en `.ai/project.yaml → skills.enabled`.

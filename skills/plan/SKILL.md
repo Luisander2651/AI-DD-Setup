@@ -140,6 +140,13 @@ Completa `docs/templates/plan.md`. Guía por sección:
   que quedan vacías y los mensajes pensados para otro rol también cambian, y cada fila lleva su
   test. Es la fuente habitual de hallazgos de `/review` en specs de control de acceso.
 - `fullstack` / `monorepo`: dónde vive el contrato compartido y cómo se regenera.
+- `mobile`: pantallas y estados como en `frontend`, más permisos del dispositivo nuevos (y su texto
+  de justificación en `Info.plist`/`AndroidManifest`), plugins nativos, datos guardados en el
+  dispositivo (dónde y si son sensibles), comportamiento offline y **compatibilidad con versiones
+  instaladas**: un cambio de API o de datos locales debe funcionar con la versión anterior de la
+  app, que seguirá en uso semanas. En Rollout: canal de pruebas, porcentaje de publicación
+  escalonada, flag remoto para apagar la feature (una app publicada no se puede retirar) y, si hay
+  actualizaciones en vivo, qué cambios pueden ir por ahí (solo capa web, sin cambios nativos).
 - `library`: cambios en la API pública y su impacto en SemVer (patch, minor o major).
 Añade siempre esta sección, aunque la plantilla no la traiga:
 
