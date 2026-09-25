@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.8.0"
+VERSION = "1.8.1"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -87,8 +87,16 @@ COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
 # ---------------------------------------------------------------- utilidades
 
 def read(path):
-    with open(path, encoding="utf-8") as f:
-        return f.read()
+    """Lee UTF-8 (con o sin BOM). Si el archivo se guardó en ANSI (cp1252, habitual en editores de
+    Windows), lo lee igualmente en lugar de fallar."""
+    with open(path, "rb") as f:
+        raw = f.read()
+    for enc in ("utf-8-sig", "cp1252", "latin-1"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", "replace")
 
 
 def frontmatter(text):

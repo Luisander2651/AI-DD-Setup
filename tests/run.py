@@ -19,6 +19,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 AIDD = os.path.join(os.path.dirname(HERE), "scripts", "aidd.py")
 FAILS = []
 
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 
 def run(args, cwd, stdin=None):
     p = subprocess.run([sys.executable, AIDD] + args, cwd=cwd, input=stdin, capture_output=True,
@@ -65,23 +71,26 @@ def scenario_review_pack():
     with tempfile.TemporaryDirectory() as tmp:
         for d in (".ai", "docs/specs/001-x", "app/login", "app/admin", "src/Controllers"):
             os.makedirs(os.path.join(tmp, d))
-        open(os.path.join(tmp, ".ai/project.yaml"), "w").write("type: frontend\n")
-        open(os.path.join(tmp, "docs/specs/001-x/spec.md"), "w").write(
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: frontend\n")
+        open(os.path.join(tmp, "docs/specs/001-x/spec.md"), "w", encoding="utf-8").write(
             "---\nstatus: approved\n---\n## Criterios de aceptación\n- [x] CA1 x\n")
         open(os.path.join(tmp, "docs/specs/001-x/tasks.md"), "w", encoding="utf-8").write(
             "---\nstatus: approved\n---\n"
             "- [x] T001 a — `app/login/page.tsx` — hecho cuando: y — cubre: CA1\n"
             "- [x] T002 b — `Ctl/SaveThingController.php` — hecho cuando: y — cubre: CA1\n")
         for f in ("app/login/page.tsx", "app/admin/page.tsx", "src/Controllers/SaveThingController.php"):
-            open(os.path.join(tmp, f), "w").write("a\n")
+            open(os.path.join(tmp, f), "w", encoding="utf-8").write("a\n")
         git(tmp, "init", "-q")
         git(tmp, "add", "-A")
         git(tmp, "commit", "-qm", "base")
         for f in ("app/login/page.tsx", "app/admin/page.tsx", "src/Controllers/SaveThingController.php",
                   "docs/specs/001-x/spec.md"):
-            open(os.path.join(tmp, f), "a").write("b\n")
+            open(os.path.join(tmp, f), "a", encoding="utf-8").write("b\n")
         git(tmp, "commit", "-qam", "change")
         code, out = run(["review-pack", "docs/specs/001-x", "--base", "HEAD~1"], tmp)
+        check("review-pack termina sin error", code == 0, out)
+        if code != 0:
+            return
         scope = open(os.path.join(tmp, ".ai/cache/review/001-x/scope.md"), encoding="utf-8").read()
         extra = scope.split("## Cambiados sin tarea")[1].split("## Tareas")[0]
         check("admin/page.tsx no se da por cubierto por login/page.tsx", "app/admin/page.tsx" in extra, scope)
@@ -96,26 +105,43 @@ def scenario_history():
         d = os.path.join(tmp, "docs/specs/001-x")
         os.makedirs(d)
         os.makedirs(os.path.join(tmp, ".ai"))
-        open(os.path.join(tmp, ".ai/project.yaml"), "w").write("type: backend\n")
-        open(os.path.join(d, "analysis.r1.md"), "w").write("---\nround: 1\nresult: fail\n---\n[x](../../x.md)\n")
-        open(os.path.join(d, "analysis.md"), "w").write("---\nround: 2\nresult: pass\n---\n[r1](analysis.r1.md)\n")
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: backend\n")
+        open(os.path.join(d, "analysis.r1.md"), "w", encoding="utf-8").write("---\nround: 1\nresult: fail\n---\n[x](../../x.md)\n")
+        open(os.path.join(d, "analysis.md"), "w", encoding="utf-8").write("---\nround: 2\nresult: pass\n---\n[r1](analysis.r1.md)\n")
         run(["history", "docs/specs/001-x", "--migrate", "--write"], tmp)
         check("la ronda suelta pasa a history/", os.path.isfile(os.path.join(d, "history/analysis.r1.md")))
         check("el enlace del vigente apunta a history/",
-              "](history/analysis.r1.md)" in open(os.path.join(d, "analysis.md")).read())
+              "](history/analysis.r1.md)" in open(os.path.join(d, "analysis.md"), encoding="utf-8").read())
         check("los enlaces relativos del archivado suben un nivel",
-              "](../../../x.md)" in open(os.path.join(d, "history/analysis.r1.md")).read())
+              "](../../../x.md)" in open(os.path.join(d, "history/analysis.r1.md"), encoding="utf-8").read())
         run(["rotate", "docs/specs/001-x", "analysis"], tmp)
         check("rotate mueve la ronda vigente", os.path.isfile(os.path.join(d, "history/analysis.r2.md"))
               and not os.path.exists(os.path.join(d, "analysis.md")))
         check("history/README.md existe", os.path.isfile(os.path.join(d, "history/README.md")))
 
 
+def scenario_encoding():
+    print("codificación (archivos guardados en ANSI/cp1252 en Windows):")
+    with tempfile.TemporaryDirectory() as tmp:
+        d = os.path.join(tmp, "docs/specs/001-x")
+        os.makedirs(d)
+        os.makedirs(os.path.join(tmp, ".ai"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: backend\n")
+        spec = ("---\nstatus: draft\n---\n## Problema\nx\n## Criterios de aceptación\n- [ ] CA1 Sesión\n"
+                "## Fuera de alcance\nx\n## Seguridad y privacidad\nNo aplica.\n")
+        open(os.path.join(d, "spec.md"), "w", encoding="cp1252").write(spec)
+        code, out = run(["validate"], tmp)
+        check("spec en cp1252 se valida sin errores", code == 0 and "0 error(es)" in out, out)
+        open(os.path.join(d, "spec.md"), "w", encoding="utf-8-sig").write(spec)
+        code, out = run(["validate"], tmp)
+        check("spec en UTF-8 con BOM se valida sin errores", code == 0 and "0 error(es)" in out, out)
+
+
 def scenario_hook():
     print("hook:")
     with tempfile.TemporaryDirectory() as tmp:
         os.makedirs(os.path.join(tmp, ".ai"))
-        open(os.path.join(tmp, ".ai/project.yaml"), "w").write("type: mobile\nworkflow:\n  enforcement: warn\n")
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: mobile\nworkflow:\n  enforcement: warn\n")
 
         def hook(ev):
             ev["cwd"] = tmp
@@ -138,6 +164,7 @@ if __name__ == "__main__":
     fixtures()
     scenario_review_pack()
     scenario_history()
+    scenario_encoding()
     scenario_hook()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")
     sys.exit(1 if FAILS else 0)

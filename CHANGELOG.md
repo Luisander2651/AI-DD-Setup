@@ -3,6 +3,14 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.8.1] - 2026-09-25
+### Fixed
+- El validador fallaba con `UnicodeDecodeError` si un `.md` estaba guardado en ANSI (cp1252,
+  habitual en editores de Windows). Ahora lee UTF-8 (con o sin BOM) y, si no lo es, cp1252.
+- `tests/run.py` escribía archivos con la codificación por defecto del sistema: en Windows (CI)
+  rompía el escenario de `review-pack`. Todas las escrituras son UTF-8 explícito, la salida se
+  fuerza a UTF-8 y hay un escenario nuevo con specs en cp1252 y en UTF-8 con BOM.
+
 ## [1.8.0] - 2026-09-25
 Contra el sobreajuste: hasta aquí todo se había probado en un solo proyecto (Laravel, brownfield,
 en español). Probado contra proyectos de otro tipo, el validador no aceptaba documentos en inglés y
