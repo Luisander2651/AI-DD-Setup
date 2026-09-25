@@ -3,6 +3,12 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.7.1] - 2026-09-25
+### Fixed
+- `review-pack`: la coincidencia por nombre de archivo (para rutas abreviadas con alias en las
+  tareas) daba por cubiertos archivos distintos con el mismo nombre (`app/admin/page.tsx` por
+  `app/login/page.tsx`). Ahora solo se usa si la ruta citada no existe y el nombre no se repite.
+
 ## [1.7.0] - 2026-09-25
 Lecciones de la primera spec recorrida de punta a punta (7 rondas de `/analyze`, 3 de `/review`,
 ~200k tokens por revisor en la primera review).

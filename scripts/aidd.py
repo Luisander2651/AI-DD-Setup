@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.7.0"
+VERSION = "1.7.1"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -948,15 +948,18 @@ def task_paths(tasks_text):
     return out
 
 
-def in_scope(f, paths):
+def in_scope(f, paths, changed=(), root=None):
     import fnmatch
     hits = set()
+    names = [os.path.basename(c) for c in changed]
     for p, tids in paths.items():
-        # las tareas suelen abreviar rutas (alias como `ApCtl/…`): basta con que coincida el nombre
-        same_name = "." in os.path.basename(p) and os.path.basename(f) == os.path.basename(p)
-        if f == p or f.endswith("/" + p) or same_name or fnmatch.fnmatch(f, p) \
-                or fnmatch.fnmatch(os.path.basename(f), os.path.basename(p)) \
-                or (p.endswith("/") and f.startswith(p)):
+        exact = f == p or f.endswith("/" + p) or fnmatch.fnmatch(f, p) or (p.endswith("/") and f.startswith(p))
+        # Rutas abreviadas con alias (`ApCtl/X.php`): se aceptan por nombre solo si la ruta citada no
+        # existe tal cual y el nombre no se repite entre los cambiados (index.ts, page.tsx…).
+        alias = ("." in os.path.basename(p) and os.path.basename(f) == os.path.basename(p)
+                 and names.count(os.path.basename(f)) == 1
+                 and not (root and os.path.exists(os.path.join(root, p))))
+        if exact or alias:
             hits |= tids
     return hits
 
@@ -1004,10 +1007,10 @@ def cmd_review_pack(args):
     _, locks = git(root, "diff", "--stat=120", rng, "--", *[f":(glob)**/{lf}" for lf in LOCKFILES])
     changed = [ln.split("\t")[-1] for ln in names.splitlines() if ln.strip()]
     paths = task_paths(s["tasks"])
-    extra = [f for f in changed if not in_scope(f, paths)]
+    extra = [f for f in changed if not in_scope(f, paths, changed, root)]
     touched_tids = set()
     for f in changed:
-        touched_tids |= in_scope(f, paths)
+        touched_tids |= in_scope(f, paths, changed, root)
     tasks, _ = parse_tasks(s["tasks"])
     untouched = sorted(t for t, v in tasks.items() if int(t[1:]) < 90 and t not in touched_tids
                        and any("/" in p for p in v[0]["files"]))
