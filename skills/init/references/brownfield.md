@@ -49,7 +49,7 @@ Si el subagente B encuentra specs, diseños o planes previos (p. ej. `features/`
 2. Copia los originales **sin modificar** a `docs/specs/NNN-<slug>/referencias/` y enlázalos
    desde la spec y desde "Notas para /plan".
 3. Lo que el original resuelve pero sea ambiguo o contradictorio con el código va a
-   `[NECESITA ACLARACIÓN]` (máximo 3) o a "Supuestos".
+   `[NECESITA ACLARACIÓN]` (máximo 3) o a "Decisiones" como `supuesto`.
 4. No borres el original: anota en `docs/roadmap.md → Pendientes` que puede eliminarse cuando el
    usuario revise la migración.
 

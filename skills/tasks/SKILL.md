@@ -97,6 +97,11 @@ grupo haya algo funcionando y probado.
   dependencias, porque no comparte archivos con ninguna otra tarea abierta.
 - `cubre`: los criterios de aceptación que la tarea ayuda a cumplir (omitir en tareas de soporte).
 - `depende`: solo si hay dependencia real; si no, se asume el orden de la lista.
+- `verificación manual:` dentro de `hecho cuando:` cuando la Trazabilidad del plan la pide para un
+  criterio que cubre la tarea: `hecho cuando: T010 pasa · verificación manual: pantalla a 390 y
+  1440 px contra el diseño`. Va en la tarea que construye la pieza, para detectar el fallo ahí.
+- Una tarea que ya no aplica no se borra si está hecha o empezada: se marca
+  `- [-] T0xx … — obsoleta: <motivo> (AAAA-MM-DD)` (contrato → "Tareas obsoletas").
 
 ## Paso 3 — Cobertura
 
@@ -118,9 +123,12 @@ Construye y comprueba estas dos tablas (van al final de `tasks.md`):
 - Toda amenaza `TM#` necesita una tarea de control y una de test (tabla de amenazas de la plantilla).
 - Toda tarea de implementación debe poder rastrearse a un cambio del plan. Si no, sobra o el plan
   está incompleto.
-- Toda `verificación manual:` de la Trazabilidad del plan va como sub-punto de T095 con qué se
-  comprueba, en qué dispositivo o herramienta y el resultado esperado; y todo requisito no
-  funcional tiene fila en la tabla de RNF (test o verificación manual).
+- Toda `verificación manual:` de la Trazabilidad del plan va en la tarea que construye esa pieza;
+  solo las que exigen staging, dispositivo físico o tienda van como sub-punto de T095 (qué se
+  comprueba, dónde y el resultado esperado). Todo requisito no funcional tiene fila en la tabla de
+  RNF (test o verificación manual).
+- Todo principio ✅ del Constitution Check del plan con `test:` o `lint:` tiene una tarea que crea
+  o ejecuta esa comprobación.
 
 ## Paso 4 — Constitution Check
 
@@ -162,8 +170,9 @@ Siguiente paso sugerido: `/analyze NNN` (idealmente antes de aprobar las tareas)
 ## Modo `--redo`
 
 - Conserva tal cual las tareas marcadas `[x]` y su número.
-- Las tareas pendientes que ya no tengan sentido con el nuevo plan se eliminan; las nuevas toman
-  números libres (nunca reutilices un número de una tarea eliminada).
+- Las tareas pendientes sin empezar que ya no tengan sentido con el nuevo plan se eliminan; las
+  hechas o empezadas se marcan `[-]` con `obsoleta:` y motivo. Las nuevas toman números libres
+  (nunca reutilices un número de una tarea eliminada u obsoleta).
 - Si una tarea hecha contradice el nuevo plan, añade una tarea para revertirla o adaptarla y
   avísale al usuario.
 - **Versión anterior:** antes de regenerar, archívala con
@@ -177,7 +186,8 @@ que lista `/plan --fix`).
 
 1. Edita en su lugar las tareas afectadas (descripción, archivos, criterio de hecho, `cubre`,
    `depende`). No renumeres ni reescribas las demás.
-2. Las tareas nuevas toman números libres; las que sobran se eliminan sin reutilizar su número.
+2. Las tareas nuevas toman números libres; las que sobran se eliminan si no se empezaron, o se
+   marcan `[-]` con `obsoleta:` y motivo si están hechas o empezadas. Nunca reutilices un número.
 3. Actualiza solo las filas afectadas de las tablas de Cobertura y del Constitution Check.
 4. Muestra el diff por hallazgo o tarea, repite la autoverificación (Paso 5) y el validador.
    `tasks.md` vuelve a `draft` si estaba `approved`.

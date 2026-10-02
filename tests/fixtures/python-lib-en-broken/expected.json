@@ -1,13 +1,20 @@
 {
-  "errors": 5,
+  "errors": 9,
   "contains": [
     "[NECESITA ACLARACIÓN] abiertos",
     "no evalúa ['P2']",
     "criterios sin trazabilidad ['AC2']",
     "T002 sin 'hecho cuando:'",
-    "declara RS1 mitigado"
+    "declara RS1 mitigado",
+    "contradicción 'Constitution P2 vs. request",
+    "T003 está marcada [-] sin 'obsoleta:",
+    "T004 está hecha y conserva una línea de bloqueo",
+    "bloqueo de T005 sin el formato"
   ],
   "warnings_contains": [
-    "plan: cita ['RS1'], que la spec no cita"
+    "plan: cita ['RS1'], que la spec no cita",
+    "implícita 'Error type' sin documento",
+    "tipo desconocido 'hunch'",
+    "P1 cumple pero no dice cómo se verifica"
   ]
 }

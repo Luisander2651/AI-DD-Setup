@@ -5,11 +5,11 @@ Fecha: 2026-09-22. Objetivo: un flujo completo de desarrollo asistido por IA que
 spec-driven development (GitHub Spec Kit, guías de SDD 2026) y con los modelos de amenazas
 publicados para agentes de código.
 
-**Estado (2026-09-24):** implementadas 1.3.1, 1.4.0, 1.4.1, 1.4.2 (hallazgos de campo 8.1–8.5 y
+**Estado (2026-10-02):** implementadas 1.3.1, 1.4.0, 1.4.1, 1.4.2 (hallazgos de campo 8.1–8.5 y
 8.7) 1.5.0 (observabilidad y auditoría, sección 9), 1.5.1 (conciliación con el roadmap) y 1.5.2
 (`extends`, hallazgo 8.8), 1.5.3–1.5.6, 1.6.0 (iterar barato, 8.10) y 1.7.0 (primera spec
-completa, 8.11), 1.8.0 (contra el sobreajuste, 8.12) y 1.9.0 (primer proyecto nuevo de punta a
-punta, 8.13; 2026-10-02).
+completa, 8.11), 1.8.0 (contra el sobreajuste, 8.12), 1.9.0 (primer proyecto nuevo de punta a
+punta, 8.13) y 1.10.0 (prácticas del portafolio, 8.14; 2026-10-02).
 
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
@@ -189,6 +189,7 @@ decisiones que el plugin no define y que deben quedar escritas para que no depen
 | 8.11 | Primera spec recorrida de punta a punta (014: 16 criterios, ~1.900 líneas en 115 archivos, 495 → 800 tests). La implementación fue lo barato (~2 h 40, tests en rojo primero); el costo estuvo en 7 rondas de `/analyze` y 3 de `/review`. Causas: (a) `/analyze` impuso un mecanismo y `/review` encontró su fallo (R1); (b) `/implement` vio un defecto de UI y lo dejó "para `/review`" (R4–R6: textos y columnas del rol sin permiso); (c) tests positivos que pasaban con lo protegido roto (R2, R3, R30); (d) las tareas que añadió `/review` no cumplían las reglas de `/tasks` y costaron 2 rondas de `/analyze`; (e) vulnerabilidades previas de npm descubiertas en `/review`; (f) aceptados "como nota" que `/implement` olvidó (R8) y 22 menores sin destino; (g) cada revisor leyó ~200k tokens: el rango partía del merge anterior a `/init` (5.600 líneas de docs ajenas) y todos recibían todos los artefactos; (h) rondas y versiones anteriores borradas o sueltas en la carpeta de la spec. | ✅ 1.7.0: recomendaciones como condición + test; hallazgos colaterales se preguntan al momento; comprobación rompiendo lo protegido; tareas de `/review` válidas sin `/analyze`; línea base SCA y tabla "qué ve cada rol" en `/plan`; aceptados con destino validados y menores al roadmap; `impl_base`, `aidd.py review-pack` y revisores con contexto mínimo; `history/` que nunca se borra, `rotate`, `history`, `changes --since`, rondas en `status`. |
 | 8.12 | Todo lo anterior salió de un proyecto (Laravel brownfield en español, un usuario). Al probar el script con proyectos de otro tipo: el validador rechazaba documentos en inglés (contradiciendo "escribe en el idioma del proyecto"), `review-pack` confundía archivos con el mismo nombre (`page.tsx`) por un ajuste hecho para Dentissa, y no había tipo `mobile`. Umbrales (tamaño de spec, diff grande, delta 40 %) calibrados con una sola spec. Sin probar: greenfield, `/release`, `/clarify`, `--parallel`, CI, equipos. | ✅ 1.8.0: vocabulario ES/EN, tipo `mobile`, `tests/fixtures/` de otros tipos e idiomas con CI, regla de mantenimiento "sin caso de otro tipo no hay regla". ✅ 1.9.0: recorrido el proyecto greenfield (8.13). |
 | 8.13 | Primer proyecto **nuevo** de `/init` a `/release`: app Ionic/Capacitor sin backend con datos de salud ("Mi Presión"). 4 rondas de `/analyze`, 2 de `/review`, 22 + 13 + 2 tareas, 57 + 21 tests. 38 hallazgos (11 altos), informe en [pruebas/8.13-greenfield-ionic.md](pruebas/8.13-greenfield-ionic.md). Causas raíz: (a) nadie creaba el proyecto base: comandos `TODO`, `/implement` bloqueado, y un andamiaje recién generado se trataba como brownfield; (b) el plan fijó una estrategia de pruebas sin probarla (Ionic no expone roles en jsdom): ADR nuevo y 2 rondas más de `/analyze`; (c) los 2 bloqueantes de la review venían de valores por defecto de la plantilla que contradecían la constitución (`minSdk 24`, botones de 32 px); (d) herramientas "propuestas" tratadas como instaladas y SAST por defecto (`semgrep --config auto`) que exige enviar métricas; (e) observabilidad, auditoría, ASVS y flag remoto pensados para servidor; (f) skill `design` habilitada y citada sin decir que es un plugin externo (el oficial de Anthropic); (g) validador y hook: falso positivo con negaciones, deuda de rondas de review archivadas perdida al liberar, `AGENTS.md` sin proteger, dependencias añadidas editando el manifiesto sin detectar, rutas con punto en `review-pack`. | ✅ 1.9.0: proyecto base y auditoría de plantilla (`greenfield.md`), prueba de concepto en `/plan`, verificación manual y RNF en tareas, generado por comando, herramientas con estado, variante mobile sin servidor, política de tests inestables, correcciones del validador y del hook con casos en `tests/` de otro tipo e idioma. Pendiente: llegar a producción real en una tienda (T095–T098 se probaron en una copia simulada), `--parallel`, la plantilla de CI y equipos. |
+| 8.14 | Un segundo proyecto real con otro flujo (portafolio personal en Astro, 15 specs con 4 skills propias y sin subagentes) salió bien y con menos vueltas. Lo que hacía mejor: cada decisión de la spec con tipo y fuente, y las implícitas sin preguntar; jerarquía explícita entre documentos; bloqueos escritos en la tarea (el estado sobrevive a una sesión cortada); comprobación visual en la tarea, con capturas y confirmación; principios con umbral verificados por tests (p. ej. "ningún literal en estilos"); tareas obsoletas marcadas, no borradas; commits que citan criterios. No se adoptó: plan y tareas en un solo archivo, máximo ~10 tareas, push = despliegue, una sola spec activa, ni la skill de diseño propia (de momento se usa el plugin `design` de Anthropic). | ✅ 1.10.0: las siete prácticas en el contrato, las skills, las plantillas y el validador, con casos en `tests/` en inglés. |
 
 ---
 
@@ -252,10 +253,12 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 | 1.7.0 | Primera spec completa (8.11): review barata, historial, aceptados con destino, hallazgos colaterales | ✅ |
 | 1.8.0 | Contra el sobreajuste (8.12): idioma, `mobile`, proyectos de prueba | ✅ |
 | 1.9.0 | Primer proyecto nuevo de punta a punta (8.13): proyecto base, prueba de concepto, plantillas auditadas, mobile sin servidor | ✅ |
-| 1.10.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2); pendientes de 8.10 | pendiente |
-| 1.11.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
-| 1.12.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, numeración sin colisiones (1.3) | pendiente |
-| 1.13.0 | Skill de diseño propia, construida a partir del uso del plugin `design` de Anthropic (hasta entonces, dependencia externa; README → "Dependencias") | pendiente |
+| 1.10.0 | Prácticas del portafolio (8.14): decisiones con tipo y fuente, jerarquía de fuentes, bloqueo en la tarea, verificación manual en la tarea, "cómo se verifica" en el Constitution Check, tareas obsoletas, commits trazables | ✅ |
+| 1.11.0 | Integración con el plugin `design` de Anthropic en `/init` (sistema de diseño y artifact principal; ver `docs/plan-integracion-design.md`) | pendiente |
+| 1.12.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2); pendientes de 8.10 | pendiente |
+| 1.13.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
+| 1.14.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, numeración sin colisiones (1.3) | pendiente |
+| 1.15.0 | Skill de diseño propia, construida a partir del uso del plugin `design` de Anthropic (hasta entonces, dependencia externa; README → "Dependencias") | pendiente |
 | 2.0.0 | Equipos y repos grandes (5.2, 5.3), `/security-audit`, evals del plugin (6) | pendiente |
 
 ## Fuentes

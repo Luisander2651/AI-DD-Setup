@@ -103,10 +103,12 @@ en estado `approved` y este encargo:
 >    `extends`, criterios de las specs extendidas que la nueva contradice **sin declararlo**, y
 >    specs cuyo comportamiento cambia pero no están en `extends`.
 > 3. **Ambigüedad:** adjetivos sin métrica, criterios no verificables, marcadores o supuestos
->    que afectan al diseño.
+>    (filas `supuesto` de "Decisiones") que afectan al diseño.
 > 4. **Constitución:** evalúa **de nuevo y por tu cuenta** cada principio contra el plan y las
 >    tareas (no copies el Constitution Check del plan). Toda violación sin excepción aceptada
->    registrada es CRÍTICA.
+>    registrada es CRÍTICA. Un principio con umbral o prohibición comprobable cuya verificación
+>    es solo manual, o sin tarea que cree su test o lint, es ALTA. Una fila `contradicción` de
+>    "Decisiones" sin `usuario` en la fuente, o una `implícita` sin documento, es ALTA.
 > 5. **Seguridad:** entradas externas o datos sensibles de la spec sin amenaza en el modelo;
 >    dependencias nuevas sin verificación registrada (`shared/agent-security.md` §2).
 > 6. **Duplicación y conflicto:** requisitos duplicados; solapamiento con otras specs en curso

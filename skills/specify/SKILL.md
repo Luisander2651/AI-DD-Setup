@@ -32,7 +32,8 @@ responde *qué* y *por qué*; el *cómo* es trabajo de `/plan`.
   en el resto de la spec.
 - **Todo criterio de aceptación es verificable.** Formato Dado / Cuando / Entonces, con resultado
   observable. "Debe ser rápido" no vale; "responde en < 2 s para 95 % de las búsquedas" sí.
-- **No inventes requisitos.** Lo que no se sepa se pregunta o se marca como supuesto.
+- **No inventes requisitos.** Lo que no se sepa se pregunta o se registra como `supuesto` en
+  "Decisiones" (`../../shared/contract.md` → "Decisiones").
 - **Nunca apruebes por tu cuenta.** La spec nace en `draft`; solo el usuario la pasa a `approved`.
 - **No escribas código** ni crees `plan.md` o `tasks.md`.
 - Escribe en el idioma del proyecto (el de `AGENTS.md`).
@@ -62,6 +63,20 @@ Lee, en este orden y solo lo necesario:
 - `docs/specs/README.md` y los títulos de las specs existentes.
 - `docs/architecture.md` solo para entender el dominio y el glosario, **no** para diseñar.
 
+### Paso 1b — Brechas, contradicciones e implícitas
+
+Antes de redactar, clasifica cada duda:
+- **Implícita**: un documento ya la responde → no preguntes; anótala en "Decisiones" con la ruta
+  como fuente (p. ej. `docs/constitution.md P4`).
+- **Contradicción**: la petición choca con una fuente de más rango (contrato → "Jerarquía de
+  fuentes") o dos fuentes chocan entre sí → pregúntala **siempre**, citando las dos, con la opción
+  que respeta la fuente de más rango como recomendada. Nunca la resuelvas tú.
+- **Brecha**: falta un dato para escribir un criterio verificable → pregúntala si cambia alcance,
+  seguridad o experiencia; si no, elige un valor razonable y regístralo como `supuesto`.
+
+Pregunta en rondas de hasta 4, cada pregunta etiquetada `[Brecha]` o `[Contradicción]` y con una
+opción recomendada.
+
 ## Paso 2 — Duplicados y tamaño
 
 1. **Duplicados:** si una spec existente cubre total o parcialmente la idea, muéstrala y pregunta:
@@ -81,7 +96,7 @@ Lee, en este orden y solo lo necesario:
    - extiende más de 4 specs o toca más de 3 módulos.
 
    Crea solo las que el usuario confirme, una por una. Si decide mantenerla junta, regístralo en
-   "Supuestos" como `(decisión del usuario, AAAA-MM-DD)`: cada spec grande multiplica las vueltas
+   "Decisiones" (tipo `brecha`, fuente `usuario`): cada spec grande multiplica las vueltas
    de `/plan` y `/analyze` y su coste en tokens.
 
 ## Paso 3 — Identificador
@@ -107,19 +122,24 @@ Completa la plantilla. Guía por sección:
 | Requisitos no funcionales | Solo los que apliquen, medibles. Incluye los que exija la constitución según el tipo (p. ej. WCAG AA en frontend). |
 | Preguntas abiertas | Marcadores `[NECESITA ACLARACIÓN]`. **Máximo 3.** |
 
-Añade al final, si hacen falta, estas dos secciones aunque la plantilla no las traiga:
+Completa también, aunque la plantilla no las traiga:
 
 ```markdown
-## Supuestos
-- <decisión razonable tomada sin preguntar, para que el usuario la revise>
+## Decisiones
+| Fecha | Tipo | Pregunta / conflicto | Decisión | Fuente |
+|---|---|---|---|---|
+| AAAA-MM-DD | implícita | <qué se dedujo> | <valor> | <ruta del documento> |
 
 ## Notas para /plan
 - <preferencias técnicas que mencionó el usuario; no son requisitos>
 ```
 
+Una fila por cada brecha, contradicción, implícita o supuesto del Paso 1b. La sección nunca queda
+vacía si hubo preguntas o deducciones.
+
 **Límite de preguntas:** si hay más de 3 dudas, conserva como `[NECESITA ACLARACIÓN]` solo las
 que cambian el alcance, la seguridad o la experiencia del usuario. Las demás se resuelven con un
-valor razonable registrado en "Supuestos".
+valor razonable registrado en "Decisiones" como `supuesto`.
 
 ## Paso 5 — Aclaración
 
@@ -180,7 +200,8 @@ antes de aprobar; si ya está aprobada, `/plan NNN`.
    `/analyze` (aclarar un criterio, añadir un caso límite, fijar un número) el plan se corrige con
    `/plan NNN --fix <IDs>` sobre las secciones afectadas; solo un cambio de alcance (historias o
    capacidades nuevas) pide `/plan --redo`.
-4. Registra el cambio al final de la spec:
+4. Si el cambio resuelve una pregunta o un hallazgo, añade su fila a "Decisiones" (fuente
+   `usuario` o `/analyze A7`). Registra el cambio al final de la spec:
    ```markdown
    ## Historial
    | Fecha | Cambio | Motivo |

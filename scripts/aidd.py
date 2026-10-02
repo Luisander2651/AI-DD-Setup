@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.9.0"
+VERSION = "1.10.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -41,7 +41,7 @@ VERDICTS = {"approved", "changes_requested", "blocked"}
 FIXED_TASKS = ["T090", "T091", "T092", "T095", "T096", "T097", "T098"]
 DEPLOY_TASKS = {"T095", "T096", "T097", "T098"}
 
-TASK_RE = re.compile(r"^\s*- \[( |x|X)\] (T\d{3})\b(.*)$")
+TASK_RE = re.compile(r"^\s*- \[( |x|X|-)\] (T\d{3})\b(.*)$")
 CA_DEF_RE = re.compile(r"^\s*- \[( |x|X)\] ((?:CA|AC)\d+)\b(.*)$")
 CA_ID = r"(?:CA|AC)\d+"
 
@@ -62,6 +62,16 @@ VOCAB = {
     "observability": ["Observabilidad", "Observability"],
     "accepted": ["Aceptados", "Accepted"],
     "deferred": ["Aceptados sin tarea", "Accepted without task"],
+    "decisions": ["Decisiones", "Decisions"],
+}
+# Tipos de "Decisiones" (shared/contract.md → "Decisiones").
+DECISION_TYPES = {
+    "brecha": "gap", "gap": "gap",
+    "contradicción": "contradiction", "contradiccion": "contradiction", "contradiction": "contradiction",
+    "implícita": "implicit", "implicita": "implicit", "implicit": "implicit",
+    "supuesto": "assumption", "assumption": "assumption",
+    "diseño": "design", "diseno": "design", "design": "design",
+    "cierre": "closure", "closure": "closure",
 }
 W = {
     "done_when": r"(?:hecho cuando|done when):",
@@ -84,6 +94,10 @@ W = {
     "in": r"\b(?:dentro|in)\b",
     "risk_by_number": r"\b(?:riesgos?|risks?)\s+\d",
     "note_of": r"(?:nota de|note (?:on|for|of|in))",
+    "blocked": r"^\s+- (?:bloqueo|blocked):",
+    "obsolete": r"(?:obsoleta|obsolete):",
+    "user": r"\b(?:usuario|user)\b",
+    "verified_by": r"(?:c[oó]mo se verifica|how (?:it is )?verified|verificaci[oó]n|verification)",
 }
 PLACEHOLDER_RE = re.compile(r"\{\{[^}]*\}\}")
 COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
@@ -226,6 +240,7 @@ def parse_tasks(tasks_text):
         tasks.setdefault(tid, []).append({
             "id": tid,
             "done": m.group(1).lower() == "x",
+            "obsolete": m.group(1) == "-",
             "parallel": rest.lstrip().startswith("[P]"),
             "text": rest,
             "files": [f.strip(" `") for f in re.split(r",\s*", files) if f.strip()],
@@ -261,6 +276,44 @@ def analysis_state(s):
     if any(afm.get(k) != v for k, v in fingerprints(s).items()):
         return "stale"
     return "pass" if afm.get("result") == "pass" else "fail"
+
+
+def task_blocks(tasks_text):
+    """{tarea: [líneas '- bloqueo:']}."""
+    blocks, cur = {}, None
+    for line in body(tasks_text).splitlines():
+        m = TASK_RE.match(line)
+        if m:
+            cur = m.group(2)
+            continue
+        if cur and re.match(W["blocked"], line, re.I):
+            blocks.setdefault(cur, []).append(line.strip())
+        elif line.strip() and not line.startswith((" ", "\t")):
+            cur = None
+    return blocks
+
+
+def block_skill(line):
+    """Skill propuesta en una línea de bloqueo ('… — /plan 003 --fix')."""
+    parts = [p.strip() for p in re.sub(W["blocked"], "", line, flags=re.I).split(" — ")]
+    return parts[2] if len(parts) >= 3 else None
+
+
+def table_rows(sec):
+    """Filas de datos (celdas) de las tablas Markdown de una sección, sin cabecera ni separador."""
+    rows, header = [], None
+    for line in (sec or "").splitlines():
+        if not line.strip().startswith("|"):
+            header = None
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
+            continue
+        if header is None:
+            header = cells
+            continue
+        rows.append((header, cells))
+    return rows
 
 
 def task_notes(tasks_text):
@@ -466,6 +519,20 @@ def validate_spec_dir(d, root):
         m = CA_DEF_RE.match(line)
         if m and m.group(1).lower() == "x" and re.search(W["not_met"], line.upper()):
             rep.err(f"spec: {m.group(2)} está marcado [x] pero dice 'HOY NO SE CUMPLE'")
+    for header, cells in table_rows(section(body(text), "decisions")):
+        if len(cells) < 5 or PLACEHOLDER_RE.search(" ".join(cells)):
+            continue
+        kind = DECISION_TYPES.get(cells[1].strip("`* ").lower())
+        src = cells[4]
+        if kind is None:
+            rep.warn(f"spec: Decisiones: tipo desconocido '{cells[1]}' (brecha, contradicción, implícita, "
+                     "supuesto, diseño, cierre)")
+        elif kind == "contradiction" and not re.search(W["user"], src, re.I):
+            rep.err(f"spec: Decisiones: contradicción '{cells[2][:50]}' resuelta sin el usuario "
+                    "(solo la decide el usuario)")
+        elif kind == "implicit" and (re.fullmatch(r"\W*(?:usuario|user)\W*", src, re.I)
+                                     or not re.search(r"[/.]|\b(?:docs|AGENTS|constitution|constituci)", src)):
+            rep.warn(f"spec: Decisiones: implícita '{cells[2][:50]}' sin documento como fuente")
     if st in {"implemented", "released"}:
         open_cas = [c[0] for c in cas if not c[1]]
         if open_cas:
@@ -529,6 +596,13 @@ def validate_spec_dir(d, root):
         for line in cc.splitlines():
             if "❌" in line and not re.search(W["accepted"], line, re.I) and pst == "approved":
                 rep.err("plan: aprobado con un ❌ sin aceptación registrada")
+        for header, cells in table_rows(cc):
+            vcol = next((i for i, h in enumerate(header) if re.search(W["verified_by"], h, re.I)), None)
+            if vcol is None or vcol >= len(cells) or "✅" not in " ".join(cells[:vcol]):
+                continue
+            if not cells[vcol].strip(" -—`"):
+                rep.warn(f"plan: Constitution Check: {cells[0][:30]} cumple pero no dice cómo se verifica "
+                         "(test:, lint: o manual:)")
         trace = section(body(ptext), "traceability")
         if trace is None:
             rep.err("plan: falta la sección 'Trazabilidad'")
@@ -567,7 +641,17 @@ def validate_spec_dir(d, root):
         for fid in FIXED_TASKS:
             if fid not in flat:
                 rep.err(f"tasks: falta la tarea fija {fid}")
-        work = {t: v for t, v in flat.items() if int(t[1:]) < 90}
+        for t, v in flat.items():
+            if v["obsolete"] and not re.search(W["obsolete"], v["text"], re.I):
+                rep.err(f"tasks: {t} está marcada [-] sin 'obsoleta: <motivo>'")
+        for t, lines in task_blocks(s["tasks"]).items():
+            if t in flat and flat[t]["done"]:
+                rep.err(f"tasks: {t} está hecha y conserva una línea de bloqueo")
+            for ln in lines:
+                if not re.search(r"\d{4}-\d{2}-\d{2}", ln) or not block_skill(ln):
+                    rep.err(f"tasks: bloqueo de {t} sin el formato 'AAAA-MM-DD — <qué falta> — <skill>'")
+        live = {t: v for t, v in flat.items() if not v["obsolete"]}
+        work = {t: v for t, v in live.items() if int(t[1:]) < 90}
         bad_range = [t for t in flat if 93 <= int(t[1:]) <= 94 or int(t[1:]) == 99 or int(t[1:]) == 0]
         if bad_range:
             rep.warn(f"tasks: IDs en rango reservado sin uso definido {bad_range}")
@@ -581,6 +665,8 @@ def validate_spec_dir(d, root):
             for dep in v["deps"]:
                 if dep not in flat:
                     rep.err(f"tasks: {t} depende de {dep}, que no existe")
+                elif flat[dep]["obsolete"] and not v["done"]:
+                    rep.warn(f"tasks: {t} depende de {dep}, que está obsoleta")
         # ciclos
         state = {}
 
@@ -613,7 +699,7 @@ def validate_spec_dir(d, root):
                 if shared:
                     rep.warn(f"tasks: {a['id']} y {b['id']} son [P] y comparten {sorted(shared)}")
         if st in {"implemented", "released"}:
-            open_t = [t for t, v in flat.items() if not v["done"] and t not in DEPLOY_TASKS]
+            open_t = [t for t, v in live.items() if not v["done"] and t not in DEPLOY_TASKS]
             if open_t:
                 rep.err(f"spec {st} con tareas abiertas {sorted(open_t)}")
         if st == "released" and "T098" in flat and not flat["T098"]["done"]:
@@ -730,6 +816,22 @@ def cmd_validate(args):
 
 # ---------------------------------------------------------------- estado
 
+def blocked_next(s):
+    """Si la siguiente tarea abierta tiene bloqueo, la skill que propone."""
+    if not s["tasks"]:
+        return None
+    tasks, order = parse_tasks(s["tasks"])
+    blocks = task_blocks(s["tasks"])
+    for t in order:
+        v = tasks[t][0]
+        if v["done"] or v["obsolete"] or int(t[1:]) >= 93:
+            continue
+        if t in blocks:
+            return f"{t} bloqueada: {block_skill(blocks[t][-1]) or 'ver tasks.md'}"
+        return None
+    return None
+
+
 def next_step(s):
     st = frontmatter(s["spec"]).get("status") if s["spec"] else None
     pst = frontmatter(s["plan"]).get("status") if s["plan"] else None
@@ -758,13 +860,14 @@ def next_step(s):
             return "/implement (tareas de /review) y /review --rerun"
         if ast in (None, "stale"):
             return "/analyze" if ast is None else "/analyze (desactualizado)"
-        return "/implement"
+        blocked = blocked_next(s)
+        return blocked or "/implement"
     if st == "implemented":
         if not s["review"]:
             return "/review"
         if verdict == "changes_requested":
             tasks, _ = parse_tasks(s["tasks"]) if s["tasks"] else ({}, [])
-            pending = [t for t, v in tasks.items() if int(t[1:]) < 93 and not v[0]["done"]]
+            pending = [t for t, v in tasks.items() if int(t[1:]) < 93 and not v[0]["done"] and not v[0]["obsolete"]]
             return "/implement y /review --rerun" if pending else "/review --rerun"
         if verdict == "blocked":
             return "resolver el bloqueo de la review"
@@ -785,7 +888,7 @@ def cmd_status(args):
     for d in spec_dirs(root):
         s = load_spec_dir(d)
         tasks, _ = parse_tasks(s["tasks"]) if s["tasks"] else ({}, [])
-        work = [v[0] for t, v in tasks.items() if int(t[1:]) < 90]
+        work = [v[0] for t, v in tasks.items() if int(t[1:]) < 90 and not v[0]["obsolete"]]
         rows.append({
             "spec": s["name"],
             "status": frontmatter(s["spec"]).get("status") if s["spec"] else None,
@@ -1145,7 +1248,7 @@ def cmd_review_pack(args):
         if c == 0:
             candidates -= set(parse_tasks(old)[0])
     untouched = sorted(t for t, v in tasks.items() if int(t[1:]) < 90 and t in candidates
-                       and t not in touched_tids and any("/" in p for p in v[0]["files"]))
+                       and not v[0]["obsolete"] and t not in touched_tids and any("/" in p for p in v[0]["files"]))
 
     def write(name, text):
         with open(os.path.join(out_dir, name), "w", encoding="utf-8", newline="\n") as f:

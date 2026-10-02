@@ -77,7 +77,9 @@ siguiente. **Implementa exactamente lo que dice el plan**: no rediseña, no agre
      `AGENTS.md`).
 7. **Política de commits** (pregunta una vez por sesión si no está en `AGENTS.md`):
    (a) un commit por tarea, (b) un commit por fase, (c) sin commits, el usuario los hace.
-   Mensajes con la convención del proyecto e incluyendo el ID: `feat(notificaciones): T020 …`.
+   Mensajes con la convención del proyecto e incluyendo el ID: `feat(001): T020 …`, con
+   `Cubre: CA1, CA3` (o `Covers:`) y la ruta de `tasks.md` en el cuerpo (contrato → "Commits
+   trazables").
 8. Ejecuta la suite de tests una vez. Si ya hay tests fallando antes de empezar, regístralos como
    **línea base** (nota bajo el encabezado de `tasks.md`) y avísale al usuario; no son
    responsabilidad de esta spec, pero no deben aumentar.
@@ -89,7 +91,10 @@ archivos que va a tocar antes de modificarlos.
 
 ## Paso 2 — Ciclo por tarea
 
-Para la siguiente tarea pendiente cuyas dependencias estén hechas:
+Para la siguiente tarea pendiente (`[ ]`; las `[-]` obsoletas se saltan) cuyas dependencias estén
+hechas. Si tiene una línea `bloqueo:`, pregunta si ya se resolvió: si sí, sustitúyela por
+`  - nota: desbloqueada AAAA-MM-DD — <cómo>` y sigue; si no, pasa a la siguiente sin bloqueo o
+detente y propone la skill que indica.
 
 1. **Anuncia** en una línea: `T012 — <descripción>`.
 2. **Si es de test:** escríbelo, ejecútalo y confirma que **falla por la razón esperada** (no por
@@ -118,16 +123,25 @@ Para la siguiente tarea pendiente cuyas dependencias estén hechas:
      `status: instalada` o `en-ci`, córrelos sobre los archivos tocados (las `propuesta` no se
      ejecutan; si falta una, anótalo en la tarea para `/review`). Un hallazgo crítico o alto se corrige dentro de la tarea;
      uno que parezca falso positivo se anota como nota y lo decide `/review`.
+   - Si `hecho cuando:` incluye `verificación manual:`, hazla ahora y no al final: con navegador
+     disponible, levanta la app y toma capturas en los anchos que fijan la constitución o el diseño
+     (p. ej. 390 y 1440 px), compáralas con el diseño y muéstralas; sin navegador o en un
+     dispositivo, pide al usuario la comprobación concreta. **Espera su confirmación** y regístrala:
+     `  - nota: verificación manual OK AAAA-MM-DD (usuario)`. Si falla, se corrige dentro de la tarea.
 5. **Marca** la tarea `[x]` en `tasks.md`. Si hubo algo relevante, añade una nota debajo:
    `  - nota: <decisión menor, archivo extra justificado, deuda detectada>`.
 6. **Commit** según la política elegida.
 
 Si la verificación falla, corrige dentro del alcance de la tarea. Tras **3 intentos** sin éxito,
-detente y reporta: qué se intentó, el error exacto y tu hipótesis.
+detente y reporta: qué se intentó, el error exacto y tu hipótesis (y deja la línea `bloqueo:` si
+la causa es una decisión que falta).
 
 ## Paso 3 — Desvíos
 
-Detente y consulta al usuario (no improvises) cuando:
+Detente y consulta al usuario (no improvises) cuando se dé alguna de estas situaciones. Si la tarea
+queda detenida, **déjalo escrito bajo la tarea** para que otra sesión sepa dónde quedó
+(contrato → "Bloqueo"):
+`  - bloqueo: AAAA-MM-DD — <qué falta> — <skill a ejecutar>`.
 
 | Situación | Acción sugerida |
 |---|---|

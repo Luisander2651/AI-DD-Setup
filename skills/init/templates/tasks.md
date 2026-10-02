@@ -12,6 +12,10 @@ Formato:
 - `[P]` = paralelizable con las demás `[P]` de su grupo una vez cumplidas sus dependencias (no
   comparte archivos con otra tarea abierta).
 - Lo generado por un comando cuenta como un archivo: `android/ (generado por npx cap add android)`.
+- `[-]` = obsoleta (`— obsoleta: <motivo> (AAAA-MM-DD)`): no cuenta como abierta ni como hecha.
+- Bajo una tarea: `  - nota: …`, `  - bloqueo: AAAA-MM-DD — <qué falta> — <skill a ejecutar>`.
+- La comprobación a mano va en la tarea que construye la pieza:
+  `hecho cuando: T010 pasa · verificación manual: <qué, dónde, contra qué>`.
 
 ## Constitution Check
 {{confirmar que las tareas no violan ningún principio; referenciar plan.md}}
@@ -33,8 +37,8 @@ Formato:
 
 ## Despliegue (lo ejecuta `/release`)
 - [ ] T095 Desplegar a staging y verificar criterios de aceptación
-  <!-- un sub-punto por cada `verificación manual:` del plan: qué, dónde (dispositivo, herramienta)
-       y resultado esperado; se registra el resultado real al hacerlo -->
+  <!-- un sub-punto por cada `verificación manual:` del plan que exija staging, dispositivo físico
+       o tienda: qué, dónde y resultado esperado; se registra el resultado real al hacerlo -->
 - [ ] T096 Aprobación humana para producción
 - [ ] T097 Desplegar a producción y vigilar métricas del plan (Rollout)
 - [ ] T098 Marcar spec como `released`

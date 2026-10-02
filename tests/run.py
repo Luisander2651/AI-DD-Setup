@@ -171,6 +171,18 @@ def scenario_status():
         _, out = run(["status", "--json"], tmp)
         check("review con cambios y sin tareas abiertas → /review --rerun",
               '"next": "/review --rerun"' in out, out)
+        os.remove(os.path.join(d, "review.md"))
+        w("spec.md", "---\nstatus: approved\n---\n## Acceptance criteria\n- [ ] AC1 x\n")
+        w("tasks.md", "---\nstatus: approved\n---\n"
+                      "- [-] T001 old — x.py — done when: y — covers: AC1 — obsolete: replaced by T002 (2026-10-02)\n"
+                      "- [ ] T002 a — x.py — done when: y — covers: AC1\n"
+                      "  - blocked: 2026-10-02 — bytes or characters — /plan 001 --fix\n")
+        _, h = run(["hash", "docs/specs/001-x"], tmp)
+        w("analysis.md", "---\nresult: pass\nround: 2\n" + "".join(f"{l}\n" for l in h.strip().splitlines()) + "---\n")
+        _, out = run(["status", "--json"], tmp)
+        check("tarea bloqueada → status propone la skill del bloqueo",
+              '"next": "T002 bloqueada: /plan 001 --fix"' in out, out)
+        check("las tareas obsoletas no cuentan en el progreso", '"tasks": "0/1"' in out, out)
 
 
 def scenario_history():

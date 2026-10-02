@@ -4,9 +4,9 @@ status: approved
 ---
 # Plan
 ## Constitution Check
-| Principle | Result |
-|---|---|
-| P1 | ✅ |
+| Principle | Result | Justification | How it is verified |
+|---|---|---|---|
+| P1 | ✅ | Pure functions | |
 
 ## Threat model
 | ID | Threat | Control | Test |

@@ -20,3 +20,11 @@ Untrusted input strings (see AC3).
 
 ## Audit
 Not applicable: a library does not log.
+
+## Decisions
+| Date | Type | Question / conflict | Decision | Source |
+|---|---|---|---|---|
+| 2026-10-02 | implicit | Runtime dependencies | None | docs/constitution.md P2 |
+| 2026-10-02 | contradiction | "Accept any format" vs. AC1 (ISO only) | ISO only | user |
+| 2026-10-02 | gap | Maximum input length | 10 MB | user (/clarify) |
+| 2026-10-02 | assumption | Error type | `ValueError` | /clarify (recommended) |

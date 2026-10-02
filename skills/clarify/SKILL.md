@@ -62,13 +62,15 @@ Evalúa la spec en cada categoría y clasifícala como **Clara**, **Parcial** o 
 | Terminología | Un mismo concepto con varios nombres, o términos que chocan con el glosario. |
 | Verificabilidad | Criterios `CA` que no se pueden comprobar con un test o una observación. |
 
-Incluye los marcadores `[NECESITA ACLARACIÓN]` y los "Supuestos" existentes como candidatos.
+Incluye los marcadores `[NECESITA ACLARACIÓN]` y las filas `supuesto` de "Decisiones" (o la sección
+"Supuestos" de specs anteriores) como candidatos. Lo que ya responde un documento no es un hueco:
+anótalo como `implícita` con su ruta.
 
 ## Paso 2 — Priorización
 
 Ordena los huecos por **impacto × incertidumbre**. Impacto alto = cambia el alcance, el modelo de
 datos, la seguridad, la experiencia principal o la forma de probar. Descarta lo que se puede decidir
-razonablemente en `/plan` sin riesgo (regístralo como supuesto si no lo está).
+razonablemente en `/plan` sin riesgo (regístralo como `supuesto` en "Decisiones" si no lo está).
 
 ## Paso 3 — Preguntas
 
@@ -78,16 +80,16 @@ cada una con su recomendación. Tras cada respuesta, **actualiza la spec de inme
 1. Escribe la respuesta en la sección que corresponde (criterio `CA` nuevo o corregido, requisito
    no funcional con número, fila de "Fuera de alcance", caso de abuso, etc.).
 2. Elimina el marcador `[NECESITA ACLARACIÓN]` o el supuesto que resolvió.
-3. Registra la pregunta al final de la spec:
+3. Registra la pregunta en "Decisiones" (`../../shared/contract.md` → "Decisiones"):
 
    ```markdown
-   ## Aclaraciones
-   ### Sesión AAAA-MM-DD
-   - P: <pregunta> → R: <respuesta>
+   | AAAA-MM-DD | brecha | <pregunta> | <respuesta> | usuario (/clarify) |
    ```
 
-Si el usuario responde "no sé" o "decide tú", toma la opción recomendada y regístrala en
-"Supuestos" (no en Aclaraciones).
+   Una contradicción entre fuentes va con tipo `contradicción` y solo la decide el usuario.
+
+Si el usuario responde "no sé" o "decide tú", toma la opción recomendada y regístrala con tipo
+`supuesto` y fuente `/clarify (recomendada)`.
 
 ## Paso 4 — Verificación
 

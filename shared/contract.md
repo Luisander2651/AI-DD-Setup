@@ -16,6 +16,33 @@ revisa todas las skills afectadas.
   `draft`, `approved` o `blocked`.
 - `/plan` y `/tasks` incluyen una sección **Constitution Check**: cada principio con
   ✅ cumple / ➖ no aplica / ❌ viola. Un ❌ solo avanza con aceptación explícita del usuario.
+  En el plan, cada ✅ dice **cómo se verifica en esta spec** (`test: <test o T0xx>`,
+  `lint: <regla>` o `manual: <qué>`): un principio con número, umbral o prohibición comprobable
+  (tamaños, versiones mínimas, literales prohibidos, presupuestos) se verifica con test o lint,
+  no solo a mano.
+- **Jerarquía de fuentes.** Ante un conflicto entre documentos prevalece, en este orden: este
+  contrato y `shared/agent-security.md` → `docs/constitution.md` → `AGENTS.md` → `docs/security.md`,
+  `docs/architecture.md` y el sistema de diseño del proyecto (si existe) → specs `approved`,
+  `implemented` o `released` (las que extiende) → la petición actual. Un conflicto nunca se
+  resuelve en silencio a favor de la fuente de menor rango: se pregunta y se registra como
+  `contradicción` en "Decisiones".
+- **Decisiones.** Toda spec registra en "Decisiones" (`| Fecha | Tipo | Pregunta / conflicto |
+  Decisión | Fuente |`) cada brecha, contradicción o supuesto resuelto. Tipos: `brecha` (faltaba
+  un dato), `contradicción` (dos fuentes chocan; **solo** la resuelve el usuario), `implícita` (la
+  responde un documento: no se pregunta, se anota con la ruta como fuente), `supuesto` (valor
+  razonable elegido por el agente, para que el usuario lo revise), `diseño` y `cierre`. La fuente es
+  `usuario`, la ruta del documento o la skill con el ID del hallazgo (`/analyze A7`). Sustituye a
+  "Supuestos" y "Aclaraciones" (que siguen siendo válidas en specs anteriores).
+- **Bloqueo.** Si `/implement` no puede hacer una tarea sin inventar una decisión, se detiene y lo
+  deja escrito bajo la tarea: `  - bloqueo: AAAA-MM-DD — <qué falta> — <skill a ejecutar>`. Al
+  resolverlo se sustituye por `  - nota: desbloqueada AAAA-MM-DD — <cómo>`. Una tarea `[x]` no
+  puede tener bloqueo; `aidd.py status` propone la skill del bloqueo como siguiente paso.
+- **Tareas obsoletas.** Al replanificar (`--fix`, `--redo`, `/review`) no se borra una tarea hecha
+  o empezada: se marca `- [-] T0xx … — obsoleta: <motivo> (AAAA-MM-DD)`. No cuenta como abierta ni
+  como hecha, y un criterio cubierto solo por tareas obsoletas queda sin cubrir.
+- **Commits trazables.** Los commits de `/implement` y de las tareas de `/review` siguen
+  `<tipo>(<NNN>): T0xx <qué>` y llevan en el cuerpo `Cubre: CA1, CA3` (o `Covers:`) y la ruta de
+  `tasks.md`, para que la historia de git se pueda cruzar con la spec.
 - Una skill condicional (p. ej. `design`) empieza así:
   > Lee `.ai/project.yaml`. Si `<skill>` no está en `skills.enabled`, informa que no aplica a este
   > tipo de proyecto y detente, salvo que el usuario insista.
@@ -131,9 +158,13 @@ revisa todas las skills afectadas.
   ejecuta una que envíe código o metadatos a un servicio no aprobado en `docs/security.md`.
 - **Generado por comando:** en una tarea, `ruta/ (generado por <comando>)` cuenta como un archivo;
   se revisa el comando y `review-pack` lo deja fuera del diff (salvo los archivos que otra tarea cita).
-- **Verificación manual:** lo que solo se comprueba a mano (dispositivo, lector de pantalla,
-  tienda) se marca `verificación manual:` en la Trazabilidad del plan y va como comprobación de
-  T095, con resultado registrado; cada requisito no funcional tiene test o verificación manual.
+- **Verificación manual:** lo que solo se comprueba a mano (aspecto, dispositivo, lector de
+  pantalla, tienda) se marca `verificación manual:` en la Trazabilidad del plan y va **en la tarea
+  que construye esa pieza** (`hecho cuando: … · verificación manual: <qué, dónde, contra qué>`):
+  `/implement` la hace o la pide (capturas en los anchos de la constitución o del diseño cuando hay
+  navegador), espera la confirmación del usuario y la registra como `- nota: verificación manual OK
+  AAAA-MM-DD (usuario)`. A T095 solo van las que exigen staging, dispositivo físico o tienda. Cada
+  requisito no funcional tiene test o verificación manual.
 - **Tests inestables:** los tests nuevos de UI, e2e o asíncronos se ejecutan dos veces en
   `/implement` y `/review`; uno intermitente se corrige o va a cuarentena con tarea, nunca con
   reintentos silenciosos.

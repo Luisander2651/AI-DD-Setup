@@ -6,6 +6,8 @@ status: approved
 - [ ] T001 Write failing tests — `tests/test_core.py` — done when: they fail for the right reason (TM1) — covers: AC1, AC2, AC3
 - [ ] T002 Implement parser — `tinyparse/core.py` — done when: tests pass — covers: AC1, AC2 — depends on: T001
 - [ ] T003 Length limit — `tinyparse/core.py` — done when: test_huge_input passes (TM1) — covers: AC3 — depends on: T002
+  - blocked: 2026-10-02 — the plan does not say whether the limit counts bytes or characters — /plan 001 --fix
+- [-] T004 Regex-based parser — `tinyparse/regex.py` — done when: tests pass — covers: AC1 — obsolete: replaced by T002 after A3 (2026-10-02)
 
 - [ ] T090 Update `docs/architecture.md` — done when: it reflects the change
 - [ ] T091 Update `docs/deployment.md` — done when: it reflects the change

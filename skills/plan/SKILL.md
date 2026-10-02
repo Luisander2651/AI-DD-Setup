@@ -60,7 +60,7 @@ forma de desplegar del proyecto. No escribe código.
 ## Paso 1 — Contexto
 
 Lee:
-- La spec completa, incluidas "Supuestos" y "Notas para /plan".
+- La spec completa, incluidas "Decisiones" (o "Supuestos" en specs anteriores) y "Notas para /plan".
 - `.ai/project.yaml`: tipo, stack, `deploy`, `skills.enabled`.
 - `docs/constitution.md`, `docs/architecture.md`, `docs/deployment.md`, `docs/security.md`,
   `docs/observability.md`.
@@ -176,8 +176,9 @@ Añade siempre esta sección, aunque la plantilla no la traiga:
 
 Todo criterio de la spec (incluidos los `(abuso)`) y toda amenaza `TM#` deben aparecer. Un criterio
 o amenaza sin test es un error del plan. Si una parte del criterio solo se puede comprobar a mano
-(en un dispositivo, con un lector de pantalla, en la tienda), añade en su fila
-`verificación manual: <qué y cómo>`; `/tasks` la lleva a la lista de T095. Haz lo mismo con cada
+(aspecto contra el diseño, en un dispositivo, con un lector de pantalla, en la tienda), añade en
+su fila `verificación manual: <qué, dónde y contra qué>`; `/tasks` la pone en la tarea que construye
+esa pieza, y en T095 solo si exige staging, dispositivo físico o tienda. Haz lo mismo con cada
 requisito no funcional de la spec: una fila `RNF: <requisito>` con su test o su verificación
 manual.
 
@@ -222,7 +223,7 @@ Evalúa **cada** principio de la constitución, sin omitir ninguno:
 
 | Resultado | Cuándo |
 |---|---|
-| ✅ Cumple | Indica cómo (evidencia en el plan). |
+| ✅ Cumple | Indica cómo (evidencia en el plan) y **cómo se verifica en esta spec**: `test: <test o T0xx>`, `lint: <regla>` o `manual: <qué>`. Parte del "Cómo se verifica" del principio en la constitución; si el principio tiene un número, umbral o prohibición comprobable (tamaños, versiones mínimas, literales prohibidos, presupuestos), la verificación es un test o un lint, no solo manual: los valores por defecto de plantillas y frameworks rompen estos principios sin que nadie lo vea. |
 | ➖ No aplica | Indica por qué. |
 | ❌ Viola | Explica la violación. |
 

@@ -4,10 +4,10 @@ status: approved
 ---
 # Plan
 ## Constitution Check
-| Principle | Result |
-|---|---|
-| P1 | ✅ |
-| P2 | ✅ |
+| Principle | Result | Justification | How it is verified |
+|---|---|---|---|
+| P1 | ✅ | Pure functions | test: test_basic |
+| P2 | ✅ | No runtime dependencies | lint: deptry |
 ## Threat model
 | ID | Threat | Control | Test |
 |---|---|---|---|

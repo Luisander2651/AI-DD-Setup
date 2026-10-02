@@ -3,6 +3,35 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.10.0] - 2026-10-02
+Prácticas tomadas del flujo del portafolio personal (sitio estático en Astro, 15 specs de punta a
+punta con 4 skills y sin subagentes): decisiones con origen, estado que sobrevive a una sesión
+cortada y comprobaciones más tempranas.
+
+### Added
+- **"Decisiones"** en la spec (`| Fecha | Tipo | Pregunta / conflicto | Decisión | Fuente |`), que
+  sustituye a "Supuestos" y "Aclaraciones". `/specify` Paso 1b clasifica cada duda: `implícita` (la
+  responde un documento: no se pregunta, se anota con su ruta), `contradicción` (solo la decide el
+  usuario), `brecha` o `supuesto`. Validador: contradicción sin el usuario (error), implícita sin
+  documento y tipo desconocido (avisos).
+- **Jerarquía de fuentes** en el contrato: contrato → constitución → `AGENTS.md` → security,
+  architecture y sistema de diseño → specs aprobadas → petición actual.
+- **Bloqueo** escrito en la tarea (`  - bloqueo: AAAA-MM-DD — <qué falta> — <skill>`): `/implement`
+  lo deja al detenerse y `status` propone esa skill como siguiente paso. Validador: formato y
+  tareas hechas con bloqueo.
+- **Tareas obsoletas** `[-]` con `obsoleta: <motivo>`: al replanificar no se borran tareas hechas o
+  empezadas; no cuentan como abiertas, hechas ni como cobertura.
+- Constitution Check del plan con columna **"Cómo se verifica"** (`test:`, `lint:`, `manual:`): un
+  principio con umbral o prohibición comprobable se verifica con test o lint (aviso si un ✅ no lo
+  dice; `/analyze` y `/review` lo comprueban).
+- **Commits trazables**: `Cubre: CA1, CA3` y la ruta de `tasks.md` en el cuerpo.
+
+### Changed
+- `verificación manual:` va en la tarea que construye la pieza (`hecho cuando: … · verificación
+  manual: …`): `/implement` la hace o la pide, con capturas en los anchos de la constitución o del
+  diseño cuando hay navegador, y espera la confirmación del usuario. T095 conserva solo las que
+  exigen staging, dispositivo físico o tienda.
+
 ## [1.9.0] - 2026-10-02
 Primer proyecto **nuevo** recorrido de punta a punta (8.13): app Ionic/Capacitor sin backend con
 datos de salud, de `/init` a `/release` (4 rondas de `/analyze`, 2 de `/review`, 57 + 21 tests).

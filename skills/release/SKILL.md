@@ -191,7 +191,9 @@ Si `project.type: mobile`:
   vivo, volver a la versión web anterior. Si el plan no tiene flag remoto para una feature de
   riesgo, dilo antes de publicar.
 - Número de versión y de build (`versionCode`/`CFBundleVersion`) suben en cada envío.
-- **T095 en mobile** es la lista de `verificación manual:` de las tareas (dispositivos de las
+- **T095 en mobile** es la lista de `verificación manual:` que exigen dispositivo físico, tienda o
+  staging (las demás ya se confirmaron en su tarea; comprueba que tengan su nota `verificación
+  manual OK`) (dispositivos de las
   versiones mínimas, lector de pantalla, copias de seguridad, manifiesto fusionado). El agente
   prepara el build web y la sincronización nativa; generar y firmar el binario, subirlo al canal
   de pruebas y hacer las comprobaciones en dispositivo es del usuario o de CI. Pide los resultados

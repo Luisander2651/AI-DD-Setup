@@ -14,3 +14,10 @@ Non-ISO formats.
 Untrusted input strings (see AC3).
 ## Audit
 Not applicable: a library does not log.
+
+## Decisions
+| Date | Type | Question / conflict | Decision | Source |
+|---|---|---|---|---|
+| 2026-10-02 | contradiction | Constitution P2 vs. request for a regex dependency | Add the dependency | /specify |
+| 2026-10-02 | implicit | Error type | `ValueError` | user |
+| 2026-10-02 | hunch | Locale | en-US | /specify |

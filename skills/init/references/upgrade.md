@@ -33,6 +33,11 @@ como diff y se aplica solo con confirmación.
    como aprobado en `docs/security.md`. Si `skills.enabled` contiene `design`, pregunta si el plugin
    oficial `design` de Anthropic sigue instalado; si no, quítalo. Si el proyecto es greenfield y `AGENTS.md` sigue con comandos `TODO(init)`, ofrece
    `references/greenfield.md` §2–§3.
+5d. **Decisiones, bloqueos y verificación (desde 1.10.0).** Nada se migra a la fuerza: las specs
+   con "Supuestos" y "Aclaraciones" siguen siendo válidas. Ofrece convertirlas a la tabla
+   "Decisiones" (tipo `supuesto` o `brecha`, fuente `usuario` si lo decidió el usuario) en las specs
+   `draft` o `approved`. En los planes `draft` o `approved`, ofrece añadir la columna "Cómo se
+   verifica" al Constitution Check. Actualiza `docs/templates/` (spec, plan y tasks) con diff.
 5b. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
    carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
    avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a
