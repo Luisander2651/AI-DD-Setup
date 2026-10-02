@@ -24,14 +24,17 @@ deploy:
   rollback: {{rollback}}       # descripción corta o TODO(init)
 security:
   owasp_top10_edition: {{año}}
-  asvs_level: {{1|2|3}}
+  asvs_level: {{1|2|3}}            # backend propio; null si no hay
+  masvs_level: {{L1|L2|R|null}}    # solo mobile
   sensitive_data: [{{personal, financial, health, credentials}}]
-  tools:                       # comandos; vacío si no hay herramienta configurada
-    secrets: {{gitleaks detect --no-banner}}
-    sast: {{semgrep scan --config auto --error}}
-    sca: {{npm audit --audit-level=high}}
-    containers: {{trivy fs --severity HIGH,CRITICAL .}}
-    dast: {{null}}             # solo contra staging
+  tools:                       # status: propuesta | instalada | en-ci | no-aplica. Solo se ejecutan
+                               # instalada y en-ci; una propuesta es un pendiente, no un control;
+                               # no-aplica lleva su motivo en docs/security.md (p. ej. sin contenedores).
+    secrets: { command: "{{gitleaks detect --no-banner}}", status: {{propuesta}} }
+    sast: { command: "{{semgrep scan --config p/<ruleset> --metrics=off --error}}", status: {{propuesta}} }
+    sca: { command: "{{npm audit --audit-level=high}}", status: {{propuesta}} }
+    containers: { command: {{null}}, status: {{propuesta}} }
+    dast: { command: {{null}}, status: {{propuesta}} }   # solo contra staging
   agent:
     min_package_age_days: 7
     protected_paths: []        # además de las de shared/agent-security.md
@@ -43,7 +46,7 @@ observability:
     events: [{{login, login_failed, access_denied, sensitive_read, sensitive_write, role_change}}]
     retention: {{TODO(init)}}
 skills:
-  enabled: [{{enabled_skills}}]  # p. ej. [design]
+  enabled: [{{enabled_skills}}]  # p. ej. [design] (plugin oficial de Anthropic, si está instalado)
 paths:
   constitution: docs/constitution.md
   architecture: docs/architecture.md

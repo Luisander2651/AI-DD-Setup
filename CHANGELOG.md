@@ -3,6 +3,73 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.9.0] - 2026-10-02
+Primer proyecto **nuevo** recorrido de punta a punta (8.13): app Ionic/Capacitor sin backend con
+datos de salud, de `/init` a `/release` (4 rondas de `/analyze`, 2 de `/review`, 57 + 21 tests).
+38 hallazgos; informe en `docs/pruebas/8.13-greenfield-ionic.md`.
+
+### Added
+- **Proyecto base en greenfield** (`skills/init/references/greenfield.md`, `/init` Fase 3b): detectar
+  un andamiaje recién generado (no es brownfield), crear el proyecto base con el comando oficial o
+  como spec 001, fijar comandos reales y **auditar los valores por defecto de la plantilla** contra
+  la constitución (versiones mínimas, permisos, copias de seguridad, tamaños de control).
+- `/plan` Paso 1b: **prueba de concepto** desechable de herramientas de test, frameworks y plugins
+  nuevos antes de fijar el diseño.
+- `verificación manual:` en la Trazabilidad del plan → comprobaciones de T095; tabla de requisitos
+  no funcionales en la Cobertura de `tasks.md`.
+- `(generado por <comando>)` en las tareas: cuenta como un archivo y `review-pack` lo deja fuera de
+  `code.diff` (salvo los archivos que otra tarea cita) y lo resume en `scope.md`.
+- Estado por herramienta en `security.tools` (`propuesta` · `instalada` · `en-ci` · `no-aplica`);
+  solo se ejecutan las instaladas o en CI, y una `propuesta` no cubre ningún tema (`/review` la
+  reporta como importante y `/release` se detiene con una SCA propuesta).
+- Mobile: perfil MASVS en la entrevista (`security.masvs_level`), variante "sin servidor" de la ronda
+  de observabilidad y de `observability.md`, riesgo `RD` por falta de flag remoto, control MASVS junto a la categoría
+  OWASP en el modelo de amenazas y tema Mobile del checklist ampliado (copias de seguridad, iCloud, permisos
+  de la plantilla, recientes y capturas, teclado, `FileProvider`, log del puente, SDK mínimo).
+- Política de tests inestables: los tests nuevos de UI/e2e se ejecutan dos veces en `/implement` y
+  `/review`.
+- Validador: aviso cuando plan o tareas citan un riesgo que la spec no cita.
+- Hook: `AGENTS.md` y `CLAUDE.md` piden aprobación (también en modo `block`, para no bloquear a
+  `/init`); editar un manifiesto (`package.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`,
+  `Gemfile`, `.csproj`…) que añade dependencias pide la verificación de §2 (y se deniega en modo
+  `block` sin spec activa).
+- `/implement`: excepción para la spec del proyecto base, cuyas tareas fijan los comandos.
+
+### Changed
+- `agent-security.md` §2: la antigüedad es la de la **versión**; instalar con el límite de fecha del
+  gestor (`npm --before`, pnpm `minimumReleaseAge`, `uv --exclude-newer`) para las transitivas; una
+  transitiva importada en el código cuenta como dependencia nueva; tabla en el ADR para andamiajes.
+- SAST por defecto con reglas fijadas y `--metrics=off`: `semgrep --config auto` exige enviar
+  métricas a semgrep.dev.
+- `/analyze` delta pequeño (< ~30 KB, sin cambio estructural) sin subagente.
+- `/specify --edit` por hallazgos de `/analyze` → `/plan --fix`, no regenerar el plan.
+- `/implement`: "no existe el módulo" es razón esperada (mejor: stub en la tarea de test);
+  comprobación rompiendo lo protegido obligatoria para controles de seguridad.
+- `/release`: compara el **código** desde el head de la review (el commit de `review.md` no cuenta);
+  T095 en mobile con resultados del usuario por comprobación.
+- `[P]` redefinido: paralelizable dentro de su grupo una vez cumplidas sus dependencias.
+- `aidd.py status`: con `/analyze` en `fail` propone las correcciones; sin tareas abiertas,
+  `/review --rerun`.
+- `review-pack --base`: en un rerun solo cuentan las tareas nuevas.
+- Línea `Conteo:` fija en análisis y review (la usa `history`).
+
+### Fixed
+- Validador: "no lo declara mitigado" / "not mitigated" ya no cuenta como declarar mitigado un riesgo
+  (la negación se evalúa pegada a la palabra y por cláusula: "RS2 mitigado; RS3 no mitigado" sí
+  afirma RS2).
+- Validador: los "Aceptados sin tarea" de rondas de review **archivadas** también se exigen en el
+  roadmap al liberar (antes se perdían).
+- Validador: sin aviso de "Auditoría" si `observability.audit.required: false`.
+- `review-pack`: las rutas que empiezan por punto (`.gitignore`, `.oxlintrc.json`) se reconocen
+  (`lstrip` borraba el punto).
+- `aidd.py … | head` ya no termina con `BrokenPipeError`.
+
+- `design` se declara como **dependencia externa**: es el plugin oficial `design` de Anthropic, no
+  una skill de este plugin (`/init` la habilitaba y `/plan`, `/implement` y `/review` la citaban sin
+  decirlo). `/init` pregunta si está instalado antes de registrarla; si falta en la sesión, las
+  skills avisan y siguen con su revisión propia (contrato → "Dependencias externas"; README →
+  "Dependencias"). La revisión de accesibilidad de `/review` se hace en toda UI, con o sin `design`.
+
 ## [1.8.1] - 2026-09-25
 ### Fixed
 - El validador fallaba con `UnicodeDecodeError` si un `.md` estaba guardado en ANSI (cp1252,

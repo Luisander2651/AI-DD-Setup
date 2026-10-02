@@ -23,14 +23,23 @@ Los modelos pueden inventar nombres de paquetes que luego registra un atacante. 
 1. **Existe** en el registro oficial con ese nombre exacto (consulta el registro: `npm view`,
    `pip index versions`, `cargo search`, la página del paquete…). Nunca instales un nombre solo
    porque "lo recuerdas".
-2. **Antigüedad:** el paquete y la versión elegida tienen al menos
-   `security.agent.min_package_age_days` días publicados (7 por defecto).
+2. **Antigüedad:** la **versión** elegida (no el paquete: mira la fecha de esa versión, p. ej.
+   `npm view <pkg> time`, no `time.modified`) tiene al menos `security.agent.min_package_age_days`
+   días publicada (7 por defecto). Con rangos (`^`, `~`) el gestor instala dependencias
+   **transitivas** publicadas hace horas: instala con el límite de fecha del gestor
+   (`npm install --before=<hoy − N días>`, pnpm `minimumReleaseAge`, `uv --exclude-newer`) o
+   revisa el lockfile resultante.
 3. **Reputación:** repositorio fuente enlazado y activo, mantenedores identificables, uso real
    (descargas o dependientes). Desconfía de nombres casi idénticos a paquetes populares.
 4. **Licencia** compatible con la de `docs/security.md` o la del proyecto.
 5. **Scripts de instalación:** si el paquete ejecuta scripts al instalarse, indícalo.
 6. **Instalación:** versión fijada, lockfile actualizado y versionado, con el gestor del proyecto.
 7. **Registro:** la dependencia y el resultado de esta verificación van en el plan (Decisiones → ADR).
+   Si son muchas a la vez (andamiaje de un proyecto nuevo), en **una tabla** del ADR: paquete,
+   versión, fecha de esa versión, licencia, repositorio, scripts de instalación.
+8. **Importar una transitiva cuenta como dependencia nueva:** usar en el código un paquete que solo
+   llega como dependencia de otro (p. ej. iconos de una librería de UI) exige declararlo y pasar
+   esta verificación, o no usarlo.
 
 Si no puedes verificar (sin red, registro caído, datos ambiguos), **no instales**: pregunta al
 usuario.

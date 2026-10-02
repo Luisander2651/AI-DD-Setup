@@ -1,9 +1,12 @@
 {
   "errors": 1,
   "contains": [
-"human_signoff pendiente"
+    "human_signoff pendiente"
   ],
   "warnings_contains": [
-"001/Rn: ['R2']"
+    "001/Rn: ['R2', 'R3']"
+  ],
+  "warnings_not_contains": [
+    "no tiene sección 'Auditoría'"
   ]
 }

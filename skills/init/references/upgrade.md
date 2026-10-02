@@ -25,6 +25,14 @@ como diff y se aplica solo con confirmación.
 5a. **Idioma (desde 1.8.0).** Si falta `language` en `project.yaml`, infiérelo de los documentos
    existentes y pide confirmación. Los títulos y marcadores ya escritos siguen siendo válidos
    (español o inglés, `shared/vocabulary.md`).
+5c. **Herramientas con estado y dependencias externas (desde 1.9.0).** Si `security.tools` usa el
+   formato anterior (`secrets: <comando>`), conviértelo a `{ command, status }` y **pregunta** el
+   estado real de cada una (`propuesta` · `instalada` · `en-ci`) ejecutando `<comando> --version`;
+   no supongas `instalada`. Si el SAST es `semgrep … --config auto`, avisa de que exige enviar
+   métricas a semgrep.dev y propone reglas fijadas con `--metrics=off`, o registrar el servicio
+   como aprobado en `docs/security.md`. Si `skills.enabled` contiene `design`, pregunta si el plugin
+   oficial `design` de Anthropic sigue instalado; si no, quítalo. Si el proyecto es greenfield y `AGENTS.md` sigue con comandos `TODO(init)`, ofrece
+   `references/greenfield.md` §2–§3.
 5b. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
    carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
    avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

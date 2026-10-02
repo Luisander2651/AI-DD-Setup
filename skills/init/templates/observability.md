@@ -58,6 +58,19 @@ Separado de los logs técnicos: responde **quién hizo qué, sobre qué, cuándo
 | Latencia p95 | {{…}} | {{…}} |
 | Cola de trabajos atascada | {{…}} | {{…}} |
 
+<!-- if sin servidor propio (app móvil o de escritorio sin backend, CLI local) -->
+
+## Sin servidor
+No hay peticiones, correlación ni registro de auditoría central: las secciones de arriba que no
+apliquen dicen "No aplica" y el motivo. Lo que sí cuenta:
+- Fallos y bloqueos: {{informes de la plataforma: consola de la tienda (p. ej. Android vitals,
+  Xcode Organizer), informes del sistema operativo, issues de usuarios · herramienta propia}} —
+  umbral y canal.
+- Herramientas que envían datos fuera del equipo o dispositivo (informes de fallos, analítica,
+  telemetría): {{ninguna · cuáles, con qué consentimiento y sin datos sensibles}}.
+- Log local (consola, archivo, log del dispositivo): qué nunca se escribe; nivel en builds de release.
+<!-- endif -->
+
 ## Brechas
 <!-- En brownfield: lo que está presente pero no en uso, datos sensibles en logs, eventos de
      auditoría faltantes. Solo hechos verificados en el código o confirmados por el usuario.

@@ -42,7 +42,8 @@ Problema dice que la spec atiende el riesgo **parcialmente**.
 <!-- if la feature toca datos sensibles, autenticación o permisos -->
 
 ## Auditoría
-Eventos que deben quedar registrados, cada uno como criterio `CA` verificable:
+Eventos que deben quedar registrados, cada uno como criterio `CA` verificable (si
+`.ai/project.yaml → observability.audit.required` es `false`, "No aplica" y el motivo):
 - {{evento}} → registra {{actor, acción, recurso, resultado}} (ver `docs/observability.md`)
 <!-- endif -->
 

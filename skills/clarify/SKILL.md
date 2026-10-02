@@ -95,6 +95,9 @@ Si el usuario responde "no sé" o "decide tú", toma la opción recomendada y re
    errores de formato.
 2. Revisa que la spec no se contradiga tras los cambios (numeración de `CA`, alcance vs. fuera de
    alcance).
+3. Repite la comprobación de tamaño de `/specify` Paso 2: si las respuestas llevaron la spec por
+   encima del umbral (> ~10 criterios, dos capacidades separables), propón dividirla antes de
+   aprobarla.
 
 ## Paso 5 — Informe
 

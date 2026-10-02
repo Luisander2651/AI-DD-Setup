@@ -32,7 +32,10 @@ el problema está en el plan.
 
 - **No escribas código** ni modifiques la spec o el plan.
 - **Cada tarea es pequeña:** toca de 1 a 3 archivos y se completa en una sesión corta. Si no,
-  divídela.
+  divídela. Excepción: lo que **genera un comando** (plataformas nativas, código de un esquema,
+  plantilla del framework) se declara como la ruta seguida de `(generado por <comando>)`, p. ej.
+  `android/ (generado por npx cap add android)`, y cuenta como un archivo; se revisa el comando,
+  no cada archivo (`review-pack` lo deja fuera del diff).
 - **Cada tarea es verificable:** tiene un criterio de hecho observable (un test que pasa, un
   comando que funciona, un archivo que existe con cierto contenido).
 - **Nada fuera del plan.** Si falta algo para cumplir la spec, detente y sugiere `/plan --redo`.
@@ -90,7 +93,8 @@ grupo haya algo funcionando y probado.
 
 - `T###`: T001–T089 para el trabajo; **T090–T099 están reservadas** para las tareas fijas de la
   plantilla. Si necesitas más de 89 tareas, la spec es demasiado grande: sugiere dividirla.
-- `[P]`: solo si no comparte archivos con otra tarea abierta y no depende de una tarea sin hacer.
+- `[P]`: puede ejecutarse en paralelo con las demás `[P]` de su grupo una vez cumplidas sus
+  dependencias, porque no comparte archivos con ninguna otra tarea abierta.
 - `cubre`: los criterios de aceptación que la tarea ayuda a cumplir (omitir en tareas de soporte).
 - `depende`: solo si hay dependencia real; si no, se asume el orden de la lista.
 
@@ -114,6 +118,9 @@ Construye y comprueba estas dos tablas (van al final de `tasks.md`):
 - Toda amenaza `TM#` necesita una tarea de control y una de test (tabla de amenazas de la plantilla).
 - Toda tarea de implementación debe poder rastrearse a un cambio del plan. Si no, sobra o el plan
   está incompleto.
+- Toda `verificación manual:` de la Trazabilidad del plan va como sub-punto de T095 con qué se
+  comprueba, en qué dispositivo o herramienta y el resultado esperado; y todo requisito no
+  funcional tiene fila en la tabla de RNF (test o verificación manual).
 
 ## Paso 4 — Constitution Check
 

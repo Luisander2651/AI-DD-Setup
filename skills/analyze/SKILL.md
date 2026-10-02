@@ -79,6 +79,11 @@ que citan los IDs que aparecen en el diff (`CA`, `TM`, `T`, `RS`…), y este enc
 Si el delta revela un cambio estructural (nuevo módulo, nuevo contrato, criterios nuevos), cambia a
 modo completo y dilo en el informe.
 
+**Delta pequeño:** si el diff de `aidd.py changes` ocupa menos de ~30 KB, no hay cambio estructural
+y los hallazgos abiertos son pocos, hazlo tú sin subagente (como `/review --rerun`), releyendo desde
+cero las secciones afectadas y no desde la memoria de la sesión. Dilo en el informe (`mode: delta`,
+"sin subagente").
+
 ## Paso 1 — Análisis independiente (modo completo)
 
 Lanza un subagente de solo lectura con las rutas de `spec.md`, `plan.md`, `tasks.md`,
@@ -165,7 +170,8 @@ tasks_sha: <…>
 # Análisis · NNN <nombre>
 
 ## Resumen
-<resultado y motivo en 2–3 frases; conteo por severidad>
+<resultado y motivo en 2–3 frases>
+Conteo: CRÍTICA n · ALTA n · MEDIA n · BAJA n
 
 ## Cobertura
 | Métrica | Valor |

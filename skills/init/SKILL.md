@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.8.1` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.9.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -83,6 +83,10 @@ todos los comandos posteriores leen y respetan.
    - `git rev-list --count HEAD` > 5.
 
    Si las señales son contradictorias (p. ej. manifiesto vacío, repo con solo un README), pregunta.
+   **Andamiaje recién generado** (manifiesto, pero todo el código viene de una plantilla como
+   `ionic start` o `npm create vite`, sin specs ni tests propios): pregunta si tratarlo como
+   proyecto nuevo (recomendado) y sigue `references/greenfield.md` §1; no explores ni infieras
+   specs del código de ejemplo.
 4. **Tipo de proyecto** (si no vino `--type`): en brownfield infiérelo y pide confirmación; en
    greenfield pregúntalo. Señales:
    - Frontend: `react`, `vue`, `svelte`, `angular`, `next`, `vite`, carpetas `components/`, `pages/`.
@@ -157,7 +161,8 @@ Bloques obligatorios:
 
 Genera en este orden, usando las plantillas de `templates/` (carpeta junto a este `SKILL.md`).
 Sustituye cada `{{placeholder}}`; lo que quede sin dato se convierte en `TODO(init): …`. Elimina
-las secciones marcadas `<!-- if … -->` que no apliquen.
+las secciones marcadas `<!-- if … -->` que no apliquen y quita los marcadores de las que sí (el
+contenido se queda).
 
 1. `.ai/project.yaml` ← `templates/project.yaml`
 2. `docs/constitution.md` ← `templates/constitution.md` (en brownfield conserva el bloque
@@ -179,9 +184,18 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
    - Brownfield: `status: inferred`, a partir de pipelines, Dockerfiles, IaC y scripts reales.
    - Si no hay procedimiento de rollback conocido, déjalo como `TODO(init)` y repórtalo como
      riesgo en el resumen: es el hueco más peligroso del documento.
+   - `mobile` sin backend: no hay flag remoto para apagar una feature publicada; regístralo como
+     riesgo `RD` con sus correcciones (publicación escalonada, prueba de actualización desde la
+     versión instalada).
 7. `docs/security.md` ← `templates/security.md`
    - Greenfield: `status: proposed`; propone herramientas según el stack (secretos, SAST, SCA,
-     contenedores) sin instalarlas.
+     contenedores). En `.ai/project.yaml → security.tools` cada una lleva su estado
+     (`propuesta` · `instalada` · `en-ci` · `no-aplica`): las skills solo ejecutan las `instalada` o
+     `en-ci`, y una
+     `propuesta` se reporta como pendiente, nunca como control activo. Antes de proponer una
+     herramienta, comprueba que no envía código ni metadatos a un servicio que `docs/security.md` no
+     aprueba (p. ej. `semgrep --config auto` exige métricas: propone reglas fijadas con
+     `--metrics=off`).
    - Brownfield: `status: inferred`, a partir del subagente E.
    - Registra la edición vigente del OWASP Top 10 en "Referencias".
    - Numera cada riesgo (`RS1`, `RS2`…) y cada corrección que propone (`RS1.a`, `RS1.b`…), con su
@@ -199,13 +213,16 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
    cubre y las que deja fuera con su destino (otro objetivo, spec o excepción). No resumas: si el
    riesgo propone cuatro correcciones, el objetivo nombra las cuatro. Pregunta al usuario por
    las que propones dejar fuera.
+9b. `docs/specs/README.md` con la tabla de specs (vacía en greenfield): `AGENTS.md` la enlaza.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
     `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
     plugin). Propón añadir `.ai/cache/` al `.gitignore` (copias locales para `/analyze` delta).
 12. **CI (opcional, pregunta):** si el proyecto usa GitHub, propone
     `.github/workflows/ai-dd.yml` ← `templates/ci/github-actions-aidd.yml`, rellenado con los
-    comandos de `AGENTS.md` y `security.tools`; quita los pasos de herramientas no configuradas.
+    comandos de `AGENTS.md` y `security.tools`; quita los pasos con `command: null` o
+    `no-aplica`. Una herramienta `propuesta` que se añade a CI se instala en el job y su `status`
+    pasa a `en-ci`.
     La plantilla revisa solo lo que cambia cada PR (modo baseline), para que la deuda previa no
     bloquee todos los PRs. Es una ruta protegida: créala solo con confirmación explícita. Si usa
     otra plataforma de CI, describe los pasos equivalentes en `docs/deployment.md`.
@@ -213,6 +230,14 @@ las secciones marcadas `<!-- if … -->` que no apliquen.
 14. `AGENTS.md` ← `templates/AGENTS.md` (se escribe al final porque enlaza todo lo anterior).
 15. `CLAUDE.md` ← `templates/CLAUDE.md` (si no existe; si existe, añade `@AGENTS.md` al inicio y
     conserva el resto, salvo lo que el usuario decidió pausar o migrar en la Fase 0).
+
+### Fase 3b — Proyecto base (solo greenfield)
+
+Sigue `references/greenfield.md` §2 y §3: propone crear el proyecto base con el comando oficial de
+la plantilla (o hacerlo en la spec 001), verifica sus dependencias en una tabla para el ADR del
+stack, fija en `AGENTS.md` los comandos reales y audita los valores por defecto de la plantilla
+contra la constitución (versiones mínimas, permisos, copias de seguridad, tamaños de control…).
+Sin este paso, `/implement` no tiene comandos que ejecutar.
 
 ### Secciones condicionales por tipo
 
@@ -223,17 +248,22 @@ Aplica según `project.type` (en monorepo, por paquete):
 | frontend | Componentes, estado, routing, design tokens, accesibilidad | WCAG AA, componentes con tests, sin lógica de negocio en vistas, preview por PR | `design` |
 | backend | API (contratos), modelo de datos, migraciones, observabilidad, seguridad | Contrato de API antes de implementar, migraciones reversibles y compatibles con la versión anterior, logs estructurados con correlación, auditoría de accesos a datos sensibles, health check | — |
 | fullstack | Ambas + **contrato entre capas** (tipos compartidos, versionado de API) | Unión de ambas + el contrato es la fuente de verdad entre capas | `design` |
-| mobile | Pantallas y navegación, estado, almacenamiento local y offline, permisos del dispositivo, plugins nativos, versiones mínimas de SO, contrato con el backend, actualizaciones (tiendas, en vivo, forzada) | OWASP MASVS L1; tokens y datos sensibles solo en almacenamiento seguro del sistema (Keychain/Keystore), nunca en `localStorage`/Preferences; permisos mínimos y justificados; accesibilidad de la plataforma; claves de firma fuera del repo; compatibilidad con versiones de la app ya instaladas (la API no rompe clientes antiguos) | `design` |
+| mobile | Pantallas y navegación, estado, almacenamiento local y offline, permisos del dispositivo, plugins nativos, versiones mínimas de SO, contrato con el backend, actualizaciones (tiendas, en vivo, forzada) | OWASP MASVS L1; tokens y datos sensibles solo en almacenamiento seguro del sistema (Keychain/Keystore), nunca en `localStorage`/Preferences; permisos mínimos y justificados; accesibilidad de la plataforma; claves de firma fuera del repo; compatibilidad con versiones de la app ya instaladas (la API no rompe clientes antiguos); objetivos de toque ≥ 44 pt/48 dp | `design` |
 | library | API pública, compatibilidad, versionado semántico | SemVer estricto, API pública documentada y testeada, publicación solo desde CI con tag | — |
 
 Las skills no se cargan ni descargan desde aquí: se registran en `.ai/project.yaml → skills.enabled`.
+`design` es el plugin oficial `design` de Anthropic, no una skill de este plugin
+(`../../shared/contract.md` → "Dependencias externas"): pregunta si está instalado y regístrala solo
+si el usuario lo confirma; si no, deja la lista vacía y anota en `AGENTS.md` que la revisión de
+diseño la hace cada skill por su cuenta.
 Cada skill condicional debe comprobar ese archivo al activarse (ver `../../shared/contract.md`).
 
 ---
 
 ## Fase 4 — Verificación
 
-1. **Instalación:** antes de instalar dependencias, pide confirmación al usuario. En brownfield,
+1. **Instalación:** antes de instalar dependencias, pide confirmación al usuario. En greenfield, si
+   el proyecto base se dejó para la spec 001, registra `verification: []` con la nota y continúa. En brownfield,
    pregunta si el repositorio es suyo o de confianza: instalar ejecuta scripts de ciclo de vida
    de las dependencias (`postinstall`, etc.) con los permisos del usuario. Si no es de confianza,
    usa el modo sin scripts del gestor (p. ej. `npm ci --ignore-scripts`, `pnpm install

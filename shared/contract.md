@@ -17,8 +17,14 @@ revisa todas las skills afectadas.
 - `/plan` y `/tasks` incluyen una sección **Constitution Check**: cada principio con
   ✅ cumple / ➖ no aplica / ❌ viola. Un ❌ solo avanza con aceptación explícita del usuario.
 - Una skill condicional (p. ej. `design`) empieza así:
-  > Lee `.ai/project.yaml`. Si `design` no está en `skills.enabled`, informa que no aplica a este
+  > Lee `.ai/project.yaml`. Si `<skill>` no está en `skills.enabled`, informa que no aplica a este
   > tipo de proyecto y detente, salvo que el usuario insista.
+- **Dependencias externas.** `design` no la incluye este plugin: es el plugin oficial `design` de
+  Anthropic (skills `design:design-system`, `design:accessibility-review`, `design:design-critique`,
+  `design:design-handoff`, `design:ux-copy`; ver README → "Dependencias"). Las skills del flujo la
+  usan **solo** si está en `skills.enabled`. Si está habilitada pero la sesión no la ofrece, avísalo
+  una vez ("el plugin `design` de Anthropic no está instalado en esta sesión") y sigue con la
+  revisión propia de la skill; nunca bloquees el flujo por su ausencia.
 - `/plan` incluye una sección **Rollout** (flags, orden de migraciones, rollback, métricas).
 - `/tasks` exige plan `approved`; numera T001–T089 para el trabajo y reserva T090–T099; cada
   tarea declara archivos, criterio de hecho, `cubre: CA…` y `depende:`; incluye tablas de Cobertura.
@@ -113,6 +119,24 @@ revisa todas las skills afectadas.
   artefactos) y devuelven solo hallazgos. `/review` revisa desde `impl_base` (lo registra
   `/implement` en `tasks.md`) con el paquete de `aidd.py review-pack`, no desde el merge con la
   rama principal.
+- **Proyecto nuevo (greenfield):** `/init` deja creado el proyecto base con comandos reales y
+  verificados, o la spec `001-proyecto-base` lo hace (`skills/init/references/greenfield.md`). En
+  ambos casos se auditan los valores por defecto de la plantilla contra la constitución (versiones
+  mínimas, permisos, copias de seguridad, tamaños de control); cada desviación es una tarea con test.
+- **Probar antes de planear:** lo que el plan da por hecho sobre una herramienta, framework o
+  plugin que el proyecto aún no usa se comprueba con una prueba de concepto desechable antes de
+  fijar el diseño (`/plan` Paso 1b).
+- **Herramientas con estado:** `security.tools` registra cada herramienta como `propuesta`,
+  `instalada`, `en-ci` o `no-aplica` (con motivo en `docs/security.md`). Ninguna skill da por cubierto un tema con una herramienta `propuesta` ni
+  ejecuta una que envíe código o metadatos a un servicio no aprobado en `docs/security.md`.
+- **Generado por comando:** en una tarea, `ruta/ (generado por <comando>)` cuenta como un archivo;
+  se revisa el comando y `review-pack` lo deja fuera del diff (salvo los archivos que otra tarea cita).
+- **Verificación manual:** lo que solo se comprueba a mano (dispositivo, lector de pantalla,
+  tienda) se marca `verificación manual:` en la Trazabilidad del plan y va como comprobación de
+  T095, con resultado registrado; cada requisito no funcional tiene test o verificación manual.
+- **Tests inestables:** los tests nuevos de UI, e2e o asíncronos se ejecutan dos veces en
+  `/implement` y `/review`; uno intermitente se corrige o va a cuarentena con tarea, nunca con
+  reintentos silenciosos.
 - **Idioma y vocabulario:** los documentos se escriben en `.ai/project.yaml → language`. Los
   títulos de sección, IDs y marcadores que lee el validador usan la forma española o inglesa de
   `shared/vocabulary.md` (otros idiomas: inglesa). Al traducir una plantilla, traduce el contenido

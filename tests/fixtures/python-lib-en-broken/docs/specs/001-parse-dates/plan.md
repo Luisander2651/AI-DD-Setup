@@ -20,3 +20,6 @@ status: approved
 | AC3, TM1 | test_huge_input |
 ## Rollout
 Minor release (SemVer), published from CI on tag.
+## Risks and mitigations
+- Length limit also helps with RS1.
+- No regression expected: RS1 mitigated; the parser API is not mitigated by anything else.

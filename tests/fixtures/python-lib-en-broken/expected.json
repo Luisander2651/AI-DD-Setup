@@ -1,9 +1,13 @@
 {
-  "errors": 4,
+  "errors": 5,
   "contains": [
-"[NECESITA ACLARACIÓN] abiertos",
-"no evalúa ['P2']",
-"criterios sin trazabilidad ['AC2']",
-"T002 sin 'hecho cuando:'"
+    "[NECESITA ACLARACIÓN] abiertos",
+    "no evalúa ['P2']",
+    "criterios sin trazabilidad ['AC2']",
+    "T002 sin 'hecho cuando:'",
+    "declara RS1 mitigado"
+  ],
+  "warnings_contains": [
+    "plan: cita ['RS1'], que la spec no cita"
   ]
 }

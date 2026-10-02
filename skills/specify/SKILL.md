@@ -103,7 +103,7 @@ Completa la plantilla. Guía por sección:
 | Fuera de alcance | Lo que alguien razonablemente esperaría y **no** se hará. Nunca vacía. |
 | Seguridad y privacidad | Qué datos sensibles toca (según la clasificación de `docs/security.md`), quién puede hacer qué, y **casos de abuso**: "Como atacante/usuario malintencionado, intento X → se rechaza/limita/registra". Cada caso de abuso genera un criterio `CA` marcado `(abuso)`. Sin tecnología: describe el comportamiento, no el mecanismo. Si la feature no toca datos sensibles, permisos ni entradas externas, escribe "No aplica" y el motivo. |
 | Cobertura de riesgos | Solo si la spec atiende riesgos o brechas documentados. Una fila por **cada** corrección de cada riesgo citado (`RS1.a`, `RS1.b`…): dentro (con los `CA` que la cubren) o fuera (con motivo y destino: spec, objetivo o excepción). Si alguna queda fuera, el Problema dice que atiende el riesgo "parcialmente". Una decisión técnica pendiente (p. ej. "fijar el provider") no se deja solo en "Notas para /plan": es una corrección dentro o fuera. |
-| Auditoría | Solo si la feature toca datos sensibles, autenticación o permisos. Qué eventos deben quedar registrados (según `docs/observability.md`), cada uno como criterio `CA` verificable: "Dado X, cuando Y, entonces queda registrado quién, qué, sobre qué recurso y con qué resultado". Sin mecanismo técnico. |
+| Auditoría | Solo si la feature toca datos sensibles, autenticación o permisos. Si `.ai/project.yaml → observability.audit.required` es `false` (p. ej. app de un solo usuario sin cuentas), escribe "No aplica" y el motivo. Qué eventos deben quedar registrados (según `docs/observability.md`), cada uno como criterio `CA` verificable: "Dado X, cuando Y, entonces queda registrado quién, qué, sobre qué recurso y con qué resultado". Sin mecanismo técnico. |
 | Requisitos no funcionales | Solo los que apliquen, medibles. Incluye los que exija la constitución según el tipo (p. ej. WCAG AA en frontend). |
 | Preguntas abiertas | Marcadores `[NECESITA ACLARACIÓN]`. **Máximo 3.** |
 
@@ -176,7 +176,10 @@ antes de aprobar; si ya está aprobada, `/plan NNN`.
    comportamiento, **no la modifiques**: propone crear una spec nueva con `extends: [NNN]`.
    (En una `inferred`, `--edit` solo valida o corrige lo que documenta del sistema actual.)
 3. Si está en `approved` y ya existe `plan.md`, avisa que el cambio invalida el plan: la spec
-   vuelve a `draft` y el plan deberá regenerarse con `/plan`.
+   vuelve a `draft` hasta que el usuario la apruebe de nuevo. Si el cambio responde a hallazgos de
+   `/analyze` (aclarar un criterio, añadir un caso límite, fijar un número) el plan se corrige con
+   `/plan NNN --fix <IDs>` sobre las secciones afectadas; solo un cambio de alcance (historias o
+   capacidades nuevas) pide `/plan --redo`.
 4. Registra el cambio al final de la spec:
    ```markdown
    ## Historial

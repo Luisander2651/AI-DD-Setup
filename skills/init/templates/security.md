@@ -31,13 +31,17 @@ updated: {{date}}
 - Rotación: {{…}}
 
 ## Herramientas
-| Tipo | Herramienta | Comando | Cuándo corre |
-|---|---|---|---|
-| Secretos | {{gitleaks}} | {{gitleaks detect --no-banner}} | /implement, CI |
-| SAST | {{semgrep}} | {{semgrep scan --config auto --error}} | /implement (archivos tocados), /review |
-| SCA (dependencias) | {{npm audit / pip-audit / osv-scanner}} | {{…}} | /review, /release |
-| Contenedores / IaC | {{trivy}} | {{trivy fs .}} | /review, /release |
-| DAST | {{OWASP ZAP baseline}} | {{…}} | /release, solo contra staging |
+| Tipo | Herramienta | Comando | Estado | Cuándo corre |
+|---|---|---|---|---|
+| Secretos | {{gitleaks}} | {{gitleaks detect --no-banner}} | {{propuesta · instalada · en-ci · no-aplica}} | /implement, CI |
+| SAST | {{semgrep}} | {{semgrep scan --config p/<ruleset> --metrics=off --error}} | | /implement (archivos tocados), /review |
+| SCA (dependencias) | {{npm audit / pip-audit / osv-scanner}} | {{…}} | | /review, /release |
+| Contenedores / IaC | {{trivy}} | {{trivy fs .}} | | /review, /release |
+| DAST | {{OWASP ZAP baseline}} | {{…}} | | /release, solo contra staging |
+
+Ninguna herramienta envía código ni metadatos a un servicio no aprobado abajo ("Servicios externos
+aprobados"): `semgrep --config auto` exige métricas, así que se usan reglas fijadas con
+`--metrics=off`.
 
 ## Permisos del agente
 Reglas base en `shared/agent-security.md` del plugin. Específicas de este proyecto:

@@ -36,13 +36,24 @@ descarta las brechas que dependían de ellos.
 **Ronda 4 — Seguridad** (obligatoria)
 1. Datos sensibles que maneja el proyecto: ninguno · datos personales · financieros · salud ·
    credenciales de terceros (multi).
-2. Autenticación: sin usuarios · sesión propia · JWT · OAuth/OIDC con proveedor externo.
+2. Autenticación: sin usuarios · sesión propia · JWT · OAuth/OIDC con proveedor externo. En
+   `mobile`, además: bloqueo local de la app (biometría o PIN del sistema) · solo el bloqueo del
+   dispositivo.
 3. Nivel ASVS objetivo: 1 (básico, la mayoría de apps) · 2 (datos sensibles o negocio crítico,
-   recomendado) · 3 (alto riesgo: salud, finanzas, infraestructura).
+   recomendado) · 3 (alto riesgo: salud, finanzas, infraestructura). En `mobile` pregunta **también**
+   el perfil MASVS: L1 (base) · L2 (datos sensibles: salud, finanzas) · R (resiliencia ante
+   ingeniería inversa) → `security.masvs_level`; el ASVS solo aplica a su backend, si lo hay.
 4. Herramientas: proponer un set según el stack (secretos, SAST, SCA, contenedores); el usuario
    confirma cuáles adoptar. Registrar los comandos en `docs/security.md` y `.ai/project.yaml`.
 
 **Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
+**Sin servidor propio** (app móvil o de escritorio sin backend, CLI local): no hay peticiones,
+correlación ni registro de auditoría central. Sustituye la ronda por: (1) informes de fallos y
+bloqueos de la plataforma (consola de la tienda, informes del sistema operativo, issues; o una
+herramienta propia), (2) si
+alguna herramienta envía datos fuera del dispositivo y con qué consentimiento (choca con los datos
+sensibles de la Ronda 4), (3) qué nunca se escribe en el log del dispositivo, y (4) si hay varios
+usuarios o roles en el mismo dispositivo (si no, `audit.required: false`).
 1. Eventos que **deben** quedar registrados (multi): logins exitosos y fallidos · accesos
    denegados · lecturas de datos sensibles · cambios de datos sensibles · cambios de permisos y
    roles · acciones administrativas · exportaciones.
@@ -58,7 +69,10 @@ descarta las brechas que dependían de ellos.
 2. Versionado y changelog (proponer SemVer + `CHANGELOG.md` si no hay).
 3. Próximos 3 objetivos (→ roadmap).
 4. En brownfield con > 15 features: cuáles documentar ahora.
-**Principios universales sugeridos** (el usuario decide; todos deben ser verificables):
+**Principios universales sugeridos** (el usuario decide; todos deben ser verificables). Propón solo
+los que apliquen al tipo: los de servidor (autorización y validación en el servidor, consultas
+parametrizadas, correlación por petición, migraciones de base de datos) no van en una app sin
+backend ni en una librería:
 - Ninguna implementación sin spec aprobada en `docs/specs/`.
 - Todo cambio de comportamiento lleva test que falla antes y pasa después.
 - No se introducen dependencias nuevas sin registrarlas en un ADR.

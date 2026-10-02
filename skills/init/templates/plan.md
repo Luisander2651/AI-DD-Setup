@@ -32,7 +32,7 @@ Evaluar **todos** los principios. ➖ = no aplica (con motivo). Un ❌ solo se a
      en otro caso, una línea explicando por qué no aplica. -->
 | ID | Amenaza (STRIDE) | Categoría OWASP | Componente | Control | Test |
 |---|---|---|---|---|---|
-| TM1 | {{Spoofing / Tampering / Repudiation / Information disclosure / DoS / Elevation}} | {{A0x:año}} | {{…}} | {{…}} | {{…}} |
+| TM1 | {{Spoofing / Tampering / Repudiation / Information disclosure / DoS / Elevation}} | {{A0x:año}} {{· MASVS-… en mobile}} | {{…}} | {{…}} | {{…}} |
 
 ## Trazabilidad
 | Criterio de aceptación | Cambio(s) | Test(s) |

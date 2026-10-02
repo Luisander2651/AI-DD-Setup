@@ -9,7 +9,9 @@ status: draft
 Formato:
 `- [ ] T### [P] <verbo + qué> — <archivos> — hecho cuando: <criterio> — cubre: CA# — depende: T###`
 - T001–T089: trabajo. T090–T099: reservadas.
-- `[P]` = paralelizable (no comparte archivos con otra tarea abierta ni depende de una pendiente).
+- `[P]` = paralelizable con las demás `[P]` de su grupo una vez cumplidas sus dependencias (no
+  comparte archivos con otra tarea abierta).
+- Lo generado por un comando cuenta como un archivo: `android/ (generado por npx cap add android)`.
 
 ## Constitution Check
 {{confirmar que las tareas no violan ningún principio; referenciar plan.md}}
@@ -31,6 +33,8 @@ Formato:
 
 ## Despliegue (lo ejecuta `/release`)
 - [ ] T095 Desplegar a staging y verificar criterios de aceptación
+  <!-- un sub-punto por cada `verificación manual:` del plan: qué, dónde (dispositivo, herramienta)
+       y resultado esperado; se registra el resultado real al hacerlo -->
 - [ ] T096 Aprobación humana para producción
 - [ ] T097 Desplegar a producción y vigilar métricas del plan (Rollout)
 - [ ] T098 Marcar spec como `released`
@@ -47,3 +51,7 @@ Formato:
 | Cambio del plan (módulo) | Tarea(s) |
 |---|---|
 | {{módulo}} | T020 |
+
+| Requisito no funcional | Tarea(s) de test o verificación manual (T095) |
+|---|---|
+| {{RNF de la spec}} | {{T0xx · T095}} |

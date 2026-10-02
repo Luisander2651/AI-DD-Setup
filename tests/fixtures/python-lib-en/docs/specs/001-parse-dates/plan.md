@@ -20,3 +20,5 @@ status: approved
 | AC3, TM1 | test_huge_input |
 ## Rollout
 Minor release (SemVer), published from CI on tag.
+## Risks and mitigations
+- RS1.a covered by TM1. RS1 is not mitigated by this release: RS1.b stays open (→ roadmap objective 2).

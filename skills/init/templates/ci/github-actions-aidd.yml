@@ -57,7 +57,7 @@ jobs:
         # sustituye LOCKFILES por la expresión de los lockfiles del proyecto, p. ej. '(composer\.lock|package-lock\.json)$'
         run: |
           if git diff --name-only "origin/${{ github.base_ref }}"...HEAD | grep -qE 'LOCKFILES'; then
-            {{security.tools.sca}}
+            {{security.tools.sca.command}}
           else
             echo "El PR no cambia dependencias"
           fi
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4   # TODO: fijar a SHA
         with:
           fetch-depth: 0
-      - run: {{security.tools.secrets}}
-      - run: {{security.tools.sast}}
-      - run: {{security.tools.sca}}
-      - run: {{security.tools.containers}}
+      - run: {{security.tools.secrets.command}}
+      - run: {{security.tools.sast.command}}
+      - run: {{security.tools.sca.command}}
+      - run: {{security.tools.containers.command}}

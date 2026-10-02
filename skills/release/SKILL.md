@@ -43,14 +43,16 @@ usuario** la lleva a producción. Sigue `docs/deployment.md` al pie de la letra.
 Para cada spec incluida:
 1. `status: implemented` y T001–T092 marcadas.
 2. `review.md` con `verdict: approved` y `human_signoff` distinto de `pending`.
-3. El `head` de la review coincide con el código actual de la rama; si hubo commits después,
-   sugiere `/review NNN --rerun`.
+3. Desde el `head` de la review no cambió **código**: `git diff --stat <head>..HEAD -- .
+   ':(exclude)docs' ':(exclude).ai' ':(exclude,glob)**/*.md'` vacío (el propio commit que escribe
+   `review.md` y los de documentación no cuentan). Si cambió código, sugiere `/review NNN --rerun`.
 Para el repositorio:
 4. Árbol limpio y rama correcta según `docs/deployment.md`.
 5. CI en verde para el commit a liberar (consulta con `gh` o la herramienta disponible; si no
    puedes consultarlo, pide al usuario que lo confirme).
 6. **Puerta de seguridad:** corre la herramienta SCA (y la de contenedores, si aplica) de
-   `.ai/project.yaml → security.tools` sobre el commit a liberar; pueden haber aparecido CVEs
+   `.ai/project.yaml → security.tools` con `status: instalada` o `en-ci` sobre el commit a liberar
+   (una SCA `propuesta` detiene el release salvo excepción vigente); pueden haber aparecido CVEs
    nuevas desde la review. Cualquier vulnerabilidad crítica o alta sin excepción vigente en
    `docs/security.md → Excepciones aceptadas` detiene el release. Una excepción solo la registra el
    usuario, con motivo y fecha de vencimiento; las vencidas no cuentan.
@@ -94,7 +96,7 @@ Si existe staging:
 2. Verifica: health check, smoke tests y, por cada spec, los criterios de aceptación que puedan
    comprobarse en staging.
 3. Revisa logs y errores durante unos minutos.
-4. Si `security.tools.dast` está configurado, pide confirmación y ejecútalo **solo contra la URL de
+4. Si `security.tools.dast` tiene `status: instalada` o `en-ci`, pide confirmación y ejecútalo **solo contra la URL de
    staging** de `docs/deployment.md` (nunca contra producción ni contra dominios de terceros).
    Hallazgos críticos o altos detienen el release como en el Paso 0.
 5. Marca T095 en cada `tasks.md`.
@@ -142,8 +144,8 @@ Para cada spec:
 5. **Riesgos:** en `security.md`, `observability.md` y `deployment.md`, marca como
    `mitigada (vX.Y.Z)` solo las correcciones que la spec liberada declara "dentro". El riesgo pasa
    a mitigado únicamente si todas sus correcciones están mitigadas o aceptadas como excepción.
-6. **Aceptados sin tarea de `/review`** (sección "Aceptados sin tarea" de `review.md` y de las
-   rondas en `history/`): añádelos a `docs/roadmap.md → Pendientes y deuda` con la clave
+6. **Aceptados sin tarea de `/review`** (sección "Aceptados sin tarea" de `review.md` y de **todas**
+   las rondas en `history/`; el validador las comprueba todas): añádelos a `docs/roadmap.md → Pendientes y deuda` con la clave
    `NNN/R8` y su resumen (agrupados en una fila por spec si son muchos, pero con todas las claves),
    para que no se pierdan al cerrar la spec. Pide confirmación antes de escribir en el roadmap.
 7. **Historial:** `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate --write` (mueve a
@@ -189,6 +191,13 @@ Si `project.type: mobile`:
   vivo, volver a la versión web anterior. Si el plan no tiene flag remoto para una feature de
   riesgo, dilo antes de publicar.
 - Número de versión y de build (`versionCode`/`CFBundleVersion`) suben en cada envío.
+- **T095 en mobile** es la lista de `verificación manual:` de las tareas (dispositivos de las
+  versiones mínimas, lector de pantalla, copias de seguridad, manifiesto fusionado). El agente
+  prepara el build web y la sincronización nativa; generar y firmar el binario, subirlo al canal
+  de pruebas y hacer las comprobaciones en dispositivo es del usuario o de CI. Pide los resultados
+  por comprobación y regístralos bajo T095; no marques T095 sin ellos.
+- **Sin backend** no hay flag remoto: la puerta del Paso 5 lo dice explícitamente junto al plan de
+  rollback (detener el escalonado y publicar un hotfix).
 
 ## Library
 

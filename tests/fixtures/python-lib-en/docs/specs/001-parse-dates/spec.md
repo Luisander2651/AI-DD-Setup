@@ -3,7 +3,7 @@ status: approved
 ---
 # Parse ISO dates
 ## Problem
-Users need to parse ISO-8601 dates without extra dependencies.
+Users need to parse ISO-8601 dates without extra dependencies. Addresses RS1 partially.
 ## Acceptance criteria
 - [ ] AC1 `parse("2026-09-25")` returns a `date`
 - [ ] AC2 Timezone offsets are preserved
@@ -12,5 +12,11 @@ Users need to parse ISO-8601 dates without extra dependencies.
 Non-ISO formats.
 ## Security and privacy
 Untrusted input strings (see AC3).
+## Risk coverage
+| Correction | Scope | Criteria / reason and destination |
+|---|---|---|
+| RS1.a — length limit | in | AC3 |
+| RS1.b — linear-time parser | out | needs a new engine → roadmap objective 2 |
+
 ## Audit
 Not applicable: a library does not log.

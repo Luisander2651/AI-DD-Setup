@@ -12,7 +12,7 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes, entrevista y genera la documentación base. `--upgrade` pone al día un proyecto con la versión instalada del plugin. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. `--upgrade` pone al día un proyecto con la versión instalada del plugin. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -43,6 +43,9 @@ así que no chocan con comandos integrados como `/init`.
   petición y logs sin datos personales, desde la spec hasta la verificación post-deploy.
 - **El agente también es una superficie de ataque.** Contenido de terceros como dato,
   verificación de dependencias nuevas (slopsquatting), rutas y comandos protegidos.
+- **Probar antes de planear.** Lo que el plan da por hecho de una herramienta o framework nuevo se
+  comprueba con una prueba de concepto; los valores por defecto de una plantilla se auditan contra
+  la constitución.
 
 ## Validador y guardia
 
@@ -57,7 +60,8 @@ así que no chocan con comandos integrados como `/init`.
 - **Hook `PreToolUse`** (`hooks/hooks.json`): en proyectos con `.ai/project.yaml`, según
   `workflow.enforcement`:
   - `warn` (por defecto): pide aprobación antes de editar código sin spec activa, tocar rutas
-    protegidas, añadir dependencias o ejecutar comandos peligrosos.
+    protegidas, añadir dependencias (por comando o editando el manifiesto) o ejecutar comandos
+    peligrosos. `AGENTS.md` y `CLAUDE.md` siempre piden aprobación.
   - `block`: bloquea las ediciones; los comandos peligrosos siguen pidiendo aprobación.
   - `off`: desactivado. `AIDD_ALLOW=1` en el entorno lo desactiva puntualmente.
   - Si el cliente no soporta la decisión "preguntar" de los hooks, usa `block`.
@@ -93,6 +97,17 @@ Opciones habituales (revisa la documentación de tu cliente, los comandos pueden
 - **Claude Code, desde el repo:** añadir este repo como marketplace con `/plugin marketplace add`
   e instalar `ai-dd`.
 - **Claude (app de escritorio):** empaquetar el directorio como archivo `.plugin` e instalarlo.
+
+## Dependencias
+
+- **Python 3.8+** para el validador (`.ai/bin/aidd.py`) y el hook.
+- **Plugin oficial `design` de Anthropic** (opcional, recomendado en proyectos con interfaz:
+  `frontend`, `fullstack`, `mobile`). Por ahora el flujo **depende de él** para la parte de diseño:
+  `/init` lo registra en `skills.enabled` si está instalado, `/plan` deja la nota de revisarlo con
+  `design:design-handoff` y `/review` añade `design:accessibility-review` y `design:design-critique`.
+  Si no está instalado, el flujo sigue con su revisión propia de accesibilidad. En una versión
+  posterior este plugin tendrá su propia skill de diseño, construida a partir de cómo se usa esta
+  (ver `docs/analisis-brechas.md` → hoja de ruta).
 
 ## Mantenimiento
 

@@ -96,7 +96,24 @@ hallazgo necesita evidencia (`archivo:línea` o salida de una herramienta).
   en la app se puede extraer); TLS obligatorio y sin excepciones de tráfico en claro; permisos
   mínimos; deep links y esquemas de URL validados como entrada externa; en apps híbridas, WebView
   sin navegación a orígenes arbitrarios y CSP; logs sin datos personales (los de dispositivo los
-  leen otras herramientas); claves de firma fuera del repo.
+  leen otras herramientas); claves de firma fuera del repo. Además, porque las plantillas los traen
+  mal por defecto:
+  - **Copias de seguridad:** `android:allowBackup="false"` o reglas `fullBackupContent` y
+    `dataExtractionRules` que excluyan los datos sensibles (incluidos los dominios `device_*`); en
+    iOS, excluir del backup de iCloud. Los plugins de almacenamiento seguro pueden sincronizar con
+    iCloud: desactivarlo si los datos no deben salir del dispositivo.
+  - **Permisos de la plantilla:** Capacitor/Ionic y otras añaden `INTERNET`; una app sin red lo
+    quita. Revisar el manifiesto **fusionado** del build, no solo el de la app.
+  - **Vista de apps recientes y capturas:** contenido sensible oculto al pasar a segundo plano o
+    `FLAG_SECURE`/pantalla de privacidad (decisión explícita: impide también capturas útiles).
+  - **Teclado y portapapeles:** campos sensibles sin autocompletado ni sugerencias del teclado;
+    no copiar datos sensibles al portapapeles sin acción del usuario.
+  - **Proveedores y componentes exportados:** quitar `FileProvider` y rutas expuestas que la app
+    no usa; ningún componente exportado sin necesidad.
+  - **Log del puente nativo** (Capacitor `loggingBehavior`, logs de plugins) sin argumentos con
+    datos sensibles en builds de release.
+  - **Versión mínima del SO** de la plantilla frente a la acordada (`minSdkVersion`,
+    `IPHONEOS_DEPLOYMENT_TARGET`).
 
 ## Severidad
 | Severidad | Criterio |

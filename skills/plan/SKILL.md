@@ -81,6 +81,16 @@ muchos o no está claro dónde encaja, lanza **un** subagente de solo lectura co
 > reutilizable, tests existentes relacionados y riesgos de romper otras features. Devuelve rutas
 > concretas y nivel de confianza. No modifiques nada.
 
+**Prueba de concepto (Paso 1b).** Si el proyecto es nuevo, o el plan introduce una herramienta de
+test, un framework de UI o un plugin nativo que el proyecto aún no usa, **no fijes la estrategia de
+pruebas ni el diseño sobre el papel**: haz una prueba desechable fuera del repositorio (carpeta
+temporal o rama que se borra) que compruebe lo que el plan va a dar por hecho. Por ejemplo: que los
+componentes se pueden consultar por rol y etiqueta en el entorno de test elegido (p. ej. los web
+components de Ionic no exponen roles en jsdom y hace falta un navegador real), que el plugin funciona con la versión del
+framework, que el build de producción elimina el código de desarrollo. Anota el resultado en
+Decisiones ("comprobado con una prueba de concepto el AAAA-MM-DD"). Descubrirlo en `/implement`
+cuesta un ADR nuevo, `--fix` de plan y tareas y otra ronda de `/analyze`.
+
 ## Paso 2 — Decisiones
 
 Lista las incógnitas técnicas (cómo guardar X, qué librería para Y, dónde vive Z). Para cada una:
@@ -132,8 +142,10 @@ Completa `docs/templates/plan.md`. Guía por sección:
 - `backend` / `fullstack`: endpoints o mensajes (método, ruta, request, response, errores),
   cambios de modelo de datos y migraciones (patrón expand → migrate → contract), permisos.
 - `frontend` / `fullstack`: pantallas y componentes nuevos o modificados, estados (carga, vacío,
-  error, éxito), manejo de estado, accesibilidad. Si `design` está en `skills.enabled`, añade la
-  nota: "Revisar con la skill `design` antes de `/implement`".
+  error, éxito), manejo de estado, accesibilidad con objetivos medibles (roles y nombres, foco al
+  abrir y cerrar diálogos, anuncios de errores y estados, tamaño de los objetivos según el nivel
+  WCAG de la constitución; 44 pt/48 dp en `mobile`). Si `design` está en `skills.enabled`, añade
+  la nota: "Revisar con el plugin `design` (`design:design-handoff`) antes de `/implement`".
 - **Si cambian permisos o roles** y hay interfaz: una tabla **"Qué ve cada rol"** por pantalla
   afectada (saludos y textos, menús, columnas, botones y enlaces, estados vacíos). Ocultar un
   control no basta: los textos que prometen una acción ("gestiona", "ver y editar"), las columnas
@@ -147,6 +159,11 @@ Completa `docs/templates/plan.md`. Guía por sección:
   app, que seguirá en uso semanas. En Rollout: canal de pruebas, porcentaje de publicación
   escalonada, flag remoto para apagar la feature (una app publicada no se puede retirar) y, si hay
   actualizaciones en vivo, qué cambios pueden ir por ahí (solo capa web, sin cambios nativos).
+  **Sin backend no hay flag remoto:** dilo en Rollout, cita el riesgo `RD` correspondiente de
+  `docs/deployment.md` (o propónlo) y compensa con publicación escalonada obligatoria y una prueba
+  de actualización desde la versión anterior instalada. En el modelo de amenazas, mapea cada
+  amenaza también a su control MASVS (`MASVS-STORAGE`, `-PLATFORM`, `-PRIVACY`…), no solo al
+  OWASP Top 10.
 - `library`: cambios en la API pública y su impacto en SemVer (patch, minor o major).
 Añade siempre esta sección, aunque la plantilla no la traiga:
 
@@ -158,7 +175,11 @@ Añade siempre esta sección, aunque la plantilla no la traiga:
 ```
 
 Todo criterio de la spec (incluidos los `(abuso)`) y toda amenaza `TM#` deben aparecer. Un criterio
-o amenaza sin test es un error del plan.
+o amenaza sin test es un error del plan. Si una parte del criterio solo se puede comprobar a mano
+(en un dispositivo, con un lector de pantalla, en la tienda), añade en su fila
+`verificación manual: <qué y cómo>`; `/tasks` la lleva a la lista de T095. Haz lo mismo con cada
+requisito no funcional de la spec: una fila `RNF: <requisito>` con su test o su verificación
+manual.
 
 ## Paso 3a — Observabilidad
 

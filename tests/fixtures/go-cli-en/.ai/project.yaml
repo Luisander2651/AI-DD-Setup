@@ -1,3 +1,6 @@
 name: logtail
 type: backend
 language: en
+observability:
+  audit:
+    required: false

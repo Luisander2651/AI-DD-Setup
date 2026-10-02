@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.8.1"
+VERSION = "1.9.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -75,6 +75,11 @@ W = {
     "accepted": r"\b(?:aceptad[oa]|accepted)\b",
     "partial": r"\b(?:parcial\w*|partial\w*)\b",
     "mitigated": r"\b(?:mitigad\w*|mitigated)\b",
+    # "no lo declara mitigado", "sin mitigar", "not mitigated", "never mitigated"
+    "negated_mitigation": r"\b(?:no|ni|sin|nunca|not|never|without)\s+(?:(?:lo|la|los|las|se|está|esta|"
+                          r"están|queda|quedan|es|son|is|are|be|been|yet|fully|considered|declara|declaran|"
+                          r"declared|declares|marked|marca|considera)\s+){0,3}(?:mitigad\w*|mitigar|mitigated)\b",
+    "generated": r"\((?:generad[oa]s?|generated)\b",
     "out": r"\b(?:fuera|out)\b",
     "in": r"\b(?:dentro|in)\b",
     "risk_by_number": r"\b(?:riesgos?|risks?)\s+\d",
@@ -294,6 +299,18 @@ def analysis_texts(d):
     return out
 
 
+def review_texts(d):
+    """review.md y sus rondas archivadas (en history/ o sueltas)."""
+    out = []
+    for base in (d, history_dir(d)):
+        if not os.path.isdir(base):
+            continue
+        for f in sorted(os.listdir(base)):
+            if f == "review.md" and base == d or re.match(r"^review\.r\d+\.md$", f):
+                out.append(read(os.path.join(base, f)))
+    return out
+
+
 def accepted_as_notes(d):
     """{(hallazgo, tarea)} de los aceptados con formato '- **ID** → nota de Txxx'."""
     pairs = set()
@@ -374,9 +391,13 @@ def mitigation_claims(text, risk):
     """Líneas que declaran mitigado el riesgo completo (no una corrección) sin decir 'parcial'."""
     out = []
     for line in text.splitlines():
-        if re.search(r"\b" + risk + r"\b(?!\.[a-z])", line) and re.search(W["mitigated"], line, re.I) \
-                and not re.search(W["partial"], line, re.I):
-            out.append(line.strip()[:80])
+        # Por cláusula: "RS2 mitigado; RS3 no mitigado" afirma RS2 aunque la línea niegue RS3.
+        for clause in re.split(r"[;.]\s|\s—\s|\|", line):
+            if re.search(r"\b" + risk + r"\b(?!\.[a-z])", clause) and re.search(W["mitigated"], clause, re.I) \
+                    and not re.search(W["partial"], clause, re.I) \
+                    and not re.search(W["negated_mitigation"], clause, re.I):
+                out.append(line.strip()[:80])
+                break
     return out
 
 
@@ -435,7 +456,10 @@ def validate_spec_dir(d, root):
         (rep.warn if st == "inferred" else rep.err)("spec: falta la sección 'Seguridad y privacidad'")
     elif sensitive and not any(c[2] for c in cas):
         rep.warn("spec: la sección de seguridad no dice 'No aplica' y no hay criterios '(abuso)'")
-    if sensitive and st != "inferred" and section(body(s["spec"]), "audit") is None:
+    cfg = read(os.path.join(root, ".ai", "project.yaml")) if root and os.path.isfile(
+        os.path.join(root, ".ai", "project.yaml")) else ""
+    audit_required = (yaml_scalar(cfg, "required") or "true").lower() not in ("false", "no")
+    if sensitive and audit_required and st != "inferred" and section(body(s["spec"]), "audit") is None:
         rep.warn("spec: toca datos sensibles o permisos pero no tiene sección 'Auditoría' "
                  "(eventos que deben registrarse)")
     for line in (section(body(s["spec"]), "criteria") or "").splitlines():
@@ -472,8 +496,13 @@ def validate_spec_dir(d, root):
         no_hist = re.sub(r"^##\s+(?:Historial|History)\b.*?(?=^##\s|\Z)", "", body(s["spec"]), flags=re.M | re.S)
         if re.search(W["risk_by_number"], no_hist, re.I):
             rep.warn("spec: cita riesgos por número ('riesgo 1'); usa sus IDs (RS1…) y declara sus correcciones")
+    spec_cited = set(cited_risks(body(s["spec"]), risks)) if risks else set()
     for kind in ("plan", "tasks"):
         if s[kind] and risks:
+            alien = [r for r in cited_risks(body(s[kind]), risks) if r not in spec_cited]
+            if alien:
+                rep.warn(f"{kind}: cita {alien}, que la spec no cita; declara sus correcciones en la spec "
+                         "('Cobertura de riesgos') o quita la referencia")
             for r in cited_risks(body(s[kind]), risks):
                 if covered_all.get(r):
                     continue
@@ -616,7 +645,11 @@ def validate_spec_dir(d, root):
     # --- review
     if s["review"]:
         rfm = frontmatter(s["review"])
-        deferred = re.findall(r"^\s*-\s*\*\*(R\d+)", section(body(s["review"]), "deferred") or "", re.M)
+        deferred = []
+        for text in review_texts(d):
+            for r in re.findall(r"^\s*-\s*\*\*(R\d+)", section(body(text), "deferred") or "", re.M):
+                if r not in deferred:
+                    deferred.append(r)
         if deferred and st == "released" and root:
             rm = os.path.join(root, "docs", "roadmap.md")
             rtext = read(rm) if os.path.isfile(rm) else ""
@@ -716,19 +749,23 @@ def next_step(s):
             return "aprobar el plan"
         if not s["tasks"]:
             return "/tasks"
+        ast = analysis_state(s)
+        if ast == "fail":
+            return "corregir hallazgos de /analyze (/plan --fix · /tasks --fix) y /analyze"
         if tst != "approved":
             return "aprobar las tareas"
-        ast = analysis_state(s)
         if ast == "stale" and verdict == "changes_requested":
             return "/implement (tareas de /review) y /review --rerun"
         if ast in (None, "stale"):
             return "/analyze" if ast is None else "/analyze (desactualizado)"
-        if ast == "fail":
-            return "corregir hallazgos de /analyze"
         return "/implement"
     if st == "implemented":
-        if not s["review"] or verdict == "changes_requested":
-            return "/review" if not s["review"] else "/implement y /review --rerun"
+        if not s["review"]:
+            return "/review"
+        if verdict == "changes_requested":
+            tasks, _ = parse_tasks(s["tasks"]) if s["tasks"] else ({}, [])
+            pending = [t for t, v in tasks.items() if int(t[1:]) < 93 and not v[0]["done"]]
+            return "/implement y /review --rerun" if pending else "/review --rerun"
         if verdict == "blocked":
             return "resolver el bloqueo de la review"
         if signoff.startswith("pending"):
@@ -916,7 +953,7 @@ def history_rows(d):
             fm = frontmatter(text)
             kind = m.group(1) or m.group(3)
             num = int(m.group(2) or m.group(4))
-            cm = re.search(r"Conteo[^:]*:\s*([^\n.]+)", text)
+            cm = re.search(r"(?:Conteo|Count)[^:]*:\s*([^\n.]+)", text)
             rows.append({"file": os.path.relpath(os.path.join(base, f), d).replace("\\", "/"), "kind": kind,
                          "n": num, "date": fm.get("date", ""), "mode": fm.get("mode", ""),
                          "result": fm.get("result") or fm.get("verdict") or fm.get("status", ""),
@@ -925,7 +962,7 @@ def history_rows(d):
     for kind in ("analysis", "review"):
         if s[kind]:
             fm = frontmatter(s[kind])
-            cm = re.search(r"Conteo[^:]*:\s*([^\n.]+)", s[kind])
+            cm = re.search(r"(?:Conteo|Count)[^:]*:\s*([^\n.]+)", s[kind])
             rows.append({"file": kind + ".md", "kind": kind, "n": int(fm.get("round") or 1),
                          "date": fm.get("date", ""), "mode": fm.get("mode", ""),
                          "result": fm.get("result") or fm.get("verdict", ""),
@@ -1002,8 +1039,26 @@ def task_paths(tasks_text):
             if "/" not in c and "." not in c:
                 continue
             for e in expand_braces(c):
-                out.setdefault(e.lstrip("./"), set()).add(tid)
+                out.setdefault(e[2:] if e.startswith("./") else e, set()).add(tid)
     return out
+
+
+def generated_paths(tasks_text):
+    """{ruta: tarea} que una tarea declara generada por un comando (`gen/ (generado por buf generate)`).
+    Se revisan por el comando que las crea, no línea a línea: quedan fuera de code.diff."""
+    tasks, _ = parse_tasks(tasks_text)
+    out = {}
+    for tid, vs in tasks.items():
+        for f in vs[0]["files"]:
+            if re.search(W["generated"], f, re.I):
+                p = f.split(" ")[0].strip("`")
+                out[p[2:] if p.startswith("./") else p] = tid
+    return out
+
+
+def under(f, g):
+    g = g.rstrip("/")
+    return f == g or f.startswith(g + "/")
 
 
 def in_scope(f, paths, changed=(), root=None):
@@ -1055,23 +1110,42 @@ def cmd_review_pack(args):
         print(f"La base {base} no existe en git.")
         return 2
     rng = f"{base}..{head}"
+    generated = generated_paths(s["tasks"])
     excl = [":(exclude)docs", ":(exclude).ai", ":(exclude,glob)**/*.md"] + \
            [f":(exclude,glob)**/{lf}" for lf in LOCKFILES]
+    # Lo generado por un comando declarado en una tarea se revisa por ese comando, no línea a línea;
+    # salvo los archivos de esas rutas que otra tarea cita expresamente (p. ej. un manifiesto editado).
+    paths = task_paths(s["tasks"])
+    cited_inside = sorted(p for p in paths for g, gen_tid in generated.items()
+                          if p != g and under(p, g) and paths[p] - {gen_tid})
+    gen_excl = [f":(exclude){g.rstrip('/')}" for g in generated]
     out_dir = os.path.join(root, ".ai", "cache", "review", os.path.basename(d))
     os.makedirs(out_dir, exist_ok=True)
-    _, code_diff = git(root, "diff", "-U3", rng, "--", ".", *excl)
+    _, code_diff = git(root, "diff", "-U3", rng, "--", ".", *excl, *gen_excl)
+    if cited_inside:
+        _, extra_diff = git(root, "diff", "-U3", rng, "--", *cited_inside)
+        code_diff += extra_diff
     _, names = git(root, "diff", "--name-status", rng, "--", ".", *excl)
+    _, names_short = git(root, "diff", "--name-status", rng, "--", ".", *excl, *gen_excl)
+    _, gen_names = git(root, "diff", "--name-only", rng, "--", *[g.rstrip("/") for g in generated]) \
+        if generated else (0, "")
     _, docs_stat = git(root, "diff", "--stat=120", rng, "--", "docs", ".ai", "*.md")
     _, locks = git(root, "diff", "--stat=120", rng, "--", *[f":(glob)**/{lf}" for lf in LOCKFILES])
     changed = [ln.split("\t")[-1] for ln in names.splitlines() if ln.strip()]
-    paths = task_paths(s["tasks"])
     extra = [f for f in changed if not in_scope(f, paths, changed, root)]
     touched_tids = set()
     for f in changed:
         touched_tids |= in_scope(f, paths, changed, root)
     tasks, _ = parse_tasks(s["tasks"])
-    untouched = sorted(t for t, v in tasks.items() if int(t[1:]) < 90 and t not in touched_tids
-                       and any("/" in p for p in v[0]["files"]))
+    candidates = set(tasks)
+    if opt(args, "--base"):
+        # En un --rerun solo cuentan las tareas que no existían en la base (las añadidas por /review).
+        rel = os.path.relpath(os.path.join(d, "tasks.md"), root).replace("\\", "/")
+        c, old = git(root, "show", f"{base}:{rel}")
+        if c == 0:
+            candidates -= set(parse_tasks(old)[0])
+    untouched = sorted(t for t, v in tasks.items() if int(t[1:]) < 90 and t in candidates
+                       and t not in touched_tids and any("/" in p for p in v[0]["files"]))
 
     def write(name, text):
         with open(os.path.join(out_dir, name), "w", encoding="utf-8", newline="\n") as f:
@@ -1088,7 +1162,15 @@ def cmd_review_pack(args):
     scope += [f"- {f}" for f in extra] or ["- ninguno"]
     scope += ["", "## Tareas con rutas que no aparecen en el diff (¿sin implementar o solo docs?)", ""]
     scope += [f"- {t}" for t in untouched] or ["- ninguna"]
-    scope += ["", "## Archivos cambiados", "", "```", names.strip(), "```"]
+    gen_list = [ln for ln in gen_names.splitlines() if ln.strip()]
+    if generated:
+        scope += ["", "## Generados por comando (fuera de code.diff; se revisa el comando de la tarea)", ""]
+        scope += [f"- {g}: {sum(1 for f in gen_list if under(f, g))} archivos (tarea {t})"
+                  for g, t in generated.items()]
+        if cited_inside:
+            scope += [f"- incluidos en code.diff porque una tarea los cita: {', '.join(cited_inside)}"]
+    scope += ["", "## Archivos cambiados" + (" (sin los generados)" if generated else ""), "", "```",
+              names_short.strip(), "```"]
     sizes["scope.md"] = write("scope.md", "\n".join(scope) + "\n")
     cas = [ln.strip() for ln in (section(body(s["spec"] or ""), "criteria") or "").splitlines()
            if CA_DEF_RE.match(ln)]
@@ -1146,6 +1228,46 @@ def active_spec(root):
 
 
 SIGNING_EXT = (".keystore", ".jks", ".p12", ".p8", ".mobileprovision")
+# Instrucciones del agente (agent-security.md §4): siempre se pregunta, también en modo block, porque
+# /init y las tareas aprobadas que los cambian necesitan escribirlos.
+AGENT_FILES = ("AGENTS.md", "CLAUDE.md")
+MANIFESTS = ("package.json", "requirements.txt", "requirements-dev.txt", "pyproject.toml", "Pipfile",
+             "composer.json", "Gemfile", "go.mod", "Cargo.toml", "pubspec.yaml", "build.gradle",
+             "build.gradle.kts", "pom.xml")
+# Una línea que parece una dependencia con versión: "pkg": "^1.2", pkg==1.2, pkg = "1.2", pkg: ^1.2,
+# require x v1.2, <version>1.2</version>, implementation 'g:a:1.2'.
+DEP_LINE_RE = re.compile(
+    r"""^\s*(?:"[@\w./-]+"\s*:\s*"[\^~<>=*]*\d|[\w.\[\]-]+\s*(?:==|>=|~=|<=|!=|>|<)\s*\d|"""
+    r""""[\w.\[\]-]+\s*(?:==|>=|~=|<=|!=|>|<)\s*\d|[\w.-]+\s*=\s*["'][\^~<>=*]*(?:\d|\*)|"""
+    r"""[\w.-]+\s*=\s*\{[^}]*\d|[\w.-]+\s*:\s*[\^~]?\d|require\s+\S+\s+v\d|gem\s+["']|<PackageReference\b|"""
+    r"""[\w.-]+/[\w.-]+\s+v\d|"""
+    r"""<version>|(?:implementation|api|compileOnly|runtimeOnly)\s*\(?\s*['"][\w.-]+:[\w.-]+:)""")
+
+
+NOT_DEP_KEY_RE = re.compile(r"""^\s*["']?(?:version|node|npm|python|requires-python|go|toolchain|edition|"""
+                            r"""rust-version|sdk|flutter|minSdkVersion|targetSdkVersion|compileSdkVersion)["']?\s*[:=]""")
+
+
+def is_dependency_line(ln):
+    return bool(DEP_LINE_RE.search(ln)) and not NOT_DEP_KEY_RE.search(ln)
+
+
+def added_dependency_lines(tool, tin, name=""):
+    """Líneas nuevas con forma de dependencia en un Write/Edit/MultiEdit de un manifiesto."""
+    if name.startswith("requirements") and name.endswith(".txt"):
+        # En requirements*.txt toda línea que no es comentario ni opción es una dependencia.
+        dep = lambda ln: bool(ln.strip()) and not ln.lstrip().startswith(("#", "-"))
+    else:
+        dep = is_dependency_line
+    if tool == "Write":
+        return [ln for ln in (tin.get("content") or "").splitlines() if dep(ln)]
+    edits = tin.get("edits") or [tin]
+    out = []
+    for e in edits:
+        old = set((e.get("old_string") or "").splitlines())
+        out += [ln for ln in (e.get("new_string") or "").splitlines()
+                if ln not in old and dep(ln)]
+    return out
 
 
 def is_protected(rel, extra):
@@ -1201,6 +1323,17 @@ def cmd_hook(args):
         return 0
     if rel.startswith(".."):
         return 0
+    if rel in AGENT_FILES:
+        return decide("ask", f"'{rel}' son instrucciones del agente (shared/agent-security.md §4): solo en /init "
+                             "o con una tarea aprobada que lo indique.")
+    base = os.path.basename(rel)
+    if base in MANIFESTS or rel.endswith(".csproj") or (base.startswith("requirements") and base.endswith(".txt")):
+        deps = added_dependency_lines(tool, tin, os.path.basename(rel))
+        if deps:
+            return decide("ask" if active_spec(root) else soft,
+                          f"Se añaden o cambian dependencias en '{rel}' ({deps[0].strip()[:60]}…). "
+                          "Verifica antes que existen, su antigüedad, reputación y licencia "
+                          "(shared/agent-security.md §2) y que el plan lo aprobó.")
     if is_protected(rel, yaml_list(cfg, "protected_paths")):
         return decide(soft, f"'{rel}' es una ruta protegida (shared/agent-security.md §4). Solo con aprobación "
                             "explícita y una tarea aprobada que lo indique.")
@@ -1268,4 +1401,11 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    try:
+        sys.exit(main(sys.argv))
+    except BrokenPipeError:  # p. ej. `aidd.py changes … | head`
+        try:
+            sys.stdout = open(os.devnull, "w")
+        except OSError:
+            pass
+        sys.exit(0)

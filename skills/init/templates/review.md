@@ -12,6 +12,7 @@ human_signoff: {{pending|<nombre> <fecha>|no requerido}}
 
 ## Resumen
 {{veredicto y motivo en 2–3 frases}}
+Conteo: bloqueante {{n}} · importante {{n}} · menor {{n}}
 
 ## Verificación automática
 | Comando | Resultado |

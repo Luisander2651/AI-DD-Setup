@@ -66,7 +66,10 @@ siguiente. **Implementa exactamente lo que dice el plan**: no rediseña, no agre
    `history/` si remite a ellas). Cada `**ID** → nota de T0xx` es obligatorio al hacer esa tarea:
    aplícalo y deja una nota que cite el ID (`  - nota: C2 — …`). El validador falla si una tarea
    hecha no la tiene.
-5. Lee los comandos de `AGENTS.md` (test, lint, build, type-check). Si no están, detente y sugiere
+5. Lee los comandos de `AGENTS.md` (test, lint, build, type-check). Excepción: en la spec del
+   proyecto base de un greenfield (`skills/init/references/greenfield.md` §2, opción b) sus tareas
+   de Preparación crean el proyecto y fijan los comandos; ejecútalas y usa los comandos desde ahí.
+   En otro caso, si no están, detente y sugiere
    `/init` en modo re-sincronizar.
 6. Revisa el estado de git:
    - Cambios sin commitear ajenos a esta spec → pregunta antes de seguir.
@@ -90,20 +93,30 @@ Para la siguiente tarea pendiente cuyas dependencias estén hechas:
 
 1. **Anuncia** en una línea: `T012 — <descripción>`.
 2. **Si es de test:** escríbelo, ejecútalo y confirma que **falla por la razón esperada** (no por
-   un error de sintaxis o import). Los casos que **pasan desde el principio** (afirman algo que ya
+   un error de sintaxis o de un import mal escrito). Si el módulo que prueba aún no existe, "no
+   existe el módulo" es una razón esperada; mejor aún, crea en la propia tarea de test la firma
+   vacía (stub que lanza "sin implementar") para que el test falle en sus aserciones. Los casos que **pasan desde el principio** (afirman algo que ya
    se cumple, p. ej. "el administrador conserva la columna") no prueban nada hasta comprobarlos:
    rompe a mano, un momento, el código que protegen (quita la cabecera, cambia el texto), confirma
    que el caso falla, restaura, y anótalo (`  - nota: comprobado rompiendo <qué>`). Revisa también
    que la aserción no pueda pasar por accidente: regex que cruzan secciones, búsquedas sobre toda
    la página, datos de prueba que coinciden con los de otro caso.
+   **Controles de seguridad y del modelo de amenazas:** la comprobación rompiendo lo protegido es
+   obligatoria aunque el test haya fallado antes de implementar (un test puede fallar por otra
+   razón y luego pasar sin probar el control). Anótala igual.
+   **UI, e2e y todo lo asíncrono:** ejecuta dos veces los tests nuevos antes de marcar la tarea. Un
+   test que falla a veces es un defecto del test o del código: se corrige (esperas por condición,
+   no por tiempo) o se pone en cuarentena con una tarea, nunca con reintentos automáticos
+   silenciosos.
 3. **Si es de implementación:** haz el cambio mínimo que cumple el criterio.
 4. **Verifica:**
    - Los tests relacionados con la tarea pasan.
    - La suite completa no tiene fallos nuevos respecto a la línea base (en suites lentas, corre
      los tests del módulo en cada tarea y la suite completa al cerrar cada fase).
    - Lint y type-check limpios en los archivos tocados.
-   - Si `.ai/project.yaml → security.tools.secrets` o `security.tools.sast` están configurados,
-     córrelos sobre los archivos tocados. Un hallazgo crítico o alto se corrige dentro de la tarea;
+   - Si `.ai/project.yaml → security.tools.secrets` o `security.tools.sast` tienen
+     `status: instalada` o `en-ci`, córrelos sobre los archivos tocados (las `propuesta` no se
+     ejecutan; si falta una, anótalo en la tarea para `/review`). Un hallazgo crítico o alto se corrige dentro de la tarea;
      uno que parezca falso positivo se anota como nota y lo decide `/review`.
 5. **Marca** la tarea `[x]` en `tasks.md`. Si hubo algo relevante, añade una nota debajo:
    `  - nota: <decisión menor, archivo extra justificado, deuda detectada>`.
@@ -133,7 +146,7 @@ al terminar la tarea en curso.
 
 Si el usuario aprueba una tarea nueva, añádela a `tasks.md` con el siguiente número libre (≤ T089)
 y la nota `añadida durante /implement: <motivo>`, cumpliendo las reglas de `/tasks` (test antes
-que el cambio, ≤ 3 archivos, criterio de hecho, revisión con `design` si toca UI).
+que el cambio, ≤ 3 archivos, criterio de hecho, revisión de accesibilidad si toca UI, con `design` si está en `skills.enabled`).
 
 ## Paso 4 — Paralelo (`--parallel`)
 
