@@ -9,7 +9,7 @@ publicados para agentes de código.
 8.7) 1.5.0 (observabilidad y auditoría, sección 9), 1.5.1 (conciliación con el roadmap) y 1.5.2
 (`extends`, hallazgo 8.8), 1.5.3–1.5.6, 1.6.0 (iterar barato, 8.10) y 1.7.0 (primera spec
 completa, 8.11), 1.8.0 (contra el sobreajuste, 8.12), 1.9.0 (primer proyecto nuevo de punta a
-punta, 8.13) y 1.10.0 (prácticas del portafolio, 8.14; 2026-10-02).
+punta, 8.13) 1.10.0 (prácticas del portafolio, 8.14) y 1.11.0 (diseño en el flujo; 2026-10-02).
 
 Prioridades: **P0** defecto del plugin, corregir ya · **P1** necesario para un flujo completo ·
 **P2** necesario para escalar a equipos o repos grandes · **P3** mejora.
@@ -254,7 +254,7 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 | 1.8.0 | Contra el sobreajuste (8.12): idioma, `mobile`, proyectos de prueba | ✅ |
 | 1.9.0 | Primer proyecto nuevo de punta a punta (8.13): proyecto base, prueba de concepto, plantillas auditadas, mobile sin servidor | ✅ |
 | 1.10.0 | Prácticas del portafolio (8.14): decisiones con tipo y fuente, jerarquía de fuentes, bloqueo en la tarea, verificación manual en la tarea, "cómo se verifica" en el Constitution Check, tareas obsoletas, commits trazables | ✅ |
-| 1.11.0 | Integración con el plugin `design` de Anthropic en `/init` (sistema de diseño y artifact principal; ver `docs/plan-integracion-design.md`) | pendiente |
+| 1.11.0 | Diseño en el flujo (`docs/plan-integracion-design.md`): opciones en HTML en greenfield, documentación del diseño existente si el usuario acepta, rediseño como spec, `--upgrade` | ✅ (pendiente: prueba de punta a punta, 8.15) |
 | 1.12.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2); pendientes de 8.10 | pendiente |
 | 1.13.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
 | 1.14.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, numeración sin colisiones (1.3) | pendiente |

@@ -8,7 +8,8 @@ Referencia de `/plan` Paso 3 (sección "Contratos y datos" del plan).
   error, éxito), manejo de estado, accesibilidad con objetivos medibles (roles y nombres, foco al
   abrir y cerrar diálogos, anuncios de errores y estados, tamaño de los objetivos según el nivel
   WCAG de la constitución; 44 pt/48 dp en `mobile`). Si `design` está en `skills.enabled`, añade
-  la nota: "Revisar con el plugin `design` (`design:design-handoff`) antes de `/implement`".
+  la nota: "Revisar con el plugin `design` (`design:design-handoff`) antes de `/implement`". Con
+  sistema de diseño (`design.status` `draft` o `approved`), sigue `design.md` de esta carpeta.
 - **Si cambian permisos o roles** y hay interfaz: una tabla **"Qué ve cada rol"** por pantalla
   afectada (saludos y textos, menús, columnas, botones y enlaces, estados vacíos). Ocultar un
   control no basta: los textos que prometen una acción ("gestiona", "ver y editar"), las columnas

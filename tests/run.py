@@ -277,6 +277,18 @@ def scenario_hook():
         check("modo block: AGENTS.md pregunta (no deniega, /init lo escribe)", code == 0 and '"ask"' in out, out)
 
 
+def scenario_design_templates():
+    print("plantillas de diseño:")
+    base = os.path.join(os.path.dirname(HERE), "skills", "init", "templates", "design")
+    html = open(os.path.join(base, "option.html"), encoding="utf-8").read()
+    import re as _re
+    ext = _re.findall(r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']+|@import|url\(\s*["']?(?:https?:)?//""", html)
+    check("option.html no carga nada externo (se abre sin red)", not ext, str(ext))
+    check("option.html calcula el contraste en la página", "function ratio" in html or "const ratio" in html)
+    for name in ("system.md", "brief.md", "creative-direction.md", "anti-cliches.md", "option.html"):
+        check(f"existe templates/design/{name}", os.path.isfile(os.path.join(base, name)))
+
+
 if __name__ == "__main__":
     fixtures()
     scenario_review_pack()
@@ -285,5 +297,6 @@ if __name__ == "__main__":
     scenario_history()
     scenario_encoding()
     scenario_hook()
+    scenario_design_templates()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")
     sys.exit(1 if FAILS else 0)

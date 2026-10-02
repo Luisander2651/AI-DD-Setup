@@ -129,6 +129,9 @@ Construye y comprueba estas dos tablas (van al final de `tasks.md`):
   RNF (test o verificación manual).
 - Todo principio ✅ del Constitution Check del plan con `test:` o `lint:` tiene una tarea que crea
   o ejecuta esa comprobación.
+- Si el plan tiene "Cambios a incorporar al sistema" de diseño, la **primera** tarea actualiza
+  `docs/design/system.md` y `system.html`; las tareas de UI `depende:` de ella y su `verificación
+  manual:` compara con el HTML (`system.html` o el de la spec) en los anchos de `design.widths`.
 
 ## Paso 4 — Constitution Check
 

@@ -17,6 +17,9 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | Cobertura de riesgos | Risk coverage | spec |
 | Historial | History | spec |
 | Decisiones | Decisions | spec |
+| Diseño | Design | spec (con interfaz) |
+| Deuda de diseño | Design debt | `docs/design/system.md` |
+| Cambios a incorporar al sistema | Changes to the design system | plan |
 | Constitution Check | Constitution Check | plan, tasks |
 | Trazabilidad | Traceability | plan |
 | Modelo de amenazas | Threat model | plan |
@@ -53,5 +56,5 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `Cómo se verifica` (`test:` · `lint:` · `manual:`) | `How it is verified` | columna del Constitution Check del plan |
 | `Cubre:` | `Covers:` | cuerpo de un commit de tarea |
 
-Los IDs de tarea (`T001`), riesgo (`RS1.a`, `OB2`, `RD3`), amenaza (`TM1`), principio (`P1`),
+Los IDs de tarea (`T001`), riesgo (`RS1.a`, `OB2`, `RD3`), deuda de diseño (`DS1`), amenaza (`TM1`), principio (`P1`),
 hallazgo (`A1`, `R1`) y las claves del frontmatter (`status`, `round`, `verdict`…) no se traducen.

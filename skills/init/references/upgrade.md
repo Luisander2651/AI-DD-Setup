@@ -38,6 +38,13 @@ como diff y se aplica solo con confirmación.
    "Decisiones" (tipo `supuesto` o `brecha`, fuente `usuario` si lo decidió el usuario) en las specs
    `draft` o `approved`. En los planes `draft` o `approved`, ofrece añadir la columna "Cómo se
    verifica" al Constitution Check. Actualiza `docs/templates/` (spec, plan y tasks) con diff.
+5e. **Diseño (desde 1.11.0).** Si el proyecto tiene interfaz (`frontend`, `fullstack`, `mobile`) y
+   `design.status` falta o es `none`, pregunta si documentar el diseño que usa hoy el código. Con
+   un sí, sigue **solo** `design.md` §3 (subagente G, capturas con datos de prueba, auditoría,
+   `system.md` extraído, `system.html` y deuda `DS`), sin re-explorar el resto del código. Con un
+   no, `design.status: declined` y no vuelvas a preguntar. Nunca ofrezcas rediseño ni opciones. Si
+   `design.status` es `declined`, `draft` o `approved`, no hagas nada. Si `skills.enabled` no
+   tiene `design` y el plugin está instalado, ofrece registrarlo.
 5b. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
    carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
    avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

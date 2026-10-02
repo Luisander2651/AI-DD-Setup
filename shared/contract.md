@@ -20,6 +20,13 @@ revisa todas las skills afectadas.
   `lint: <regla>` o `manual: <qué>`): un principio con número, umbral o prohibición comprobable
   (tamaños, versiones mínimas, literales prohibidos, presupuestos) se verifica con test o lint,
   no solo a mano.
+- **Sistema de diseño.** En proyectos con interfaz, `docs/design/system.md` (y su vista
+  `system.html`) es la fuente de verdad visual cuando `.ai/project.yaml → design.status` es `draft`
+  o `approved`. Ninguna skill cambia un token o un componente sin una tarea que lo haga ("Cambios a
+  incorporar al sistema" del plan). Las opciones y vistas de diseño son **HTML en el repo**
+  (abribles sin red); el canvas de la skill `design`, si se usa, es un complemento enlazado.
+  `/init` nunca rediseña: en brownfield solo documenta el diseño existente si el usuario acepta
+  (`declined` si no) y un rediseño es siempre una spec propia.
 - **Jerarquía de fuentes.** Ante un conflicto entre documentos prevalece, en este orden: este
   contrato y `shared/agent-security.md` → `docs/constitution.md` → `AGENTS.md` → `docs/security.md`,
   `docs/architecture.md` y el sistema de diseño del proyecto (si existe) → specs `approved`,
@@ -46,10 +53,13 @@ revisa todas las skills afectadas.
 - Una skill condicional (p. ej. `design`) empieza así:
   > Lee `.ai/project.yaml`. Si `<skill>` no está en `skills.enabled`, informa que no aplica a este
   > tipo de proyecto y detente, salvo que el usuario insista.
-- **Dependencias externas.** `design` no la incluye este plugin: es el plugin oficial `design` de
+- **Dependencias externas.** Dos piezas de diseño que este plugin no incluye: la skill `design`
+  (crea un canvas Design a partir de un brief; si la sesión la ofrece, `/init` y `/plan` la usan para
+  las opciones) y el plugin oficial `design` de
   Anthropic (skills `design:design-system`, `design:accessibility-review`, `design:design-critique`,
-  `design:design-handoff`, `design:ux-copy`; ver README → "Dependencias"). Las skills del flujo la
-  usan **solo** si está en `skills.enabled`. Si está habilitada pero la sesión no la ofrece, avísalo
+  `design:design-handoff`, `design:ux-copy`; ver README → "Dependencias"). El plugin se usa **solo**
+  si `design` está en `skills.enabled`; la skill de canvas, si la sesión la ofrece. Si el plugin
+  está habilitado pero la sesión no lo ofrece, avísalo
   una vez ("el plugin `design` de Anthropic no está instalado en esta sesión") y sigue con la
   revisión propia de la skill; nunca bloquees el flujo por su ausencia.
 - `/plan` incluye una sección **Rollout** (flags, orden de migraciones, rollback, métricas).

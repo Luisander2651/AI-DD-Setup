@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.10.0"
+VERSION = "1.11.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -63,7 +63,11 @@ VOCAB = {
     "accepted": ["Aceptados", "Accepted"],
     "deferred": ["Aceptados sin tarea", "Accepted without task"],
     "decisions": ["Decisiones", "Decisions"],
+    "design": ["Diseño", "Design"],
+    "color": ["Color", "Colour"],
 }
+DESIGN_STATES = {"none", "declined", "draft", "approved"}
+DESIGN_SOURCES = {"chosen", "extracted", "null", ""}
 # Tipos de "Decisiones" (shared/contract.md → "Decisiones").
 DECISION_TYPES = {
     "brecha": "gap", "gap": "gap",
@@ -162,6 +166,20 @@ def find_root(start):
 def yaml_scalar(text, key):
     m = re.search(r"^\s*" + re.escape(key) + r":\s*([^#\n]*)", text, re.M)
     return m.group(1).strip().strip('"').strip("'") if m else None
+
+
+def yaml_block(text, key):
+    """Texto indentado bajo la clave de primer nivel `key:` (None si no existe)."""
+    m = re.search(r"^" + re.escape(key) + r":[^\n]*\n((?:[ \t]+[^\n]*\n?|[ \t]*\n)*)", text, re.M)
+    return m.group(1) if m else None
+
+
+def design_config(root):
+    p = os.path.join(root, ".ai", "project.yaml") if root else ""
+    block = yaml_block(read(p), "design") if p and os.path.isfile(p) else None
+    if block is None:
+        return None
+    return {k: (yaml_scalar(block, k) or "") for k in ("status", "source", "system", "html")}
 
 
 def yaml_list(text, key):
@@ -519,6 +537,11 @@ def validate_spec_dir(d, root):
         m = CA_DEF_RE.match(line)
         if m and m.group(1).lower() == "x" and re.search(W["not_met"], line.upper()):
             rep.err(f"spec: {m.group(2)} está marcado [x] pero dice 'HOY NO SE CUMPLE'")
+    dcfg = design_config(root)
+    dsec = section(body(text), "design")
+    if dsec is not None and dcfg and dcfg["status"] == "approved" and st not in {"inferred"} \
+            and not re.search(r"system\.md", dsec):
+        rep.warn("spec: tiene sección 'Diseño' pero no enlaza docs/design/system.md (sistema aprobado)")
     for header, cells in table_rows(section(body(text), "decisions")):
         if len(cells) < 5 or PLACEHOLDER_RE.search(" ".join(cells)):
             continue
@@ -775,6 +798,44 @@ def validate_roadmap(root):
     return len(rep.errors)
 
 
+def validate_design(root):
+    dcfg = design_config(root)
+    if dcfg is None:
+        return 0
+    rep = Report("docs/design")
+    st = dcfg["status"].lower()
+    if st not in DESIGN_STATES:
+        rep.err(f"project.yaml: design.status inválido ({dcfg['status']!r}; none, declined, draft, approved)")
+    if dcfg["source"].lower() not in DESIGN_SOURCES:
+        rep.err(f"project.yaml: design.source inválido ({dcfg['source']!r}; chosen, extracted)")
+    if st in {"draft", "approved"}:
+        sp = os.path.join(root, dcfg["system"] or "docs/design/system.md")
+        hp = os.path.join(root, dcfg["html"] or "docs/design/system.html")
+        if not os.path.isfile(sp):
+            rep.err(f"design.status {st} pero no existe {os.path.relpath(sp, root)}")
+        else:
+            txt = read(sp)
+            fm = frontmatter(txt)
+            if fm.get("status") not in {"draft", "approved"}:
+                rep.err(f"system.md: status inválido ({fm.get('status')!r}; draft, approved)")
+            elif st == "approved" and fm.get("status") != "approved":
+                rep.warn("project.yaml dice design.status approved pero system.md sigue en draft")
+            if fm.get("source") not in {"chosen", "extracted"}:
+                rep.err(f"system.md: source inválido ({fm.get('source')!r}; chosen, extracted)")
+            if PLACEHOLDER_RE.search(COMMENT_RE.sub("", txt)):
+                rep.err("system.md: quedan {{placeholders}} sin sustituir")
+            for header, cells in table_rows(section(body(txt), "color")):
+                if not cells or not re.search(r"--color-(?:text|on-|danger|success|warning\b)", cells[0]):
+                    continue
+                if not re.search(r"\d+(?:[.,]\d+)?\s*:\s*1", " ".join(cells[1:])):
+                    rep.warn(f"system.md: {cells[0].strip('` ')} es color de texto y no declara su contraste (n.n:1)")
+        if not os.path.isfile(hp):
+            rep.warn(f"falta la vista {os.path.relpath(hp, root)} (HTML del sistema, se abre sin red)")
+    if rep.errors or rep.warnings:
+        rep.print()
+    return len(rep.errors)
+
+
 def spec_dirs(root):
     base = os.path.join(root, "docs", "specs")
     if not os.path.isdir(base):
@@ -789,11 +850,12 @@ def cmd_validate(args):
     for a in args:
         a = os.path.abspath(a)
         targets.append(os.path.dirname(a) if os.path.isfile(a) else a)
+    design_errors = validate_design(root) if not args else 0
     if not targets:
         targets = spec_dirs(root)
         if not targets:
             print("No hay specs en docs/specs/.")
-            return 0
+            return 1 if design_errors else 0
     seen, errors = set(), 0
     nums = {}
     for d in targets:
@@ -805,7 +867,7 @@ def cmd_validate(args):
         errors += len(rep.errors)
         num = os.path.basename(d)[:3]
         nums.setdefault(num, []).append(os.path.basename(d))
-    errors += validate_roadmap(root)
+    errors += validate_roadmap(root) + design_errors
     for num, names in nums.items():
         if len(names) > 1:
             print(f"✗ número de spec repetido {num}: {names}")

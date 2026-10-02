@@ -1,0 +1,12 @@
+{
+  "errors": 2,
+  "contains": [
+    "design.source inválido ('picked'",
+    "system.md: quedan {{placeholders}}"
+  ],
+  "warnings_contains": [
+    "system.md sigue en draft",
+    "--color-text-muted es color de texto y no declara su contraste",
+    "falta la vista docs/design/system.html"
+  ]
+}

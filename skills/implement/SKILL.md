@@ -125,7 +125,8 @@ detente y propone la skill que indica.
      uno que parezca falso positivo se anota como nota y lo decide `/review`.
    - Si `hecho cuando:` incluye `verificación manual:`, hazla ahora y no al final: con navegador
      disponible, levanta la app y toma capturas en los anchos que fijan la constitución o el diseño
-     (p. ej. 390 y 1440 px), compáralas con el diseño y muéstralas; sin navegador o en un
+     (`design.widths`, p. ej. 390 y 1440 px), compáralas con `docs/design/system.html` o el HTML de
+     la spec y muéstralas; sin navegador o en un
      dispositivo, pide al usuario la comprobación concreta. **Espera su confirmación** y regístrala:
      `  - nota: verificación manual OK AAAA-MM-DD (usuario)`. Si falla, se corrige dentro de la tarea.
 5. **Marca** la tarea `[x]` en `tasks.md`. Si hubo algo relevante, añade una nota debajo:

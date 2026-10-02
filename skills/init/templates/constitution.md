@@ -27,6 +27,17 @@ spec. Los principios se exigen a todo código **nuevo o modificado**.
 
 <!-- repetir por principio -->
 
+<!-- if el proyecto tiene interfaz y design.status es draft o approved -->
+
+### P{{n}}. La interfaz usa solo el sistema de diseño
+**Regla:** colores, tipografía, espaciados, radios, sombras y duraciones salen de los tokens de
+[docs/design/system.md](design/system.md); ningún valor literal en estilos o componentes. Un valor
+nuevo se añade primero al sistema.
+**Cómo se verifica:** {{test o lint que falla con colores, tamaños o espaciados literales en los estilos}}.
+**Por qué:** mantiene la coherencia entre specs sin revisar cada pantalla a mano; los valores por
+defecto de plantillas y librerías lo rompen sin que nadie lo vea.
+<!-- endif -->
+
 ## Restricciones
 - {{compliance, plataformas, presupuesto, performance}}
 

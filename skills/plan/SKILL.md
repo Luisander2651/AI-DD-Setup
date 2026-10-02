@@ -126,6 +126,11 @@ cambiar la spec, detente y sugiere `/specify --edit` antes de seguir.
 
 ## Paso 3 — Diseño
 
+Si la spec tiene interfaz y el proyecto tiene sistema de diseño (`design.status` `draft` o
+`approved`), lee primero `references/design.md`: pantallas con componentes del sistema, "Cambios a
+incorporar al sistema" y, en una spec de rediseño o con pantallas que el sistema no cubre, las
+opciones en HTML antes de diseñar el resto.
+
 Completa `docs/templates/plan.md`. Guía por sección:
 
 | Sección | Contenido |

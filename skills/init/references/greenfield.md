@@ -36,6 +36,8 @@ Tras la entrevista, con el stack decidido:
      el modo que respeta la antigüedad mínima también en las transitivas (§2.2).
    - Ejecuta el comando con confirmación. Si el comando descarga la plantilla de un dominio que el
      entorno no alcanza, crea el equivalente con el gestor de paquetes y dilo.
+   - Si hay interfaz y sistema de diseño elegido (`design.md` §2), escribe sus tokens en el archivo
+     de tema del stack en este mismo paso.
    - Fija en `AGENTS.md` los comandos **reales** (instalar, dev, test, lint, type-check, build) y
      ejecútalos (Fase 4). Si la plantilla no trae tests o lint, añade los mínimos del stack y
      regístralos en el mismo ADR.
@@ -48,7 +50,8 @@ Tras la entrevista, con el stack decidido:
 Los valores por defecto de una plantilla no los decidió nadie del proyecto y suelen contradecir
 la constitución sin que ningún documento lo diga. Antes de cerrar `/init` (o en el plan de la spec
 001), contrasta cada uno con la constitución, `docs/security.md` y las restricciones de la
-entrevista, y regístralo en una tabla en `docs/architecture.md` → "Deuda técnica y riesgos":
+entrevista (y con `docs/design/system.md` si existe: tamaño de controles, margen lateral de campos
+y pantallas, colores y radios por defecto de la librería), y regístralo en una tabla en `docs/architecture.md` → "Deuda técnica y riesgos":
 
 | Valor de la plantilla | Dónde | Regla con la que choca | Acción |
 |---|---|---|---|

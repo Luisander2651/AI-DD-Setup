@@ -1,0 +1,8 @@
+name: plantshop
+type: frontend
+language: en
+design:
+  status: approved
+  source: picked
+  system: docs/design/system.md
+  html: docs/design/system.html

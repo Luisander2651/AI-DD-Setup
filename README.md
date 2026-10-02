@@ -12,7 +12,7 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. `--upgrade` pone al día un proyecto con la versión instalada del plugin. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (7 si documenta el diseño existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -101,6 +101,10 @@ Opciones habituales (revisa la documentación de tu cliente, los comandos pueden
 ## Dependencias
 
 - **Python 3.8+** para el validador (`.ai/bin/aidd.py`) y el hook.
+- **Skill `design`** (opcional; crea un canvas Design a partir de un brief): si la sesión la
+  ofrece, `/init` y `/plan` generan con ella las opciones de diseño y enlazan el canvas. Sin ella,
+  las opciones se generan igual en HTML con `skills/init/templates/design/option.html`. El HTML es
+  siempre el entregable: queda en el repo y se abre sin red.
 - **Plugin oficial `design` de Anthropic** (opcional, recomendado en proyectos con interfaz:
   `frontend`, `fullstack`, `mobile`). Por ahora el flujo **depende de él** para la parte de diseño:
   `/init` lo registra en `skills.enabled` si está instalado, `/plan` deja la nota de revisarlo con

@@ -47,6 +47,13 @@ Eventos que deben quedar registrados, cada uno como criterio `CA` verificable (s
 - {{evento}} → registra {{actor, acción, recurso, resultado}} (ver `docs/observability.md`)
 <!-- endif -->
 
+<!-- if la spec tiene interfaz -->
+
+## Diseño
+{{qué debe sentir quien la usa y qué pantallas toca}}. Sistema: [docs/design/system.md](../../design/system.md).
+{{Si es un rediseño: "Rediseño de <pantallas>: /plan genera las opciones."}}
+<!-- endif -->
+
 ## Requisitos no funcionales
 - {{performance, seguridad, accesibilidad}}
 

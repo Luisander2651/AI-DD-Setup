@@ -1,6 +1,6 @@
 # Plan — Diseño en `/init` con `design` (1.11.0)
 
-**Estado:** propuesta revisada con el usuario el 2026-10-02 (decisiones en §9).
+**Estado:** implementado en 1.11.0 (2026-10-02), salvo la prueba de punta a punta (§12, paso 6). Decisiones en §9.
 **Origen:** la prueba 8.13 ("Mi Presión" llegó a `/release` con los componentes de Ionic por
 defecto y los campos del formulario pegados al borde, sin ninguna fase de diseño) y la skill
 `design-spec` del portafolio personal (sistema de diseño aprobado antes de la primera pantalla,

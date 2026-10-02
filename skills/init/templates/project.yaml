@@ -45,6 +45,13 @@ observability:
     required: {{true|false}}
     events: [{{login, login_failed, access_denied, sensitive_read, sensitive_write, role_change}}]
     retention: {{TODO(init)}}
+design:                        # solo proyectos con interfaz (frontend, fullstack, mobile)
+  status: {{none|declined|draft|approved}}   # declined: el usuario no quiso documentarlo (no se vuelve a preguntar)
+  source: {{chosen|extracted|null}}         # chosen: elegido entre opciones · extracted: documentado del código
+  system: docs/design/system.md
+  html: docs/design/system.html
+  canvas: {{null}}             # enlace del canvas si se usó la skill design
+  widths: [{{390, 1440}}]      # anchos de comprobación (mobile: [360, 412])
 skills:
   enabled: [{{enabled_skills}}]  # p. ej. [design] (plugin oficial de Anthropic, si está instalado)
 paths:

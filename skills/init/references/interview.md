@@ -46,6 +46,17 @@ descarta las brechas que dependían de ellos.
 4. Herramientas: proponer un set según el stack (secretos, SAST, SCA, contenedores); el usuario
    confirma cuáles adoptar. Registrar los comandos en `docs/security.md` y `.ai/project.yaml`.
 
+**Ronda 4b — Diseño** (solo greenfield con interfaz: `frontend`, `fullstack`, `mobile`; ver
+`design.md` §2). En brownfield no se hace: allí solo se pregunta, en la Fase 0, si documentar el
+diseño existente.
+1. Objetivo del diseño y qué debe sentir quien lo usa; público y contexto de uso (prisa, una mano,
+   luz exterior, edad).
+2. Marca: ¿hay logo y paleta cerrados? (sí → 2 opciones · no → 3) · colores pedidos y a evitar.
+3. Tipografía preferida o estilo (geométrica, humanista, con cifras tabulares para datos) · claro,
+   oscuro o ambos.
+4. Referencias que gustan y que no · intensidad del movimiento (sobrio, moderado, protagonista) ·
+   librería de componentes prevista y cuánto se personaliza.
+
 **Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
 **Sin servidor propio** (app móvil o de escritorio sin backend, CLI local): no hay peticiones,
 correlación ni registro de auditoría central. Sustituye la ronda por: (1) informes de fallos y

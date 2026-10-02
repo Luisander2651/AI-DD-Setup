@@ -14,7 +14,7 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.10.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.11.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -90,6 +90,9 @@ todos los comandos posteriores leen y respetan.
 4. **Tipo de proyecto** (si no vino `--type`): en brownfield infiérelo y pide confirmación; en
    greenfield pregúntalo. Señales por tipo en `references/project-types.md` §1 (una app híbrida es
    `mobile`; en monorepo, el tipo va por paquete).
+5. **Interfaz y diseño** (`frontend`, `fullstack`, `mobile`): sigue `references/design.md`. En
+   brownfield, pregunta ahora si documentar el diseño existente (sin cambiar código); con un no,
+   `design.status: declined`. En greenfield, el diseño se decide en la entrevista.
 
 Informa en una línea qué detectaste antes de continuar.
 
@@ -99,7 +102,7 @@ Informa en una línea qué detectaste antes de continuar.
 
 Omitir con `--no-explore` o en greenfield.
 
-Lanza **en paralelo** seis subagentes de solo lectura (tipo `Explore` si existe). Los prompts
+Lanza **en paralelo** los subagentes de solo lectura (tipo `Explore` si existe). Los prompts
 exactos están en `references/explore-agents.md`:
 
 | Subagente | Produce |
@@ -110,10 +113,11 @@ exactos están en `references/explore-agents.md`:
 | D. Tooling, calidad y despliegue | Comandos build/test/lint/dev, CI, cobertura, variables de entorno, pipelines de deploy, entornos, rollback |
 | E. Seguridad | Autenticación y autorización, datos sensibles, puntos de entrada, manejo de secretos, herramientas de seguridad existentes, riesgos evidentes |
 | F. Observabilidad y auditoría | Qué se registra realmente: configuración de logs, emisión desde el código, correlación de peticiones, eventos de auditoría, datos sensibles en logs, métricas y alertas |
+| G. Interfaz y diseño (solo si el usuario aceptó documentarlo) | Tokens declarados y valores fijos, tipografía, componentes y sus estados, pantallas principales |
 
 Cada subagente devuelve un informe estructurado con **evidencia** (rutas de archivo) y un nivel de
 confianza (`alta`/`media`/`baja`) por hallazgo. No generan documentos: solo informan.
-Si el entorno no permite subagentes, ejecuta las seis exploraciones tú mismo en secuencia con
+Si el entorno no permite subagentes, ejecuta las exploraciones tú mismo en secuencia con
 los mismos prompts.
 
 Después, **consolida**:
@@ -146,6 +150,8 @@ Bloques obligatorios:
    objetivo y herramientas de seguridad (→ `docs/security.md`).
 8. Observabilidad y auditoría: qué eventos deben quedar registrados, obligaciones legales de
    registro de accesos, retención y quién puede leer los registros (→ `docs/observability.md`).
+9. Diseño (greenfield con interfaz): objetivo, marca y colores, tipografía, referencias
+   (→ `docs/design/`, `references/design.md` §2).
 
 ---
 
@@ -205,6 +211,9 @@ contenido se queda).
    cubre y las que deja fuera con su destino (otro objetivo, spec o excepción). No resumas: si el
    riesgo propone cuatro correcciones, el objetivo nombra las cuatro. Pregunta al usuario por
    las que propones dejar fuera.
+9a. **Diseño** (proyectos con interfaz): greenfield, opciones en HTML y sistema elegido
+    (`references/design.md` §2); brownfield aceptado, sistema extraído y deuda `DS` (§3). Bloque
+    `design` de `.ai/project.yaml` en ambos casos (`declined` si el usuario no lo quiso).
 9b. `docs/specs/README.md` con la tabla de specs (vacía en greenfield): `AGENTS.md` la enlaza.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
     `templates/review.md` y `templates/adr.md` para que los usen las demás skills.
@@ -276,6 +285,8 @@ Entrega al usuario, sin recapitular los pasos:
   detectados en brownfield (sin detallar vectores de explotación).
 - Estado de `docs/observability.md`: qué capacidades están solo presentes y no en uso, y si
   falta el registro de auditoría de accesos a datos sensibles.
+- Diseño: opciones generadas y elegida, o sistema extraído con su deuda `DS`, con las rutas de los
+  HTML para abrirlos; o `declined`.
 - Conciliación con el roadmap (si ya existía): brechas cubiertas por objetivos existentes,
   propuestas aplicadas o rechazadas y lo que los objetivos del usuario mencionan y la
   exploración no detectó.

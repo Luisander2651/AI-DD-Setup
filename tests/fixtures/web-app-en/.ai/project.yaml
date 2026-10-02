@@ -1,0 +1,13 @@
+name: plantshop
+type: frontend
+language: en
+design:
+  status: approved
+  source: extracted
+  system: docs/design/system.md
+  html: docs/design/system.html
+  canvas: null
+  widths: [390, 1440]
+security:
+  tools:
+    sast: { command: null, status: no-aplica }

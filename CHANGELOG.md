@@ -3,6 +3,38 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.11.0] - 2026-10-02
+Diseño en el flujo (plan en `docs/plan-integracion-design.md`). La prueba 8.13 llegó a producción
+con los componentes por defecto de Ionic y campos sin margen porque ninguna skill pedía diseño; el
+portafolio personal, que sí lo tuvo desde el principio, mantuvo 15 specs coherentes con un solo
+sistema.
+
+### Added
+- **Greenfield con interfaz:** Ronda 4b de diseño en la entrevista (objetivo, marca y colores,
+  tipografía, referencias) y **opciones en HTML**: 3 por defecto, 2 si el usuario ya trae marca.
+  La elegida pasa a `docs/design/system.md` y `system.html`; sus tokens se escriben en el tema del
+  proyecto base y la auditoría de la plantilla compara también con el sistema.
+- **Brownfield con interfaz:** solo si el usuario acepta (pregunta en la Fase 0), documenta el
+  diseño existente: subagente G, capturas con datos de prueba, auditoría, `system.md` extraído,
+  `system.html` y deuda `DS` propuesta al roadmap. Nunca rediseña; `declined` si no se quiere.
+- `/init --upgrade` §5e: solo la documentación del diseño existente, si el usuario acepta.
+- **Rediseño como spec propia:** `/plan` (`references/design.md`) genera las opciones en la carpeta
+  de la spec, "Cambios a incorporar al sistema" como primera tarea y migración por pantalla.
+- Plantillas `templates/design/`: `system.md`, `brief.md`, `creative-direction.md`,
+  `anti-cliches.md` (base por tipo de proyecto) y `option.html` (autocontenida, sin red, modo
+  oscuro, "Sin movimiento" y **contraste calculado por la propia página**).
+- Bloque `design` en `project.yaml` y principio "La interfaz usa solo el sistema de diseño".
+- La skill `design` (canvas a partir de un brief) como dependencia opcional junto al plugin
+  `design` de Anthropic: si la sesión la ofrece se usa para las opciones; el HTML es siempre el
+  entregable.
+- Validador: `design.status`/`source`, `system.md` y su HTML, contraste declarado en cada color de
+  texto, spec con "Diseño" que no enlaza el sistema. Fixtures `web-app-en` y prueba de que
+  `option.html` no carga nada externo.
+
+### Changed
+- Espacio en `init` y `plan`: las señales y secciones por tipo pasan a
+  `init/references/project-types.md` y los contratos por tipo a `plan/references/contracts-by-type.md`.
+
 ## [1.10.0] - 2026-10-02
 Prácticas tomadas del flujo del portafolio personal (sitio estático en Astro, 15 specs de punta a
 punta con 4 skills y sin subagentes): decisiones con origen, estado que sobrevive a una sesión
