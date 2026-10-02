@@ -812,7 +812,7 @@ def validate_design(root):
         sp = os.path.join(root, dcfg["system"] or "docs/design/system.md")
         hp = os.path.join(root, dcfg["html"] or "docs/design/system.html")
         if not os.path.isfile(sp):
-            rep.err(f"design.status {st} pero no existe {os.path.relpath(sp, root)}")
+            rep.err(f"design.status {st} pero no existe {os.path.relpath(sp, root).replace(os.sep, '/')}")
         else:
             txt = read(sp)
             fm = frontmatter(txt)
@@ -830,7 +830,7 @@ def validate_design(root):
                 if not re.search(r"\d+(?:[.,]\d+)?\s*:\s*1", " ".join(cells[1:])):
                     rep.warn(f"system.md: {cells[0].strip('` ')} es color de texto y no declara su contraste (n.n:1)")
         if not os.path.isfile(hp):
-            rep.warn(f"falta la vista {os.path.relpath(hp, root)} (HTML del sistema, se abre sin red)")
+            rep.warn(f"falta la vista {os.path.relpath(hp, root).replace(os.sep, '/')} (HTML del sistema, se abre sin red)")
     if rep.errors or rep.warnings:
         rep.print()
     return len(rep.errors)
