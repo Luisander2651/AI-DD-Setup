@@ -90,13 +90,45 @@ skills/
 
 ## Instalación
 
-Opciones habituales (revisa la documentación de tu cliente, los comandos pueden cambiar):
+Tres caminos (revisa la documentación de tu cliente: los comandos pueden cambiar). El marketplace
+de este repo se llama `ai-dd` y el plugin también, así que su identificador es `ai-dd@ai-dd`.
 
+- **Claude Code, desde el repo (recomendado):** dentro de una sesión,
+  `/plugin marketplace add Luisander2651/AI-DD-Setup` y después `/plugin install ai-dd@ai-dd`
+  (elige el alcance: usuario, proyecto o local). Desde la terminal:
+  `claude plugin marketplace add Luisander2651/AI-DD-Setup` y `claude plugin install ai-dd@ai-dd`.
 - **Claude Code, para probar en local:** arrancar con el directorio del plugin, p. ej.
-  `claude --plugin-dir E:\AI-DD-Setup`.
-- **Claude Code, desde el repo:** añadir este repo como marketplace con `/plugin marketplace add`
-  e instalar `ai-dd`.
-- **Claude (app de escritorio):** empaquetar el directorio como archivo `.plugin` e instalarlo.
+  `claude --plugin-dir E:\AI-DD-Setup`. Solo dura esa sesión y no se instala.
+- **Claude (app de escritorio, chat y Cowork):** en **Customize > Plugins**, **Add > Add marketplace**
+  con `Luisander2651/AI-DD-Setup` (recomendado: así recibe actualizaciones), o **Add > Upload plugin**
+  con la carpeta empaquetada como `.zip` o `.plugin` (debe contener un solo `.claude-plugin/plugin.json`).
+
+## Actualización
+
+Cada versión sube `version` en `.claude-plugin/plugin.json` y se publica con push a `main`; después,
+según cómo se instaló:
+
+- **Claude Code, desde el repo:**
+  - En una sesión: `/plugin` → pestaña **Marketplaces** → `ai-dd` → **Update marketplace** (refresca el
+    catálogo y actualiza el plugin), o pestaña **Installed** → `ai-dd` → **Update now**.
+  - Desde la terminal: `claude plugin marketplace update ai-dd` y `claude plugin update ai-dd@ai-dd`.
+    Ojo: `claude plugin marketplace update` **sin nombre** solo refresca los catálogos y deja los
+    plugins en su versión actual.
+  - Activa la versión nueva con `/reload-plugins` o abriendo una sesión nueva, y compruébala con
+    `claude plugin list` (línea `Version`).
+  - Actualización automática: `/plugin` → **Marketplaces** → `ai-dd` → **Enable auto-update**. En un
+    marketplace propio viene desactivada; con ella, Claude Code actualiza al iniciar sesión y avisa
+    con `Plugin updated … Run /reload-plugins to apply`.
+- **Claude Code, en local (`--plugin-dir`):** `git pull` en la carpeta del plugin y abre una sesión nueva.
+- **Claude (app de escritorio), como marketplace:** **Customize > Plugins** → el marketplace → **Check for
+  updates** trae la última versión del repo; activa **Sync automatically** para que lleguen solas. Las sesiones de Claude Code con la misma cuenta lo reciben como plugin sincronizado
+  (`/reload-plugins` para cargarlo).
+- **Claude (app de escritorio), subido como archivo:** no se actualiza solo. Empaqueta la versión nueva y
+  súbela otra vez con **Add > Upload plugin**; si queda la anterior, quítala desde su menú → **Remove**.
+  Para no repetir esto en cada versión, cámbialo a la opción de marketplace.
+
+**Después, en cada proyecto** inicializado con una versión anterior: `/ai-dd:init --upgrade` (pone al
+día el validador, las plantillas y `.ai/project.yaml`; ver "Mantenimiento" → 6).
 
 ## Dependencias
 
