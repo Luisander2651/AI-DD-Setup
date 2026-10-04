@@ -65,7 +65,8 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    demás con `data-optional`, que la página oculta si falta un token).
 5. Contenido **real**: nombre del producto y textos de la primera feature del roadmap, datos de
    prueba realistas; nunca lorem ipsum ni cifras inventadas.
-6. Pantallas: 1–2 principales en cada ancho de `design.widths`.
+6. Pantallas: 1–2 principales en cada ancho de `design.widths`. Lo que cambia con el ancho se
+   escribe con `@container`, no con `@media` (el marco no es la ventana).
 7. "Por qué" en una o dos frases ligadas al brief, y el riesgo asumido.
 
 Las opciones deben ser **distintas de verdad**: cambian al menos dos de familia de color,
@@ -110,42 +111,85 @@ dejo `docs/design/system.md` y una vista en HTML. No cambio código."* Con un **
 `design.status: declined`, no lances el subagente G y no vuelvas a preguntar (tampoco
 `--upgrade`).
 
-Con un **sí**:
-1. **Subagente G** (`explore-agents.md`) en la Fase 1, junto a los demás.
-2. **Capturas y medidas** de las pantallas principales (lista, vacío, error, formulario con error)
-   en `design.widths`, solo si la app arranca con los comandos verificados y **solo con datos de
-   prueba**, nunca con datos reales. Para inyectarlos, en este orden: helpers o fixtures de los
-   tests de pantalla del proyecto (p. ej. un almacén simulado), un comando de semilla documentado,
-   o pregunta; si no hay forma sin datos reales, no captures y dilo. Van a
-   `docs/design/capturas/`. En cada pantalla **mide** los estilos calculados en el navegador
-   (`getComputedStyle`): fondo y texto de pantalla, barra y filas, familia de fuente, margen lateral
-   del contenido y de los campos, alto de botones y campos; con `prefers-color-scheme: dark`
-   emulado, si el código declara modo oscuro. `system.md` documenta **lo medido**: si difiere de lo
-   que declara el código (G), lo medido manda y la diferencia es deuda `DS`.
-3. **Auditoría:** con el plugin, `design:design-system audit` sobre el informe de G y
+Con un **sí**, la regla es **fidelidad**: el documento describe la app que ve el usuario, no una
+interpretación. Nada se dibuja a mano ni se redacta: lo que no se puede capturar o leer del código
+queda marcado como pendiente.
+
+1. **Subagente G** (`explore-agents.md`) en la Fase 1, junto a los demás: tokens, valores fijos,
+   lo declarado que no se carga, **inventario completo de vistas** y recursos de marca.
+2. **Datos de prueba.** Las capturas se hacen **solo con datos de prueba**, nunca con datos reales.
+   Para tenerlos, en este orden: helpers o fixtures de los tests de pantalla del proyecto (p. ej.
+   un almacén simulado), una base de datos de pruebas con su semilla (`migrate --seed`, factories,
+   fixtures) en un entorno local aparte, o pregunta. Si el usuario no quiere capturas, explícale
+   que sin ellas el HTML no puede ser fiel y ofrece la base de pruebas; si aun así no, sigue sin
+   capturas (paso 4, estado `sin captura`).
+3. **Capturas y medidas de todas las vistas** del inventario, en cada ancho de `design.widths`, con
+   el rol que haga falta para verlas (usuarios de prueba). Es automático (Playwright o equivalente):
+   no te limites a las "principales". Incluye estados que se puedan provocar con datos de prueba
+   (vacío, error de validación, modal abierto). Van a `docs/design/capturas/<vista>-<ancho>.png`.
+   En cada vista **mide** los estilos calculados (`getComputedStyle`): fondo y texto de pantalla,
+   barras, tarjetas y filas, familia de fuente, margen lateral, alto de botones y campos; con
+   `prefers-color-scheme: dark` emulado si el código declara modo oscuro. `system.md` documenta
+   **lo medido**: si difiere de lo que declara el código (G), lo medido manda y la diferencia es
+   deuda `DS`.
+4. **Inventario de vistas** en `system.md`: una fila por vista con ruta o plantilla, rol, capturas
+   y estado (`capturada` · `sin captura (motivo)` · `no accesible (motivo)`). El resumen final dice
+   cuántas de cuántas se capturaron.
+5. **Auditoría:** con el plugin, `design:design-system audit` sobre el informe de G y
    `design:accessibility-review` sobre las capturas; sin él, la misma revisión con el checklist de
    `system.md` (contraste, valores fijos, estados, toque mínimo).
-4. `system.md` con `source: extracted`, `status: draft`: el sistema **tal como está**, sin
-   mejoras. Lo no determinado se marca y se pregunta. La deuda va a "Deuda de diseño" con IDs
-   (`DS1`, `DS2`…) y evidencia.
-5. `system.html` desde `option.html` con los valores reales: los pares que no cumplen se ven en
-   rojo (es deuda, no se corrige aquí). En "Pantallas", las capturas como `<img
-   src="capturas/<pantalla>-<ancho>.png" alt="…">` dentro de cada marco. En "Componentes", recortes
-   de las capturas (botón, campo, fila, aviso) en lugar de los componentes sintéticos de la
-   plantilla: los sintéticos no reproducen los detalles de la librería (mayúsculas de Material,
-   superficies internas) y harían creer que el sistema es otro.
-6. **Roadmap:** las `DS` prioritarias se proponen como objetivos con la conciliación de
+6. `system.md` con `source: extracted`, `status: draft`, `extracted_with: <versión del plugin>`: el
+   sistema **tal como está**, sin mejoras. Lo no determinado se marca y se pregunta. La deuda va a
+   "Deuda de diseño" con IDs (`DS1`, `DS2`…) y evidencia.
+7. `system.html` desde `option.html` con los valores reales; los pares que no cumplen se ven en
+   rojo (es deuda, no se corrige aquí):
+   - **Marca:** el logo del repo (SVG, o PNG/WebP en base64) y el nombre comercial que muestra la
+     app, no el nombre del repositorio.
+   - **Textos:** copiados de las vistas y plantillas del código (títulos, botones, mensajes),
+     nunca redactados. Datos de ejemplo: los de prueba.
+   - **Pantallas:** todas las vistas del inventario como galería de capturas
+     (`<img src="capturas/<vista>-<ancho>.png" alt="<vista> a <ancho> px">`), agrupadas por sección
+     de la app; una vista sin captura es un hueco con su ruta y el motivo, **nunca una maqueta**.
+   - **Componentes:** recortes de las capturas (botón, campo, fila, tarjeta, aviso, menú), no los
+     sintéticos de la plantilla, que no reproducen iconos, librerías ni detalles reales.
+8. **Roadmap:** las `DS` prioritarias se proponen como objetivos con la conciliación de
    `brownfield.md` §4; el usuario decide.
-7. Constitución: el principio "solo tokens" se propone con la regla de "Código previo": aplica a
+9. Constitución: el principio "solo tokens" se propone con la regla de "Código previo": aplica a
    pantallas nuevas o modificadas; el código anterior no bloquea.
 
 No propongas rediseño ni generes opciones. Si el usuario lo pide, el resumen indica que es una
 spec propia (`/specify "rediseño de …"`).
 
+### 3b. Re-extraer un sistema ya documentado
+
+`/init --upgrade --redo-design`, u ofrecido por `--upgrade` cuando `system.md` es
+`source: extracted` y `extracted_with` falta o es anterior a 1.11.2. Sirve para rehacer con estas
+reglas una documentación hecha con un procedimiento anterior o que ya no se parece a la app. No
+aplica a un sistema `chosen` (cambiarlo es un rediseño: spec propia).
+
+1. **Archiva, no borres:** mueve `system.md` y `system.html` a `docs/design/history/`
+   (`system.v<N>.md`, `system.v<N>.html`, con `N` = versión mayor anterior) y las capturas a
+   `docs/design/history/capturas-v<N>/`.
+2. **Re-extrae** con los pasos 1–7 de §3 (sin volver a preguntar si documentar: el usuario ya dijo
+   que sí).
+3. **Concilia la deuda:** compara cada `DS` del sistema archivado con lo nuevo.
+   - Sigue ocurriendo → conserva su **mismo ID** con evidencia actualizada.
+   - Ya no ocurre → fila con su ID y estado `no se confirma (re-extracción <fecha>: <evidencia>)`.
+   - Problema nuevo → ID nuevo a partir del mayor usado (nunca reutilices uno).
+   Si la `DS` vieja mezclaba dos problemas, consérvala para el que sigue y crea uno nuevo para el
+   otro, y dilo en "Decisiones".
+4. **Referencias:** lista dónde se citan las `DS` y el sistema (roadmap, specs, planes,
+   constitución, `AGENTS.md`) y qué cambia para cada una; **no las edites** sin confirmación. El
+   validador avisa si algo cita una `DS` que no existe ni en el sistema ni en `history/`.
+5. `system.md` sube la versión **menor** (`1.0.0` → `1.1.0`), `extracted_with` nuevo, `status:
+   draft` (y `design.status: draft` en `project.yaml`) hasta que el usuario lo apruebe, y una fila en
+   "Decisiones" (tipo `diseño`, "re-extracción con el procedimiento X").
+
 ## 4. `/init --upgrade`
 
 `upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
-re-explorar el resto del código: lanza únicamente el subagente G.
+re-explorar el resto del código: lanza únicamente el subagente G. Con un sistema extraído por un
+procedimiento anterior, ofrece §3b (re-extraer); `--redo-design` lo ejecuta directamente.
 
 ## 5. Brief (para la skill `design` y para escribir el HTML)
 

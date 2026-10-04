@@ -8,7 +8,7 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
 ## Pasos
 
 1. **Versiones.** Lee `skills_version` de `.ai/project.yaml` y la versión de `../SKILL.md`. Si son
-   iguales, dilo y termina. Lee las entradas de `../../../CHANGELOG.md` del plugin entre ambas
+   iguales, dilo y termina (salvo `--redo-design`: entonces ve directo al paso 9). Lee las entradas de `../../../CHANGELOG.md` del plugin entre ambas
    versiones y resume al usuario qué cambia para su proyecto.
 2. **Validador.** Compara `python .ai/bin/aidd.py --version` con `../../../scripts/aidd.py`.
    Si es anterior, reemplázalo por la copia del plugin (los pasos siguientes usan sus comandos).
@@ -56,8 +56,13 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    un sí, sigue **solo** `design.md` §3 (subagente G, capturas con datos de prueba y medidas,
    auditoría, `system.md` extraído, `system.html` y deuda `DS`), sin re-explorar el resto del
    código. Con un no, `design.status: declined` y no vuelvas a preguntar. Nunca ofrezcas rediseño
-   ni opciones. Si `design.status` es `declined`, `draft` o `approved`, no hagas nada. Si
-   `skills.enabled` no tiene `design` y el plugin está instalado, ofrece registrarlo.
+   ni opciones. Si `design.status` es `declined` o el sistema es `source: chosen`, no hagas nada.
+   **Re-extracción (desde 1.11.2):** si `system.md` es `source: extracted` y `extracted_with` falta
+   o es anterior a 1.11.2, explica qué cambió (inventario completo de vistas con capturas, nada
+   dibujado a mano, textos y logo de la app, deuda conciliada) y **ofrece** re-extraer con
+   `design.md` §3b; con `--upgrade --redo-design`, hazlo sin preguntar si ofrecerlo. Nunca borres
+   el sistema anterior: se archiva en `docs/design/history/`. Si `skills.enabled` no tiene
+   `design` y el plugin está instalado, ofrece registrarlo.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
     avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

@@ -16,8 +16,12 @@
      solo tokens (ningún literal de color, tamaño o espaciado).
   4. Sustituye cada {{…}} por contenido real del proyecto (nunca lorem ipsum).
   5. Pantallas: una .v-frame por pantalla y ancho de design.widths, con el HTML de la pantalla
-     dentro de .opt, compuesto con las clases c-*. En un sistema extraído del código, los
-     componentes y las pantallas son recortes de las capturas reales (<img>), no los sintéticos.
+     dentro de .opt, compuesto con las clases c-*. Lo responsivo, con @container (max-width: …)
+     dentro del bloque "components", nunca con @media: el marco no es la ventana.
+     En un sistema EXTRAÍDO del código no se compone nada: cada marco es la captura real
+     (<img src="capturas/<vista>-<ancho>.png">), los componentes son recortes de esas capturas, los
+     textos y el logo son los de la app (logo incrustado desde el repo) y una vista sin captura
+     se muestra como hueco "sin captura (motivo)", nunca como maqueta.
   El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano. Un par
   con data-optional se oculta si la opción no define alguno de sus tokens; uno sin él sale como
   "falta el token".
@@ -88,6 +92,9 @@
   .v-viewport { border: 1px solid var(--ui-line); border-radius: 12px; overflow: hidden; background: var(--ui-panel); }
   .v-scaler { transform-origin: 0 0; }
   .v-scaler > .opt { min-height: var(--frame-h, 720px); }
+  /* Cada marco es un contenedor: las reglas responsivas de la opción usan @container, no @media,
+     para que el marco de 390 px se vea como la app a 390 px aunque la ventana sea ancha. */
+  .v-scaler > .opt, .v-stage > .opt { container-type: inline-size; }
   .v-motion { margin: 0; padding-left: 20px; max-width: 75ch; }
   .v-motion li { margin-bottom: 10px; }
   .v-foot { padding: 28px 0 48px; color: var(--ui-muted); font-size: 13px; }

@@ -398,6 +398,48 @@ def scenario_templates():
         check("los finales de línea no cuentan como personalización", "sin cambios" in out.split("| spec.md |")[1].split("\n")[0], out)
 
 
+def scenario_design_inventory():
+    print("sistema extraído: inventario de vistas y deuda DS:")
+    with tempfile.TemporaryDirectory() as tmp:
+        os.makedirs(os.path.join(tmp, ".ai"))
+        os.makedirs(os.path.join(tmp, "docs/design/capturas"))
+        os.makedirs(os.path.join(tmp, "docs/design/history"))
+        os.makedirs(os.path.join(tmp, "docs/specs/001-x"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write(
+            "type: fullstack\nlanguage: en\ndesign:\n  status: draft\n  source: extracted\n"
+            "  system: docs/design/system.md\n  html: docs/design/system.html\n")
+        open(os.path.join(tmp, "docs/design/system.html"), "w", encoding="utf-8").write("<html></html>")
+        open(os.path.join(tmp, "docs/design/capturas/login-390.png"), "wb").write(b"png")
+        open(os.path.join(tmp, "docs/design/history/system.v1.md"), "w", encoding="utf-8").write(
+            "## Design debt\n| ID | Problem |\n|---|---|\n| DS3 | old |\n")
+        open(os.path.join(tmp, "docs/design/system.md"), "w", encoding="utf-8").write(
+            "---\nstatus: draft\nsource: extracted\n---\n## View inventory\n"
+            "| View | Route / template | Role | Captures | State |\n|---|---|---|---|---|\n"
+            "| Login | /login | guest | capturas/login-390.png | captured |\n"
+            "| Calendar | /calendar | staff | capturas/calendar-390.png | captured |\n"
+            "| Reports | /reports | admin | — | not captured |\n"
+            "| Billing | /billing | admin | — | not captured (needs a payment sandbox) |\n"
+            "| Audit log | /audit | admin | — | maybe later |\n"
+            "## Design debt\n| ID | Problem | Where | Fix | State |\n|---|---|---|---|---|\n"
+            "| DS1 | hard-coded pink | app.css | tokens | pending |\n| DS2 | no focus ring | app.css | ring | pending |\n"
+            "| DS2 | duplicated | x | y | pending |\n")
+        open(os.path.join(tmp, "docs/roadmap.md"), "w", encoding="utf-8").write(
+            "| # | Goal |\n|---|---|\n| 1 | Fix DS1, DS3 and DS9 |\n")
+        open(os.path.join(tmp, "docs/specs/001-x/spec.md"), "w", encoding="utf-8").write(
+            "---\nstatus: draft\n---\n## Problem\nDS2\n## Acceptance criteria\n- [ ] AC1 x\n"
+            "## Out of scope\nx\n## Security and privacy\nNot applicable\n")
+        _, out = run(["validate"], tmp)
+        out = out.replace("\\", "/")
+        check("captura citada que no existe → aviso", "calendar-390.png, que no existe" in out, out)
+        check("sin captura sin motivo → aviso", "'Reports' not captured sin motivo" in out, out)
+        check("sin captura con motivo → sin aviso", "'Billing'" not in out, out)
+        check("estado desconocido → aviso", "'Audit log' con estado desconocido" in out, out)
+        check("ID de deuda repetido → error", "IDs de deuda repetidos ['DS2']" in out, out)
+        check("roadmap cita DS que no existe → aviso (DS3 está en history/)",
+              "docs/roadmap.md cita ['DS9']" in out, out)
+        check("captura existente → sin aviso", "'Login'" not in out, out)
+
+
 if __name__ == "__main__":
     fixtures()
     scenario_review_pack()
@@ -411,5 +453,6 @@ if __name__ == "__main__":
     scenario_release_status()
     scenario_design_contrast_rule()
     scenario_templates()
+    scenario_design_inventory()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")
     sys.exit(1 if FAILS else 0)

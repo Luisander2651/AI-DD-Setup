@@ -19,6 +19,7 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | Decisiones | Decisions | spec |
 | Diseño | Design | spec (con interfaz) |
 | Deuda de diseño | Design debt | `docs/design/system.md` |
+| Inventario de vistas | View inventory | `docs/design/system.md` (sistema extraído) |
 | Cambios a incorporar al sistema | Changes to the design system | plan |
 | Constitution Check | Constitution Check | plan, tasks |
 | Trazabilidad | Traceability | plan |
@@ -39,6 +40,8 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `HOY NO SE CUMPLE` | `NOT MET TODAY` | criterio de spec inferida que el código no cumple |
 | `No aplica` | `Not applicable` | sección de seguridad sin datos sensibles |
 | `hecho cuando:` | `done when:` | tarea |
+| `capturada` · `sin captura (motivo)` · `no accesible (motivo)` | `captured` · `not captured (reason)` · `not reachable (reason)` | estado de una vista del inventario |
+| `DS1` | `DS1` | deuda de diseño; un ID no se reutiliza |
 | `MINOR`, `añade`, `nuevo` | `MINOR`, `adds`, `new` | fila de "Enmiendas" que añade un principio |
 | `constitution_version:` | `constitution_version:` | frontmatter del plan y de `analysis.md` |
 | `cubre:` | `covers:` | tarea |

@@ -3,6 +3,30 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.11.2] - 2026-10-03
+Fidelidad del diseño extraído. En un proyecto real (clínica dental, Laravel) documentado con 1.11.0,
+`system.html` no se parecía a la app: sin capturas, el agente redibujó 3–4 pantallas con los
+componentes genéricos de la plantilla, inventó textos y marca (el nombre del repo en lugar del
+logo, titulares distintos) y el marco de 390 px mostraba el login de escritorio.
+
+### Fixed
+- **Nada dibujado a mano en un sistema extraído:** cada vista es una captura real con datos de
+  prueba (helpers de tests, base de pruebas con semilla, o preguntar); sin captura, la vista queda
+  como hueco "sin captura (motivo)", nunca como maqueta.
+- **Textos y marca de la app:** copiados de las vistas y del logo del repo, nunca redactados ni
+  tomados del nombre del repositorio.
+- **Marcos responsivos:** `option.html` hace de cada marco un contenedor y pide `@container` en
+  lugar de `@media`, para que el marco de 390 px se vea como la app a 390 px.
+
+### Added
+- **Inventario de vistas** en `system.md` (todas las rutas y vistas con rol, capturas y estado) y
+  galería completa en `system.html`; el subagente G inventaría vistas, marca y datos de prueba.
+- **Re-extracción** (`/init --upgrade --redo-design`, y ofrecida por `--upgrade` cuando
+  `extracted_with` falta o es anterior): archiva el sistema anterior en `docs/design/history/`,
+  re-extrae y **concilia la deuda** conservando los IDs `DS` vigentes; nunca reutiliza un ID.
+- Validador: estados y capturas del inventario; IDs `DS` repetidos (error); roadmap o specs que
+  citan una `DS` que no existe ni en el sistema ni en `history/`.
+
 ## [1.11.1] - 2026-10-03
 Correcciones de la prueba 8.15 (`docs/pruebas/8.15-diseno-ionic.md`): diseño de punta a punta en
 un proyecto existente, de `--upgrade` a una spec de rediseño liberada hasta T095.

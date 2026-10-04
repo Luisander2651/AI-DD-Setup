@@ -38,7 +38,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.11.1"
+VERSION = "1.11.2"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -72,6 +72,8 @@ VOCAB = {
     "decisions": ["Decisiones", "Decisions"],
     "design": ["Diseño", "Design"],
     "color": ["Color", "Colour"],
+    "design_debt": ["Deuda de diseño", "Design debt"],
+    "view_inventory": ["Inventario de vistas", "View inventory"],
 }
 DESIGN_STATES = {"none", "declined", "draft", "approved"}
 DESIGN_SOURCES = {"chosen", "extracted", "null", ""}
@@ -888,11 +890,64 @@ def validate_design(root):
                     continue
                 if not re.search(r"\d+(?:[.,]\d+)?\s*:\s*1", " ".join(cells[1:])):
                     rep.warn(f"system.md: {cells[0].strip('` ')} es color de texto y no declara su contraste (n.n:1)")
+            check_design_inventory(rep, txt, os.path.dirname(sp))
+            check_design_debt(rep, root, txt, os.path.dirname(sp))
         if not os.path.isfile(hp):
             rep.warn(f"falta la vista {os.path.relpath(hp, root).replace(os.sep, '/')} (HTML del sistema, se abre sin red)")
     if rep.errors or rep.warnings:
         rep.print()
     return len(rep.errors)
+
+
+VIEW_STATES = r"^(?:capturada|captured|sin captura|not captured|no accesible|not reachable)\b"
+DS_RE = r"\bDS\d+\b"
+
+
+def check_design_inventory(rep, txt, ddir):
+    """Inventario de vistas (sistema extraído): estado válido, motivo si no hay captura y que las
+    capturas citadas existan."""
+    sec = section(body(txt), "view_inventory")
+    if sec is None:
+        return
+    for header, cells in table_rows(sec):
+        if not cells or not cells[0].strip() or PLACEHOLDER_RE.search(" ".join(cells)):
+            continue
+        state = cells[-1].strip().lower()
+        if not re.match(VIEW_STATES, state):
+            rep.warn(f"system.md: vista '{cells[0][:30]}' con estado desconocido '{cells[-1][:30]}' "
+                     "(capturada, sin captura (motivo), no accesible (motivo))")
+            continue
+        if not state.startswith(("capturada", "captured")) and not re.search(r"[(:—-]\s*\w", state):
+            rep.warn(f"system.md: vista '{cells[0][:30]}' {state} sin motivo")
+        for img in re.findall(r"(capturas/[\w./-]+\.(?:png|jpe?g|webp))", " ".join(cells)):
+            if not os.path.isfile(os.path.join(ddir, img)):
+                rep.warn(f"system.md: la vista '{cells[0][:30]}' cita {img}, que no existe")
+        if state.startswith(("capturada", "captured")) and not re.search(r"capturas/", " ".join(cells)):
+            rep.warn(f"system.md: vista '{cells[0][:30]}' marcada capturada sin ruta de captura")
+
+
+def check_design_debt(rep, root, txt, ddir):
+    """IDs DS únicos; lo que citan roadmap y specs existe en la deuda actual o en un sistema archivado."""
+    ids = [cells[0].strip() for _, cells in table_rows(section(body(txt), "design_debt"))
+           if cells and re.fullmatch(r"DS\d+", cells[0].strip())]
+    dup = sorted({i for i in ids if ids.count(i) > 1})
+    if dup:
+        rep.err(f"system.md: IDs de deuda repetidos {dup} (un ID no se reutiliza)")
+    known = set(ids)
+    hist = os.path.join(ddir, "history")
+    if os.path.isdir(hist):
+        for f in os.listdir(hist):
+            if f.endswith(".md"):
+                known.update(re.findall(DS_RE, read(os.path.join(hist, f))))
+    sources = [os.path.join(root, "docs", "roadmap.md")] + [
+        os.path.join(d, "spec.md") for d in spec_dirs(root)]
+    for src in sources:
+        if not os.path.isfile(src):
+            continue
+        lost = sorted(set(re.findall(DS_RE, read(src))) - known, key=lambda x: int(x[2:]))
+        if lost:
+            name = os.path.relpath(src, root).replace(os.sep, "/")
+            rep.warn(f"{name} cita {lost}, que no están en la deuda de system.md ni en docs/design/history/", actionable=True)
 
 
 def spec_dirs(root):

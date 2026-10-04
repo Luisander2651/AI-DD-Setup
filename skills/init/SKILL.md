@@ -14,13 +14,14 @@ Prepara un repositorio para trabajar con el flujo:
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.11.1` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.11.2` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
 | Argumento | Efecto |
 |---|---|
 | `--upgrade` | Pone al día un proyecto ya inicializado con la versión instalada del plugin, sin re-explorar. Sigue `references/upgrade.md`. |
+| `--upgrade --redo-design` | Re-extrae el sistema de diseño documentado del código (`source: extracted`): archiva el anterior en `docs/design/history/`, captura todas las vistas y concilia la deuda `DS` (`references/design.md` §3b). |
 | `--type <frontend\|backend\|fullstack\|mobile\|monorepo\|library>` | Omite la pregunta de tipo de proyecto |
 | `--force` | Permite sobrescribir archivos existentes (siempre mostrando diff antes) |
 | `--no-explore` | En brownfield, omite los subagentes y solo entrevista |

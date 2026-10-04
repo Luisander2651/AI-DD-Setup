@@ -2,6 +2,7 @@
 status: draft            # draft | approved (solo el usuario aprueba)
 source: {{chosen|extracted}}   # chosen: elegido entre opciones · extracted: documentado del código
 version: 1.0.0
+extracted_with: {{skills_version}}   # solo source: extracted — versión del plugin que lo extrajo (--upgrade ofrece re-extraer si es anterior a 1.11.2)
 html: docs/design/system.html
 canvas: {{enlace del canvas de la skill design | null}}
 widths: [{{390, 1440}}]
@@ -103,6 +104,21 @@ anima solo `transform` y `opacity` salvo justificación.
 |---|---|---|---|
 | {{nombre}} | `system.html#{{id}}-m` | `system.html#{{id}}-d` | {{…}} |
 
+<!-- if source: extracted -->
+## Inventario de vistas
+
+**Todas** las vistas de la app (rutas, plantillas, modales con URL propia), no solo las principales,
+con capturas de la app real hechas con datos de prueba. Nada se dibuja a mano.
+
+| Vista | Ruta / plantilla | Rol | Capturas | Estado |
+|---|---|---|---|---|
+| {{Citas}} | {{/citas · resources/views/citas/index.blade.php}} | {{personal}} | {{capturas/citas-390.png · capturas/citas-1440.png}} | {{capturada}} |
+| {{Facturación}} | {{/facturacion}} | {{admin}} | — | {{sin captura (motivo)}} |
+
+Estados: `capturada` · `sin captura (motivo)` · `no accesible (motivo)`. El validador comprueba
+que las capturas citadas existan.
+<!-- endif -->
+
 ## Reglas de uso
 
 - {{Una acción principal por pantalla; colores semánticos solo con su significado; …}}
@@ -119,6 +135,10 @@ código previo; se corrige cuando una spec toca la pantalla o como objetivo del 
 | ID | Problema | Dónde (evidencia) | Corrección propuesta | Estado |
 |---|---|---|---|---|
 | DS1 | {{valores fijos de color en 23 archivos}} | {{rutas}} | {{sustituir por tokens}} | pendiente |
+
+Estados: `pendiente` · `la resuelve NNN` · `resuelta por NNN` · `no se confirma (re-extracción
+AAAA-MM-DD: evidencia)`. Un ID nunca se reutiliza: una re-extracción conserva los vigentes y numera
+lo nuevo a partir del último.
 <!-- endif -->
 
 ## Decisiones
