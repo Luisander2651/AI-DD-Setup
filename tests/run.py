@@ -323,7 +323,9 @@ def scenario_closed_specs():
         spec("003", "implemented", "")
         spec("004", "approved", "constitution_version: 1.0.0\n", "## Risks\nRD1 mitigated by staged rollout\n")
         _, out = run(["validate"], tmp)
-        block = lambda n: out.split(f"docs/specs/{n}-x", 1)[1].split("docs/specs/", 1)[0]
+        out = out.replace("\\", "/")  # Windows: rutas con barra invertida
+        block = lambda n: out.split(f"docs/specs/{n}-x", 1)[1].split("docs/specs/", 1)[0] if f"docs/specs/{n}-x" in out else ""
+        check("validate lista las cuatro specs", all(f"docs/specs/{n}-x" in out for n in ("001", "002", "003", "004")), out)
         check("plan con constitution_version anterior: no se le exige el principio añadido después",
               "P2" not in block("001"), out)
         check("plan sin constitution_version en spec abierta: exige todos los principios",

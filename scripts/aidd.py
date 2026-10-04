@@ -531,7 +531,7 @@ def principles_added_after(root, version):
 
 def validate_spec_dir(d, root):
     s = load_spec_dir(d)
-    rep = Report(os.path.relpath(d, root) if root else d)
+    rep = Report((os.path.relpath(d, root) if root else d).replace(os.sep, "/"))
     if not s["spec"]:
         rep.err("falta spec.md")
         return rep
