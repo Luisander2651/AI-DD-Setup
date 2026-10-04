@@ -289,6 +289,113 @@ def scenario_design_templates():
         check(f"existe templates/design/{name}", os.path.isfile(os.path.join(base, name)))
 
 
+def scenario_closed_specs():
+    print("specs cerradas, enmiendas y riesgos citados en Rollout:")
+    with tempfile.TemporaryDirectory() as tmp:
+        os.makedirs(os.path.join(tmp, ".ai"))
+        os.makedirs(os.path.join(tmp, "docs"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: mobile\nlanguage: en\n")
+        open(os.path.join(tmp, "docs/constitution.md"), "w", encoding="utf-8").write(
+            "---\nversion: 1.1.0\n---\n### P1 Tests first\n### P2 Only design tokens\n"
+            "## Amendments\n| Version | Date | Change | Reason |\n|---|---|---|---|\n"
+            "| 1.0.0 | 2026-01-01 | Initial | /init |\n| 1.1.0 | 2026-02-01 | P2 added (MINOR) | /init --upgrade |\n")
+        open(os.path.join(tmp, "docs/deployment.md"), "w", encoding="utf-8").write(
+            "## Known risks\n### RD1 · High — No kill switch\n- RD1.a Staged rollout\n- RD1.b Hotfix path\n")
+
+        def spec(num, status, plan_fm, plan_extra=""):
+            d = os.path.join(tmp, f"docs/specs/{num}-x")
+            os.makedirs(d)
+            mark = "x" if status in ("implemented", "released") else " "
+            open(os.path.join(d, "spec.md"), "w", encoding="utf-8").write(
+                f"---\nstatus: {status}\n---\n## Problem\nx\n## Acceptance criteria\n- [{mark}] AC1 x\n"
+                "## Out of scope\nNothing\n## Security and privacy\nNot applicable\n")
+            if status == "implemented":
+                open(os.path.join(d, "tasks.md"), "w", encoding="utf-8").write(
+                    "---\nstatus: approved\n---\n- [x] T001 a — x.py — done when: y — covers: AC1\n"
+                    "- [x] T090 a\n- [x] T091 b\n- [x] T092 c\n- [ ] T095 d\n")
+            open(os.path.join(d, "plan.md"), "w", encoding="utf-8").write(
+                f"---\nstatus: approved\n{plan_fm}---\n## Constitution Check\n| Principle | Result |\n|---|---|\n"
+                "| P1 | ✅ |\n## Threat model\nNone\n## Traceability\nAC1 → test\n"
+                "## Rollout\nRollback per RD1 (context only).\n" + plan_extra)
+
+        spec("001", "implemented", "constitution_version: 1.0.0\n")
+        spec("002", "approved", "")
+        spec("003", "implemented", "")
+        spec("004", "approved", "constitution_version: 1.0.0\n", "## Risks\nRD1 mitigated by staged rollout\n")
+        _, out = run(["validate"], tmp)
+        block = lambda n: out.split(f"docs/specs/{n}-x", 1)[1].split("docs/specs/", 1)[0]
+        check("plan con constitution_version anterior: no se le exige el principio añadido después",
+              "P2" not in block("001"), out)
+        check("plan sin constitution_version en spec abierta: exige todos los principios",
+              "error: plan: Constitution Check no evalúa ['P2']" in block("002"), out)
+        check("plan sin constitution_version en spec cerrada: aviso heredado, no error",
+              "no evalúa" not in block("003") and "heredado" in block("003"), out)
+        check("riesgo citado solo en Rollout: sin aviso", "RD1" not in block("001") + block("002"), out)
+        check("riesgo declarado fuera de Rollout: aviso", "cita ['RD1']" in block("004"), out)
+        _, out = run(["validate", "--all"], tmp)
+        check("validate --all muestra los heredados", "heredado: plan: Constitution Check" in out, out)
+
+
+def scenario_release_status():
+    print("status durante /release:")
+    with tempfile.TemporaryDirectory() as tmp:
+        d = os.path.join(tmp, "docs/specs/001-x")
+        os.makedirs(d)
+        os.makedirs(os.path.join(tmp, ".ai"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: mobile\nlanguage: en\n")
+        w = lambda f, t: open(os.path.join(d, f), "w", encoding="utf-8").write(t)
+        w("spec.md", "---\nstatus: implemented\n---\n## Acceptance criteria\n- [x] AC1 x\n")
+        w("plan.md", "---\nstatus: approved\n---\n")
+        w("review.md", "---\nverdict: approved\nround: 1\nhuman_signoff: me 2026-10-03\n---\n")
+        base = "---\nstatus: approved\n---\n- [x] T001 a — x.py — done when: y — covers: AC1\n- [x] T090 a\n- [x] T091 b\n- [x] T092 c\n"
+        w("tasks.md", base + "- [ ] T095 staging\n  - blocked: 2026-10-03 — sign and upload the AAB, check on device — /release 001\n- [ ] T096 approve\n")
+        _, out = run(["status", "--json"], tmp)
+        check("T095 bloqueada → status dice qué falta", "T095 bloqueada: sign and upload the AAB" in out, out)
+        w("tasks.md", base + "- [x] T095 staging\n- [ ] T096 approve\n")
+        _, out = run(["status", "--json"], tmp)
+        check("T095 hecha → aprobación humana (T096)", "aprobación humana para producción (T096)" in out, out)
+
+
+def scenario_design_contrast_rule():
+    print("system.md: regla de contraste:")
+    with tempfile.TemporaryDirectory() as tmp:
+        os.makedirs(os.path.join(tmp, ".ai"))
+        os.makedirs(os.path.join(tmp, "docs/design"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write(
+            "type: frontend\nlanguage: en\ndesign:\n  status: draft\n  source: chosen\n"
+            "  system: docs/design/system.md\n  html: docs/design/system.html\n")
+        open(os.path.join(tmp, "docs/design/system.html"), "w", encoding="utf-8").write("<html></html>")
+        open(os.path.join(tmp, "docs/design/system.md"), "w", encoding="utf-8").write(
+            "---\nstatus: draft\nsource: chosen\n---\n## Color\n| Token | Light | Dark | Use | Contrast light · dark |\n|---|---|---|---|---|\n"
+            "| `--color-text` | `#111111` | `#eeeeee` | Text | 18.9:1 · 17.0:1 |\n"
+            "| `--color-warning-bg` | `#fff3d6` | `#3a2d10` | Warning background | — |\n"
+            "| `--color-danger` | `#b3261e` | `#ff8f86` | Errors | 6.0 · 8.2 |\n")
+        _, out = run(["validate"], tmp)
+        check("un fondo (-bg) no se trata como color de texto", "--color-warning-bg" not in out, out)
+        check("contraste sin ':1' sigue avisando", "--color-danger es color de texto" in out, out)
+
+
+def scenario_templates():
+    print("templates (huellas de docs/templates/):")
+    with tempfile.TemporaryDirectory() as tmp:
+        os.makedirs(os.path.join(tmp, ".ai"))
+        os.makedirs(os.path.join(tmp, "docs/templates"))
+        for n, t in (("spec.md", "# Spec\r\nbody  \r\n"), ("plan.md", "# Plan\n")):
+            open(os.path.join(tmp, "docs/templates", n), "w", encoding="utf-8", newline="").write(t)
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write("type: cli\nlanguage: en\n")
+        _, y = run(["templates", "--yaml"], tmp)
+        open(os.path.join(tmp, ".ai/project.yaml"), "a", encoding="utf-8").write(y)
+        open(os.path.join(tmp, "docs/templates/plan.md"), "a", encoding="utf-8").write("## Our own section\n")
+        open(os.path.join(tmp, "docs/templates/tasks.md"), "w", encoding="utf-8").write("# Tasks\n")
+        _, out = run(["templates"], tmp)
+        check("plantilla igual a la registrada → sin cambios", "| spec.md |" in out and "sin cambios" in out.split("| spec.md |")[1].split("\n")[0], out)
+        check("plantilla editada → personalizada", "personalizada" in out.split("| plan.md |")[1].split("\n")[0], out)
+        check("plantilla sin huella → sin registro", "sin registro" in out.split("| tasks.md |")[1].split("\n")[0], out)
+        open(os.path.join(tmp, "docs/templates/spec.md"), "w", encoding="utf-8").write("# Spec\nbody\n")
+        _, out = run(["templates"], tmp)
+        check("los finales de línea no cuentan como personalización", "sin cambios" in out.split("| spec.md |")[1].split("\n")[0], out)
+
+
 if __name__ == "__main__":
     fixtures()
     scenario_review_pack()
@@ -298,5 +405,9 @@ if __name__ == "__main__":
     scenario_encoding()
     scenario_hook()
     scenario_design_templates()
+    scenario_closed_specs()
+    scenario_release_status()
+    scenario_design_contrast_rule()
+    scenario_templates()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")
     sys.exit(1 if FAILS else 0)

@@ -23,7 +23,8 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | Constitution Check | Constitution Check | plan, tasks |
 | Trazabilidad | Traceability | plan |
 | Modelo de amenazas | Threat model | plan |
-| Rollout | Rollout | plan |
+| Rollout | Rollout | plan (una cita de riesgo aquí es contexto, no cobertura) |
+| Enmiendas | Amendments | `docs/constitution.md` |
 | Observabilidad | Observability | plan |
 | Aceptados | Accepted | analysis |
 | Aceptados sin tarea | Accepted without task | review |
@@ -38,6 +39,8 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `HOY NO SE CUMPLE` | `NOT MET TODAY` | criterio de spec inferida que el código no cumple |
 | `No aplica` | `Not applicable` | sección de seguridad sin datos sensibles |
 | `hecho cuando:` | `done when:` | tarea |
+| `MINOR`, `añade`, `nuevo` | `MINOR`, `adds`, `new` | fila de "Enmiendas" que añade un principio |
+| `constitution_version:` | `constitution_version:` | frontmatter del plan y de `analysis.md` |
 | `cubre:` | `covers:` | tarea |
 | `depende:` | `depends on:` | tarea |
 | `- nota:` | `- note:` | nota bajo una tarea |

@@ -65,5 +65,6 @@ paths:
   specs: docs/specs
   adr: docs/adr
   templates: docs/templates
+template_hashes: {}            # huellas de docs/templates/ (aidd.py templates --yaml); las usa --upgrade
 verification:                  # lo llena la Fase 4
   - { command: "{{cmd}}", result: pass|fail, note: "" }

@@ -1,6 +1,6 @@
 # Diseño: sistema de diseño y opciones en HTML
 
-Lo usa `/init` (y `/init --upgrade` §5e) en proyectos con interfaz: `frontend`, `fullstack`,
+Lo usa `/init` (y `/init --upgrade` paso 9) en proyectos con interfaz: `frontend`, `fullstack`,
 `mobile`, o un paquete de esos tipos en un monorepo. En `backend` y `library` no se escribe el
 bloque `design` de `project.yaml`.
 
@@ -51,12 +51,22 @@ tipografía, forma, densidad y composición, no el color). Regístralo en `brief
 ### 2.4 Generar las opciones
 Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`:
 
-1. Tokens completos en `<style id="tokens">` (si hay modo oscuro, **todos** los colores redefinidos).
-2. Componentes ajustados a la dirección en `<style id="components">`, solo con tokens.
-3. Contenido **real**: nombre del producto y textos de la primera feature del roadmap, datos de
+1. Tokens completos en el bloque de estilos `tokens` (si hay modo oscuro, **todos** los colores
+   redefinidos). Para rellenar los bloques, busca la etiqueta **después** del comentario de
+   instrucciones de la plantilla (el comentario los nombra).
+2. Componentes ajustados a la dirección en el bloque `components`, solo con tokens.
+3. Tipografía real: si la fuente no es del sistema, incrusta en el bloque `fonts` cada peso que
+   uses como `@font-face` con el subconjunto latino en woff2 y base64, tomado del mismo paquete o
+   archivo que usará la app (p. ej. `@fontsource/<familia>/files/<familia>-latin-400-normal.woff2`);
+   sin él, el usuario elegiría sobre la fuente de reemplazo. Comprueba que carga
+   (`[...document.fonts].some(f => f.family === '<familia>' && f.status === 'loaded')`;
+   `document.fonts.check()` da `true` aunque la fuente no exista).
+4. Pares de contraste: deja en "Color" solo los pares cuyos tokens existen en la opción (marca los
+   demás con `data-optional`, que la página oculta si falta un token).
+5. Contenido **real**: nombre del producto y textos de la primera feature del roadmap, datos de
    prueba realistas; nunca lorem ipsum ni cifras inventadas.
-4. Pantallas: 1–2 principales en cada ancho de `design.widths`.
-5. "Por qué" en una o dos frases ligadas al brief, y el riesgo asumido.
+6. Pantallas: 1–2 principales en cada ancho de `design.widths`.
+7. "Por qué" en una o dos frases ligadas al brief, y el riesgo asumido.
 
 Las opciones deben ser **distintas de verdad**: cambian al menos dos de familia de color,
 pareja tipográfica, forma y densidad, y composición de la pantalla principal. No tres tonos de lo
@@ -74,7 +84,8 @@ que elija una o combine elementos.
 
 ### 2.5 Elección → sistema
 1. `docs/design/system.md` con `source: chosen`, `status: draft`: los tokens de la opción elegida
-   (y lo combinado), contraste de cada color de texto (el que calculó la página), componentes con
+   (y lo combinado; con modo oscuro, columnas "Claro" y "Oscuro" y el contraste como
+   `13.0:1 · 15.2:1`), contraste de cada color de texto (el que calculó la página), componentes con
    estados, pantallas principales y la elección en "Decisiones" (tipo `diseño`, fuente `usuario`).
    Con el plugin habilitado, redacta componentes y patrones con `design:design-system document`.
 2. `docs/design/system.html`: la opción elegida ajustada, con "sistema de diseño aprobado" en la
@@ -85,10 +96,11 @@ que elija una o combine elementos.
 5. `AGENTS.md` → Documentación: enlaces a `system.md` y `system.html`.
 
 ### 2.6 Proyecto base
-En `greenfield.md` §2, los tokens se escriben en el archivo de tema del stack (variables CSS,
-`src/theme/variables.css` de Ionic, `ThemeData` de Flutter, tema de la librería de componentes) y
-la auditoría de §3 compara también con `system.md`: tamaño de controles, margen lateral de campos
-y pantallas, colores y radios por defecto de la librería.
+En `greenfield.md` §2, los tokens se escriben en un único archivo de tema del stack (variables CSS,
+`src/theme/tokens.css` en Ionic, `ThemeData` de Flutter) **conectados al tema de la librería de
+componentes** (`../../plan/references/design.md` §4), y la auditoría de §3 compara también con
+`system.md`: tamaño de controles, margen lateral de campos y pantallas, colores y radios por
+defecto de la librería.
 
 ## 3. Brownfield: documentar el diseño existente
 
@@ -100,9 +112,16 @@ dejo `docs/design/system.md` y una vista en HTML. No cambio código."* Con un **
 
 Con un **sí**:
 1. **Subagente G** (`explore-agents.md`) en la Fase 1, junto a los demás.
-2. **Capturas** de las pantallas principales en `design.widths`, solo si la app arranca con los
-   comandos verificados y **solo con datos de prueba o semilla**, nunca con datos reales (si no
-   arranca sin datos reales, no captures y dilo). Van a `docs/design/capturas/`.
+2. **Capturas y medidas** de las pantallas principales (lista, vacío, error, formulario con error)
+   en `design.widths`, solo si la app arranca con los comandos verificados y **solo con datos de
+   prueba**, nunca con datos reales. Para inyectarlos, en este orden: helpers o fixtures de los
+   tests de pantalla del proyecto (p. ej. un almacén simulado), un comando de semilla documentado,
+   o pregunta; si no hay forma sin datos reales, no captures y dilo. Van a
+   `docs/design/capturas/`. En cada pantalla **mide** los estilos calculados en el navegador
+   (`getComputedStyle`): fondo y texto de pantalla, barra y filas, familia de fuente, margen lateral
+   del contenido y de los campos, alto de botones y campos; con `prefers-color-scheme: dark`
+   emulado, si el código declara modo oscuro. `system.md` documenta **lo medido**: si difiere de lo
+   que declara el código (G), lo medido manda y la diferencia es deuda `DS`.
 3. **Auditoría:** con el plugin, `design:design-system audit` sobre el informe de G y
    `design:accessibility-review` sobre las capturas; sin él, la misma revisión con el checklist de
    `system.md` (contraste, valores fijos, estados, toque mínimo).
@@ -111,7 +130,10 @@ Con un **sí**:
    (`DS1`, `DS2`…) y evidencia.
 5. `system.html` desde `option.html` con los valores reales: los pares que no cumplen se ven en
    rojo (es deuda, no se corrige aquí). En "Pantallas", las capturas como `<img
-   src="capturas/<pantalla>-<ancho>.png" alt="…">` dentro de cada marco.
+   src="capturas/<pantalla>-<ancho>.png" alt="…">` dentro de cada marco. En "Componentes", recortes
+   de las capturas (botón, campo, fila, aviso) en lugar de los componentes sintéticos de la
+   plantilla: los sintéticos no reproducen los detalles de la librería (mayúsculas de Material,
+   superficies internas) y harían creer que el sistema es otro.
 6. **Roadmap:** las `DS` prioritarias se proponen como objetivos con la conciliación de
    `brownfield.md` §4; el usuario decide.
 7. Constitución: el principio "solo tokens" se propone con la regla de "Código previo": aplica a
@@ -122,7 +144,7 @@ spec propia (`/specify "rediseño de …"`).
 
 ## 4. `/init --upgrade`
 
-`upgrade.md` §5e ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
+`upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
 re-explorar el resto del código: lanza únicamente el subagente G.
 
 ## 5. Brief (para la skill `design` y para escribir el HTML)

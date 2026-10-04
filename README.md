@@ -51,8 +51,10 @@ así que no chocan con comandos integrados como `/init`.
 
 - `python .ai/bin/aidd.py validate [docs/specs/NNN-slug]` — revisa formato y consistencia de
   spec, plan, tareas, análisis y review (estados, criterios, trazabilidad, cobertura, ciclos).
+  Los avisos de specs ya cerradas salen resumidos como heredados; `--all` los muestra.
 - `python .ai/bin/aidd.py status` — estado de cada spec y siguiente paso (con las rondas de `/analyze` y `/review`).
 - `snapshot` / `changes [--since REF]` — copia y diff para `/analyze` delta.
+- `templates [--yaml]` — huellas de `docs/templates/`: `--upgrade` sabe cuáles personalizó el usuario.
 - `rotate` / `history [--write] [--migrate]` — archivan e indexan rondas y versiones en
   `docs/specs/NNN/history/` (nunca se borran).
 - `review-pack` — paquete compartido de `/review`: diff de código filtrado desde `impl_base`,
@@ -78,7 +80,7 @@ de Microsoft Store en Windows no lo rompe. Sin ningún Python válido, el hook n
   plugin.json          # manifiesto (la versión aquí = skills_version de los proyectos)
   marketplace.json     # permite instalar el plugin desde este repo
 hooks/hooks.json       # guardia PreToolUse
-scripts/aidd.py        # validate · status · hash · snapshot · changes · rotate · history · review-pack · hook (se copia a .ai/bin/ en cada proyecto)
+scripts/aidd.py        # validate · status · hash · templates · snapshot · changes · rotate · history · review-pack · hook (se copia a .ai/bin/ en cada proyecto)
 shared/
   contract.md          # reglas comunes: estados, numeración, puertas de aprobación
   security-checklist.md  # seguridad del código (OWASP por temas)

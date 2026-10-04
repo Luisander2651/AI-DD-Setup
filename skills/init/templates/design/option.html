@@ -5,14 +5,22 @@
   externas, para que se abra sin red cuantas veces se quiera.
 
   Cómo rellenarla:
-  1. <style id="tokens">: valores de la opción. Solo se cambian los valores, no los nombres
+  (Los bloques de estilos se llaman por su id; este comentario no repite sus etiquetas para que
+  buscar la etiqueta no caiga aquí.)
+  1. Bloque "fonts": si la tipografía no es del sistema, un @font-face por peso con el subconjunto
+     latino en woff2 incrustado en base64 (data:font/woff2;base64,…), tomado del paquete o archivo
+     que usará la app. Sin él la opción se ve con la fuente de reemplazo. Fuente del sistema: vacío.
+  2. Bloque "tokens": valores de la opción. Solo se cambian los valores, no los nombres
      (son los de docs/design/system.md). El bloque [data-scheme="dark"] se borra si no hay modo oscuro.
-  2. <style id="components">: ajusta forma, peso y ritmo de los componentes a la opción, usando
+  3. Bloque "components": ajusta forma, peso y ritmo de los componentes a la opción, usando
      solo tokens (ningún literal de color, tamaño o espaciado).
-  3. Sustituye cada {{…}} por contenido real del proyecto (nunca lorem ipsum).
-  4. Pantallas: una .v-frame por pantalla y ancho de design.widths, con el HTML de la pantalla
-     dentro de .opt, compuesto con las clases c-*.
-  El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano.
+  4. Sustituye cada {{…}} por contenido real del proyecto (nunca lorem ipsum).
+  5. Pantallas: una .v-frame por pantalla y ancho de design.widths, con el HTML de la pantalla
+     dentro de .opt, compuesto con las clases c-*. En un sistema extraído del código, los
+     componentes y las pantallas son recortes de las capturas reales (<img>), no los sintéticos.
+  El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano. Un par
+  con data-optional se oculta si la opción no define alguno de sus tokens; uno sin él sale como
+  "falta el token".
 -->
 <html lang="{{es}}">
 <head>
@@ -84,6 +92,10 @@
   .v-motion li { margin-bottom: 10px; }
   .v-foot { padding: 28px 0 48px; color: var(--ui-muted); font-size: 13px; }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<style id="fonts">
+  /* @font-face incrustados (ver instrucciones). Vacío si la fuente es del sistema. */
 </style>
 
 <style id="tokens">
@@ -238,9 +250,9 @@
       <li class="v-pair" data-fg="--color-on-primary" data-bg="--color-primary" data-min="4.5">Texto del botón principal</li>
       <li class="v-pair" data-fg="--color-danger" data-bg="--color-bg" data-min="4.5">Error sobre fondo</li>
       <li class="v-pair" data-fg="--color-success" data-bg="--color-bg" data-min="4.5">Éxito sobre fondo</li>
-      <li class="v-pair" data-fg="--color-text" data-bg="--color-warning-bg" data-min="4.5">Texto sobre aviso</li>
+      <li class="v-pair" data-fg="--color-text" data-bg="--color-warning-bg" data-min="4.5" data-optional>Texto sobre aviso</li>
       <li class="v-pair" data-fg="--color-border" data-bg="--color-surface" data-min="3">Borde de campo sobre superficie</li>
-      <li class="v-pair" data-fg="--color-focus" data-bg="--color-bg" data-min="3">Anillo de foco sobre fondo</li>
+      <li class="v-pair" data-fg="--color-focus" data-bg="--color-bg" data-min="3" data-optional>Anillo de foco sobre fondo</li>
     </ul>
   </section>
 
@@ -364,6 +376,7 @@
   // Color resuelto de un token dentro de la primera .opt (respeta el modo activo).
   function rgbOf(token) {
     const host = document.querySelector('.opt');
+    if (!getComputedStyle(host).getPropertyValue(token).trim()) return null;  // token no definido
     host.appendChild(probe);
     probe.style.color = `var(${token})`;
     const m = getComputedStyle(probe).color.match(/[\d.]+/g);
@@ -396,7 +409,13 @@
       const fg = rgbOf(li.dataset.fg), bg = rgbOf(li.dataset.bg);
       const min = parseFloat(li.dataset.min);
       li.querySelectorAll('.v-pair-sample, .v-pair-ratio').forEach(n => n.remove());
-      if (!fg || !bg) continue;
+      li.hidden = false;
+      if (!fg || !bg) {
+        if (li.hasAttribute('data-optional')) { li.hidden = true; continue; }
+        li.dataset.ok = 'false';
+        li.insertAdjacentHTML('beforeend', `<span class="v-pair-ratio">falta el token ${!fg ? li.dataset.fg : li.dataset.bg}</span>`);
+        continue;
+      }
       const r = ratio(fg, bg);
       li.dataset.ok = String(r >= min);
       li.insertAdjacentHTML('afterbegin',

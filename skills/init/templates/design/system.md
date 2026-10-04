@@ -37,7 +37,8 @@ Qué debe sentir quien lo usa, en 2–3 frases. Dirección creativa: creative-di
 | `--color-warning` | `{{#…}}` | Avisos | {{n.n:1 sobre su fondo}} |
 
 Todo color de texto declara su contraste calculado (WCAG: ≥ 4.5:1 texto normal, ≥ 3:1 texto grande
-y bordes de control). Modo oscuro: {{"no aplica", o la misma tabla con los valores oscuros de **todos** los colores y su contraste}}.
+y bordes de control). Modo oscuro: {{"no aplica", o la misma tabla con columnas "Claro" y "Oscuro" en lugar de "Valor", los
+valores oscuros de **todos** los colores y el contraste de ambos como `13.0:1 · 15.2:1`}}.
 
 ## Tipografía
 

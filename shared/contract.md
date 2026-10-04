@@ -19,7 +19,8 @@ revisa todas las skills afectadas.
   En el plan, cada ✅ dice **cómo se verifica en esta spec** (`test: <test o T0xx>`,
   `lint: <regla>` o `manual: <qué>`): un principio con número, umbral o prohibición comprobable
   (tamaños, versiones mínimas, literales prohibidos, presupuestos) se verifica con test o lint,
-  no solo a mano.
+  no solo a mano. El plan guarda `constitution_version`: una enmienda posterior que añade un
+  principio no invalida los planes anteriores (el validador exige los principios de esa versión).
 - **Sistema de diseño.** En proyectos con interfaz, `docs/design/system.md` (y su vista
   `system.html`) es la fuente de verdad visual cuando `.ai/project.yaml → design.status` es `draft`
   o `approved`. Ninguna skill cambia un token o un componente sin una tarea que lo haga ("Cambios a

@@ -2,10 +2,16 @@
 """ai-dd: validadores deterministas del flujo, índice de estado y hook de guardia.
 
 Uso:
-  aidd.py validate [RUTA ...]      Valida specs (carpetas docs/specs/NNN-slug o archivos).
+  aidd.py validate [RUTA ...] [--all]
+                                   Valida specs (carpetas docs/specs/NNN-slug o archivos).
                                    Sin rutas valida todas. Código de salida 1 si hay errores.
+                                   Los avisos de specs implemented/released se resumen como
+                                   heredados; --all los muestra.
   aidd.py status [--json]          Estado de todas las specs y siguiente paso sugerido.
   aidd.py hash RUTA                Huellas de spec/plan/tasks (las registra /analyze).
+  aidd.py templates [--yaml]       Huellas de docs/templates/ frente a project.yaml → template_hashes
+                                   (sin cambios · personalizada · sin registro); --yaml imprime el
+                                   bloque para guardarlas (lo hacen /init y --upgrade al copiarlas).
   aidd.py snapshot RUTA            Guarda una copia de spec/plan/tasks en .ai/cache/ (la usa /analyze).
   aidd.py changes RUTA [--since REF]
                                    Diff de spec/plan/tasks contra la última copia guardada o
@@ -32,7 +38,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.11.0"
+VERSION = "1.11.1"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -59,6 +65,7 @@ VOCAB = {
     "traceability": ["Trazabilidad", "Traceability"],
     "threat_model": ["Modelo de amenazas", "Threat model"],
     "rollout": ["Rollout"],
+    "amendments": ["Enmiendas", "Amendments"],
     "observability": ["Observabilidad", "Observability"],
     "accepted": ["Aceptados", "Accepted"],
     "deferred": ["Aceptados sin tarea", "Accepted without task"],
@@ -88,6 +95,7 @@ W = {
     "clarify": r"\[(?:NECESITA ACLARACIÓN|NEEDS CLARIFICATION)\]",
     "accepted": r"\b(?:aceptad[oa]|accepted)\b",
     "partial": r"\b(?:parcial\w*|partial\w*)\b",
+    "added": r"\bMINOR\b|\b(?:añad\w*|nuev\w*|agreg\w*|adds?|added|new)\b",
     "mitigated": r"\b(?:mitigad\w*|mitigated)\b",
     # "no lo declara mitigado", "sin mitigar", "not mitigated", "never mitigated"
     "negated_mitigation": r"\b(?:no|ni|sin|nunca|not|never|without)\s+(?:(?:lo|la|los|las|se|está|esta|"
@@ -200,14 +208,18 @@ def yaml_list(text, key):
 
 
 class Report:
+    SHOW_INHERITED = False  # validate --all
+
     def __init__(self, label):
-        self.label, self.errors, self.warnings = label, [], []
+        self.label, self.errors, self.warnings, self.inherited = label, [], [], []
+        self.closed = False  # spec implemented/released: sus avisos ya no se pueden resolver editándola
 
     def err(self, msg):
         self.errors.append(msg)
 
-    def warn(self, msg):
-        self.warnings.append(msg)
+    def warn(self, msg, actionable=False):
+        """`actionable`: se corrige fuera de la spec (roadmap, docs), así que se muestra aunque esté cerrada."""
+        (self.inherited if self.closed and not actionable else self.warnings).append(msg)
 
     def print(self):
         mark = "✗" if self.errors else ("!" if self.warnings else "✓")
@@ -216,6 +228,11 @@ class Report:
             print(f"    error: {e}")
         for w in self.warnings:
             print(f"    aviso: {w}")
+        if self.inherited and Report.SHOW_INHERITED:
+            for w in self.inherited:
+                print(f"    heredado: {w}")
+        elif self.inherited:
+            print(f"    {len(self.inherited)} aviso(s) heredado(s) de una spec cerrada (validate --all para verlos)")
 
 
 # ---------------------------------------------------------------- modelo
@@ -315,6 +332,12 @@ def block_skill(line):
     """Skill propuesta en una línea de bloqueo ('… — /plan 003 --fix')."""
     parts = [p.strip() for p in re.sub(W["blocked"], "", line, flags=re.I).split(" — ")]
     return parts[2] if len(parts) >= 3 else None
+
+
+def block_what(line):
+    """Qué falta, en una línea de bloqueo ('AAAA-MM-DD — <qué falta> — <skill>')."""
+    parts = [p.strip() for p in re.sub(W["blocked"], "", line, flags=re.I).split(" — ")]
+    return parts[1] if len(parts) >= 2 else None
 
 
 def table_rows(sec):
@@ -438,6 +461,12 @@ def load_risks(root):
     return {k: v for k, v in risks.items() if v}
 
 
+def strip_section(text, key):
+    """El texto sin la sección `key` (de su encabezado al siguiente del mismo nivel o superior)."""
+    names = "|".join(re.escape(n) for n in VOCAB.get(key, [key]))
+    return re.sub(r"^##\s+(?:" + names + r")\b.*?(?=^##\s|\Z)", "", text, flags=re.M | re.S)
+
+
 def cited_risks(text, risks):
     ids = set(re.findall(r"\b(" + RISK_RE + r")(?:\.[a-z])?\b", text))
     return sorted(i for i in ids if i in risks)
@@ -479,6 +508,25 @@ def constitution_principles(root):
     return re.findall(r"^###\s+(P\d+)\b", read(p), re.M)
 
 
+def version_tuple(v):
+    return tuple(int(x) for x in re.findall(r"\d+", v or "")[:3]) or (0,)
+
+
+def principles_added_after(root, version):
+    """Principios que añade una enmienda posterior a `version` (filas de 'Enmiendas' con MINOR o
+    'añade/nuevo/add/new' que citan P#)."""
+    p = os.path.join(root, "docs", "constitution.md")
+    if not os.path.isfile(p):
+        return set()
+    sec = section(body(read(p)), "amendments") or ""
+    out = set()
+    for line in sec.splitlines():
+        m = re.match(r"^\|\s*v?(\d+\.\d+\.\d+)\s*\|", line)
+        if m and version_tuple(m.group(1)) > version_tuple(version) and re.search(W["added"], line, re.I):
+            out.update(re.findall(r"\b(P\d+)\b", line))
+    return out
+
+
 # ---------------------------------------------------------------- validación
 
 def validate_spec_dir(d, root):
@@ -494,6 +542,7 @@ def validate_spec_dir(d, root):
     st = fm.get("status")
     if st not in SPEC_STATES:
         rep.err(f"spec: status inválido o ausente ({st!r})")
+    rep.closed = st in {"implemented", "released"}
     text = COMMENT_RE.sub("", s["spec"])
     if PLACEHOLDER_RE.search(text):
         rep.err("spec: quedan {{placeholders}} sin sustituir")
@@ -589,7 +638,9 @@ def validate_spec_dir(d, root):
     spec_cited = set(cited_risks(body(s["spec"]), risks)) if risks else set()
     for kind in ("plan", "tasks"):
         if s[kind] and risks:
-            alien = [r for r in cited_risks(body(s[kind]), risks) if r not in spec_cited]
+            # Rollout cita riesgos de despliegue como contexto (rollback); eso no es declarar cobertura.
+            claims = strip_section(body(s[kind]), "rollout")
+            alien = [r for r in cited_risks(claims, risks) if r not in spec_cited]
             if alien:
                 rep.warn(f"{kind}: cita {alien}, que la spec no cita; declara sus correcciones en la spec "
                          "('Cobertura de riesgos') o quita la referencia")
@@ -614,7 +665,15 @@ def validate_spec_dir(d, root):
         cc = section(body(ptext), "constitution_check") or ""
         if principles is not None:
             missing = [p for p in principles if not re.search(r"\b" + p + r"\b", cc)]
-            if missing:
+            pcv = pfm.get("constitution_version")
+            if missing and pcv:
+                # El plan se evaluó contra esa versión: los principios añadidos después no se le exigen.
+                newer = principles_added_after(root, pcv)
+                missing = [p for p in missing if p not in newer]
+            if missing and not pcv and rep.closed:
+                rep.warn(f"plan: Constitution Check no evalúa {missing} (plan sin constitution_version "
+                         "anterior a la enmienda; la spec está cerrada)")
+            elif missing:
                 rep.err(f"plan: Constitution Check no evalúa {missing}")
         for line in cc.splitlines():
             if "❌" in line and not re.search(W["accepted"], line, re.I) and pst == "approved":
@@ -749,7 +808,7 @@ def validate_spec_dir(d, root):
     loose = sorted(f for f in os.listdir(d) if ROUND_FILE_RE.match(f))
     if loose:
         rep.warn(f"rondas o versiones anteriores sueltas {loose}: van en history/ "
-                 "(python .ai/bin/aidd.py history <ruta> --migrate)")
+                 "(python .ai/bin/aidd.py history <ruta> --migrate)", actionable=True)
 
     # --- review
     if s["review"]:
@@ -764,7 +823,7 @@ def validate_spec_dir(d, root):
             rtext = read(rm) if os.path.isfile(rm) else ""
             lost = [r for r in deferred if not re.search(re.escape(own) + r"/" + r + r"\b", rtext)]
             if lost:
-                rep.warn(f"review: aceptados sin tarea que no están en el roadmap como {own}/Rn: {lost}")
+                rep.warn(f"review: aceptados sin tarea que no están en el roadmap como {own}/Rn: {lost}", actionable=True)
         verdict = rfm.get("verdict")
         if verdict not in VERDICTS:
             rep.err(f"review: verdict inválido o ausente ({verdict!r})")
@@ -825,7 +884,7 @@ def validate_design(root):
             if PLACEHOLDER_RE.search(COMMENT_RE.sub("", txt)):
                 rep.err("system.md: quedan {{placeholders}} sin sustituir")
             for header, cells in table_rows(section(body(txt), "color")):
-                if not cells or not re.search(r"--color-(?:text|on-|danger|success|warning\b)", cells[0]):
+                if not cells or not re.search(r"--color-(?:text|on-|danger|success|warning(?![\w-]))", cells[0]):
                     continue
                 if not re.search(r"\d+(?:[.,]\d+)?\s*:\s*1", " ".join(cells[1:])):
                     rep.warn(f"system.md: {cells[0].strip('` ')} es color de texto y no declara su contraste (n.n:1)")
@@ -846,6 +905,9 @@ def spec_dirs(root):
 
 def cmd_validate(args):
     root = find_root(os.getcwd()) or os.getcwd()
+    if "--all" in args:
+        Report.SHOW_INHERITED = True
+        args = [a for a in args if a != "--all"]
     targets = []
     for a in args:
         a = os.path.abspath(a)
@@ -894,6 +956,25 @@ def blocked_next(s):
     return None
 
 
+def release_next(s):
+    """Dentro de /release: la primera tarea de despliegue abierta, con su bloqueo si lo tiene."""
+    if not s["tasks"]:
+        return "/release"
+    tasks, order = parse_tasks(s["tasks"])
+    blocks = task_blocks(s["tasks"])
+    done = [t for t in order if t in DEPLOY_TASKS and tasks[t][0]["done"]]
+    for t in order:
+        if t not in DEPLOY_TASKS or tasks[t][0]["done"] or tasks[t][0]["obsolete"]:
+            continue
+        if t in blocks:
+            what = block_what(blocks[t][-1])
+            return f"{t} bloqueada: {what}" if what else f"{t} bloqueada (ver tasks.md)"
+        if t == "T096":
+            return "aprobación humana para producción (T096) y /release"
+        return f"/release ({t})" if done else "/release"
+    return "/release"
+
+
 def next_step(s):
     st = frontmatter(s["spec"]).get("status") if s["spec"] else None
     pst = frontmatter(s["plan"]).get("status") if s["plan"] else None
@@ -935,7 +1016,7 @@ def next_step(s):
             return "resolver el bloqueo de la review"
         if signoff.startswith("pending"):
             return "firma humana de la review"
-        return "/release"
+        return release_next(s)
     if st == "released":
         return "—"
     return "revisar spec.md"
@@ -1522,6 +1603,36 @@ def force_utf8():
             pass
 
 
+def template_sha(path):
+    """Huella de una plantilla, sin depender de finales de línea ni espacios finales."""
+    lines = [l.rstrip() for l in read(path).replace("\r\n", "\n").split("\n")]
+    return hashlib.sha256("\n".join(lines).strip().encode("utf-8")).hexdigest()[:12]
+
+
+def cmd_templates(args):
+    """Huellas de docs/templates/ frente a las registradas en project.yaml → template_hashes."""
+    root = find_root(os.getcwd())
+    if not root:
+        print("No se encontró .ai/project.yaml (¿se ejecutó /init?).")
+        return 1
+    tdir = os.path.join(root, "docs", "templates")
+    names = sorted(f for f in os.listdir(tdir) if os.path.isfile(os.path.join(tdir, f))) if os.path.isdir(tdir) else []
+    current = {n: template_sha(os.path.join(tdir, n)) for n in names}
+    if "--yaml" in args:
+        print("template_hashes:              # huellas de docs/templates/ al copiarlas (aidd.py templates --yaml)")
+        for n, h in current.items():
+            print(f"  {n}: {h}")
+        return 0
+    block = yaml_block(read(os.path.join(root, ".ai", "project.yaml")), "template_hashes") or ""
+    recorded = dict(re.findall(r"^\s+([\w.-]+):\s*([0-9a-f]{6,})", block, re.M))
+    print("| plantilla | huella | registrada | estado |\n|---|---|---|---|")
+    for n, h in current.items():
+        r = recorded.get(n)
+        state = "sin registro" if r is None else ("sin cambios" if r == h else "personalizada")
+        print(f"| {n} | {h} | {r or '—'} | {state} |")
+    return 0
+
+
 def main(argv):
     force_utf8()
     if len(argv) < 2 or argv[1] in ("-h", "--help"):
@@ -1544,6 +1655,8 @@ def main(argv):
         for k, v in fingerprints(load_spec_dir(d)).items():
             print(f"{k}: {v}")
         return 0
+    if cmd == "templates":
+        return cmd_templates(args)
     if cmd == "snapshot":
         return cmd_snapshot(args)
     if cmd == "changes":

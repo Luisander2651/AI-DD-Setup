@@ -1,6 +1,7 @@
 ---
 spec: {{NNN}}-{{slug}}
 status: draft   # draft | approved | blocked
+constitution_version: {{versión de docs/constitution.md}}
 created: {{date}}
 ---
 

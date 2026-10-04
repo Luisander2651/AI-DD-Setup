@@ -3,6 +3,37 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.11.1] - 2026-10-03
+Correcciones de la prueba 8.15 (`docs/pruebas/8.15-diseno-ionic.md`): diseño de punta a punta en
+un proyecto existente, de `--upgrade` a una spec de rediseño liberada hasta T095.
+
+### Fixed
+- **Validador:** el plan guarda `constitution_version` y se le exigen los principios de esa versión:
+  una enmienda que añade un principio ya no rompe los planes anteriores (D9). Los avisos de specs
+  `implemented`/`released` salen como "heredados" (`validate --all` los muestra), salvo los que se
+  corrigen fuera de la spec (D4). Un riesgo citado solo en Rollout es contexto, no cobertura (D14).
+  `--color-warning-bg` ya no cuenta como color de texto (D15).
+- **`status` dentro de `/release`:** muestra el bloqueo de T095–T097 y la aprobación humana (D16).
+- **`/init --upgrade`:** pasos en orden de ejecución (D2); la tabla "Herramientas" de
+  `security.md` se actualiza junto con `project.yaml` (D3); las ofertas de 1.10.0 miran el estado
+  de la spec (D5); tras una enmienda, propone actualizar los planes abiertos (D9).
+- **Diseño existente:** el subagente G busca lo declarado que no se carga (clases sin su CSS, modo
+  oscuro sin paleta) y las capturas **miden** estilos calculados; `system.md` documenta lo medido
+  (D6). Cómo inyectar datos de prueba para las capturas (D10). En sistemas extraídos, componentes
+  y pantallas con recortes de las capturas (D8).
+- **Rediseño:** `/specify` hace la entrevista de diseño y `/plan` crea brief, dirección creativa y
+  anticlichés si faltan (D11); paso del sistema extraído al elegido (versión mayor, deuda, capturas).
+- **`option.html`:** bloque `fonts` para incrustar la tipografía real (D12), pares de contraste
+  opcionales y aviso "falta el token" (D7), comentario sin etiquetas literales (D13).
+
+### Added
+- `aidd.py templates [--yaml]` y `project.yaml → template_hashes`: `--upgrade` sabe si una
+  plantilla de `docs/templates/` fue personalizada y la fusiona en lugar de reemplazarla (D1).
+- `plan/references/design.md`: conectar los tokens con el tema de la librería de componentes (D18),
+  recetas de tests del sistema (D17) y estados de pantalla con una región de estado persistente
+  (D19); la lista de accesibilidad de `/review` lo comprueba y dice qué hacer sin el plugin
+  `design` (D20).
+
 ## [1.11.0] - 2026-10-02
 Diseño en el flujo (plan en `docs/plan-integracion-design.md`). La prueba 8.13 llegó a producción
 con los componentes por defecto de Ionic y campos sin margen porque ninguna skill pedía diseño; el

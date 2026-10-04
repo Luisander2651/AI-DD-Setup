@@ -259,7 +259,8 @@ habría que considerar al configurarlo.
 
 ## Paso 8 — Escritura y aprobación
 
-1. Escribe `docs/specs/NNN-<slug>/plan.md` con `status: draft`.
+1. Escribe `docs/specs/NNN-<slug>/plan.md` con `status: draft` y `constitution_version` (la de
+   `docs/constitution.md` con la que hiciste el Constitution Check).
 2. Muestra al usuario: enfoque en 2–3 frases, módulos afectados, decisiones clave, resultado del
    Constitution Check (conteo ✅/➖/❌), ADRs propuestos y riesgos principales.
 3. Pregunta si lo aprueba:
