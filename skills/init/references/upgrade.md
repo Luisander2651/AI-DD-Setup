@@ -61,7 +61,10 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    o es anterior a 1.11.2, explica qué cambió (inventario completo de vistas con capturas, nada
    dibujado a mano, textos y logo de la app, deuda conciliada) y **ofrece** re-extraer con
    `design.md` §3b; con `--upgrade --redo-design`, hazlo sin preguntar si ofrecerlo. Nunca borres
-   el sistema anterior: se archiva en `docs/design/history/`. Si `skills.enabled` no tiene
+   el sistema anterior: se archiva en `docs/design/history/`.
+   **Rehacer opciones (desde 1.11.4):** con `--upgrade --redo-options`, sigue `design.md` §2.7 y
+   nada más del paso. Sin el argumento, si hay `docs/design/opciones/` y `design.status` es `none`
+   (opciones sin elegir), menciona en el resumen que existe. Si `skills.enabled` no tiene
    `design` y el plugin está instalado, ofrece registrarlo.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo

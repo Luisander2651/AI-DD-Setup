@@ -3,6 +3,19 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.11.4] - 2026-10-09
+Rehacer las opciones de diseño antes de elegir. Entre "se generaron las opciones" y "hay sistema
+aprobado" no había camino: si ninguna convencía, el usuario aprobaba una a medias para abrir un
+rediseño o pedía regenerarlas a mano, sin entrevista ni registro.
+
+### Added
+- `/init --upgrade --redo-options` (`design.md` §2.7): solo con `design.status` distinto de
+  `approved`. Pregunta qué falló y qué se conserva, actualiza `brief.md`, `creative-direction.md` y
+  `anti-cliches.md` (una base conservada pasa a ser el concepto firma), archiva la ronda en
+  `docs/design/opciones/history/ronda-<N>/` (también un `system.md` en `draft`) y genera otra con
+  la columna "Qué cambia respecto a la ronda <N>". En un rediseño, lo mismo desde `/plan` en la
+  carpeta de la spec.
+
 ## [1.11.3] - 2026-10-09
 Opciones de diseño con idea propia. En un proyecto real (landing de una casa agroquímica) dos de
 tres opciones eran la misma página con otra piel: mismo esqueleto y textos, tríada de tarjetas,

@@ -128,6 +128,37 @@ componentes** (`../../plan/references/design.md` §4), y la auditoría de §3 co
 `system.md`: tamaño de controles, margen lateral de campos y pantallas, colores y radios por
 defecto de la librería.
 
+### 2.7 Rehacer las opciones antes de elegir
+
+`/init --upgrade --redo-options`. Para cuando las opciones ya se generaron, ninguna convence y aún
+no hay sistema aprobado. Sin esto, el usuario aprueba una opción a medias para poder abrir un
+rediseño, o pide regenerarlas a mano sin procedimiento.
+
+**Condiciones:** existe `docs/design/opciones/` y `design.status` no es `approved`. Si es
+`approved`, detente: cambiar el sistema es un rediseño (spec propia, `/specify "rediseño de …"`).
+Si es `declined` o el sistema es `extracted`, no aplica: es §3b o un rediseño.
+
+1. **Qué falló.** Pregunta en una sola ronda qué no convenció de cada opción y qué se conserva
+   (una opción como base, o elementos sueltos de otras). Repite de la Ronda 4b solo lo que cambie
+   la siguiente ronda: casi siempre el concepto firma (punto 5), los clichés del sector y las
+   referencias. Las respuestas van a "Decisiones" de `brief.md` (tipo `diseño`, fuente `usuario`).
+2. **Documentos de partida.** Actualiza `brief.md`, `creative-direction.md` y `anti-cliches.md`
+   (§2.2) con lo nuevo: lo rechazado pasa a `anti-cliches.md` con su alternativa, y una base
+   elegida se convierte en el concepto firma. Muestra el cambio y pide aprobación.
+3. **Archiva** las opciones actuales en `docs/design/opciones/history/ronda-<N>/` (`N` = 1, 2…,
+   la primera libre), con sus HTML intactos. Si había un `system.md`/`system.html` en `draft`
+   de una elección anterior, archívalos en esa misma carpeta y deja `design.status: none` y
+   `source: null` hasta la nueva elección. Nunca borres una ronda.
+4. **Genera** la nueva ronda con §2.3–§2.4 (y la skill `design` si está; el canvas nuevo sustituye a
+   `design.canvas` y el anterior queda citado en "Decisiones"). Si hay una base conservada, las
+   opciones son composiciones de su idea y ninguna repite el esqueleto de la ronda anterior.
+5. **Presenta** la tabla de §2.4 con una columna más, "Qué cambia respecto a la ronda <N>", y
+   sigue con §2.5.
+
+En un rediseño (spec propia), las opciones viven en la carpeta de la spec: aplica los mismos pasos
+desde `/plan` (`../../plan/references/design.md` §2), archivando en
+`docs/specs/NNN-<slug>/design/history/ronda-<N>/`.
+
 ## 3. Brownfield: documentar el diseño existente
 
 **Pregunta en la Fase 0**, al detectar interfaz y antes de explorar: *"¿Documento el diseño que
@@ -215,6 +246,7 @@ aplica a un sistema `chosen` (cambiarlo es un rediseño: spec propia).
 `upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
 re-explorar el resto del código: lanza únicamente el subagente G. Con un sistema extraído por un
 procedimiento anterior, ofrece §3b (re-extraer); `--redo-design` lo ejecuta directamente.
+`--redo-options` sigue §2.7 (rehacer las opciones de un proyecto nuevo antes de elegir sistema).
 
 ## 5. Brief (para la skill `design` y para escribir el HTML)
 
