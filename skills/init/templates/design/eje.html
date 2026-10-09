@@ -16,7 +16,9 @@
   3. Bloque "variantes": una regla .opt[data-var="N"] por variante con SOLO los tokens del eje:
        tipografía → --font-*, --text-* (tamaño, interlineado, peso, interletrado);
        color      → --color-*;
-       forma      → --radius-*, --border-*, --shadow-*, --space-*.
+       forma      → --radius-*, --border-*, --shadow-*, --space-*;
+       fondo      → --surface-* y reglas de fondo, textura e imagen (.opt[data-var="N"] …);
+       movimiento → --duration-*, --ease-* y reglas de animación bajo .opt[data-var="N"][data-play].
      Un token de otro eje aquí invalida la comparación.
   4. Cabecera: eje, opción base y los criterios del eje sacados de brief.md (escritos ANTES de
      elegir las variantes). Cada variante dice en "Por qué" qué criterio cumple y cómo.
@@ -104,11 +106,12 @@
       opción base. Solo cambian los tokens de {{eje}}.</p>
     <p><strong>Criterios del eje</strong> (de <code>brief.md</code>, escritos antes de elegir las variantes):</p>
     <ol class="v-criteria">
-      <li>{{p. ej. legible al sol en un teléfono desde 16 px}}</li>
-      <li>{{p. ej. tono de casa técnica seria, no de startup ni de tienda artesanal}}</li>
-      <li>{{p. ej. cifras claras para composición y dosis; acentos y ñ completos}}</li>
+      <li>{{criterio de legibilidad en el contexto de uso del brief (dispositivo, entorno, tamaño mínimo)}}</li>
+      <li>{{criterio de tono: qué debe transmitir y qué no, según el territorio}}</li>
+      <li>{{criterio de contenido: cifras, idioma y caracteres que debe resolver bien}}</li>
     </ol>
-    <button type="button" class="v-toggle" id="toggle-sun" aria-pressed="false">Simular sol</button>
+    <button type="button" class="v-toggle" id="toggle-sun" aria-pressed="false">Simular luz exterior</button>
+    <button type="button" class="v-toggle" id="replay">Reproducir</button>
   </div>
 </header>
 
@@ -126,7 +129,7 @@
           <p class="v-muted">Riesgo: {{qué se sacrifica}}</p>
           <ul class="v-checks"></ul>
         </div>
-        <div class="v-narrow"><div class="opt" data-var="1">
+        <div class="v-narrow"><div class="opt" data-var="1" data-play>
           {{hero de la base}}
           <span class="v-label">Ficha</span>
           {{una ficha o tarjeta del contenido principal}}
@@ -162,6 +165,7 @@
   <li data-fg="--color-text-muted" data-bg="--color-bg" data-min="4.5">Texto secundario</li>
   <li data-fg="--color-on-primary" data-bg="--color-primary" data-min="4.5">Botón principal</li>
   <li data-fg="--color-text" data-bg="--color-warning-bg" data-min="4.5">Texto sobre aviso</li>
+  <li data-fg="--color-text" data-bg="--surface-worst" data-min="4.5">Texto sobre la zona más difícil del fondo</li>
 </template>
 
 <script>
@@ -208,6 +212,11 @@
     const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
     e.currentTarget.setAttribute('aria-pressed', String(on));
     document.body.classList.toggle('v-sun', on);
+  });
+  document.getElementById('replay').addEventListener('click', () => {
+    document.querySelectorAll('.opt').forEach(o => {
+      o.removeAttribute('data-play'); void o.offsetWidth; o.setAttribute('data-play', '');
+    });
   });
   checks();
 })();

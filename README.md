@@ -12,7 +12,7 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (7 si documenta el diseño existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color o la forma de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (7 si documenta el diseño existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color, la forma, el fondo o el movimiento de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -55,11 +55,20 @@ Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Detalle en
 ### Cuándo se diseña
 | Situación | Qué pasa |
 |---|---|
-| Proyecto nuevo | `/init` hace la entrevista de diseño (Ronda 4b), escribe `brief.md`, `creative-direction.md` y `anti-cliches.md`, genera 3 opciones en HTML (2 si la marca ya está cerrada) y la elegida pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
+| Proyecto nuevo | `/init` investiga el nicho (`nicho.md`), hace la entrevista de diseño (Ronda 4b) con territorios de identidad propuestos, escribe `brief.md`, `creative-direction.md` y `anti-cliches.md`, genera 3 opciones en HTML (2 si la marca ya está cerrada) y la elegida pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
 | Proyecto existente | `/init` solo **documenta** el diseño actual si lo aceptas (capturas reales, deuda `DS`); nunca rediseña. `--upgrade --redo-design` lo vuelve a documentar. |
-| Rediseño o pantallas nuevas | Siempre una spec propia: `/specify` hace la entrevista y `/plan` genera las opciones en la carpeta de la spec; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
+| Rediseño o pantallas nuevas | Siempre una spec propia: `/specify` investiga el nicho si falta y hace la entrevista y `/plan` genera las opciones en la carpeta de la spec; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
 
 ### Cómo se generan opciones que no parezcan de plantilla
+- **Investigación del nicho** (`skills/init/references/nicho.md` → `docs/design/nicho.md`): antes
+  de la entrevista se estudian las convenciones del sector, los materiales propios del oficio
+  (documentos, envases, espacios, herramientas), 4–6 referentes reales con enlace, lo que todos
+  repiten (pasa a clichés) y el contexto de uso. Profundidad según el producto: completa en sitios
+  y apps públicas, ligera en herramientas internas, omitida si hay manual de marca. Se estudia el
+  patrón, nunca se copia a un competidor; sin estereotipos ni creación de logo o nombre.
+- **Territorios de identidad.** Con esa investigación, la entrevista propone 2–3 formas de ser
+  reconocible en el sector, cada una con concepto firma, tono, movimiento y superficies. El
+  elegido va a `creative-direction.md` y las opciones lo componen.
 - **Concepto firma.** La entrevista pregunta si ya hay una idea que deba reconocerse (p. ej. "el
   código se escribe y se compila en la tarjeta"). Con ella, las opciones son **composiciones** de
   esa idea; sin ella, cada opción es una **dirección** con su propia idea y su momento firma.
@@ -73,6 +82,12 @@ Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Detalle en
   dominio del producto, cada uno con su alternativa.
 - **Tipografía justificada.** Nada de fuentes del sistema como marca ni de fuentes de moda elegidas
   por estética: cada familia se justifica contra el brief y se incrusta en woff2.
+- **Movimiento con jerarquía.** Cada opción trae su paleta de movimiento (momento firma,
+  microinteracciones, entradas, transiciones) derivada del territorio, con versión sin movimiento
+  y demo en vivo en el HTML. Un protagonista; el resto sobrio.
+- **Superficies y fondos.** Más allá del color sólido: texturas, patrones, cambios entre secciones
+  y tratamiento de imagen, salidos del territorio y en CSS o SVG ligero. El contraste se mide sobre
+  la zona más difícil del fondo (`--surface-worst`).
 - **Repaso antes de enseñar** cada opción contra los rasgos por defecto de las interfaces generadas
   (`design.md` §6) y contra `anti-cliches.md`, con o sin el plugin `design`.
 
@@ -80,7 +95,7 @@ Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Detalle en
 | Si… | Usa | Qué hace |
 |---|---|---|
 | Ninguna opción convence | `/init --upgrade --redo-options` (o "rehacer" en `/plan`) | Pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `history/ronda-<N>/` y genera otra con "qué cambia respecto a la ronda anterior". |
-| Una opción convence salvo un aspecto | `/init --upgrade --redo-options --only <tipografia\|color\|forma> --base <opción>` (o "afinar un eje" en `/plan`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula el sol. |
+| Una opción convence salvo un aspecto | `/init --upgrade --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <opción>` (o "afinar un eje" en `/plan`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula luz exterior. |
 | Ya hay sistema aprobado | `/specify "rediseño de …"` | Spec de rediseño (ver arriba). |
 
 En `/plan`, la tipografía o el color se afinan **antes** de "Cambios a incorporar al sistema";

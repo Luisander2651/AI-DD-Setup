@@ -26,6 +26,7 @@ Un rediseño **siempre** es una spec propia; `/init` nunca lo hace. Antes del Pa
    (`../../init/references/interview.md` → Ronda 4b; `/specify` ya la habrá hecho si la spec es de
    rediseño, y sus respuestas están en "Decisiones") y créalos desde `../../init/templates/design/`
    (`../../init/references/design.md` §2.2), con aprobación del usuario, antes de generar opciones.
+   Si falta `docs/design/nicho.md`, investiga antes el nicho (`../../init/references/nicho.md`).
 1. Brief en modo spec (`../../init/references/design.md` §5) con el contenido real de la spec. Si
    `creative-direction.md` tiene concepto firma, las opciones son composiciones de esa idea; si
    no, cada opción es una dirección con su idea y su momento firma (§2.3 de ese archivo).

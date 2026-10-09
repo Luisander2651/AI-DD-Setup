@@ -65,7 +65,10 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    **Rehacer opciones (desde 1.11.4):** con `--upgrade --redo-options`, sigue `design.md` §2.7 y
    nada más del paso. Sin el argumento, si hay `docs/design/opciones/` y `design.status` es `none`
    (opciones sin elegir), menciona en el resumen que existe. Con `--only <eje> --base <opción>`,
-   sigue `design.md` §2.8 (ronda acotada a un eje, desde 1.11.5). Si `skills.enabled` no tiene
+   sigue `design.md` §2.8 (ronda acotada a un eje, desde 1.11.5; ejes `fondo` y `movimiento`
+   desde 1.12.0). **Nicho (desde 1.12.0):** si hay diseño `chosen` o en opciones y falta
+   `docs/design/nicho.md`, no lo crees en el upgrade: menciónalo en el resumen; se investiga en la
+   siguiente ronda de opciones o spec de rediseño. Si `skills.enabled` no tiene
    `design` y el plugin está instalado, ofrece registrarlo.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo

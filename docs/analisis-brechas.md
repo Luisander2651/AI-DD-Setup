@@ -261,10 +261,11 @@ Esto adelanta la parte de observabilidad que estaba en 5.1 (1.6.0).
 | 1.11.1 | Correcciones de la prueba 8.15 (D1–D20) | ✅ |
 | 1.11.2 | Fidelidad del diseño extraído e inventario de vistas; re-extracción (8.16) | ✅ |
 | 1.11.3–1.11.5 | Diseño con idea propia (8.17): composición obligatoria entre opciones, concepto firma, clichés del sector, `--redo-options` y ronda acotada a un eje | ✅ |
-| 1.12.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2); pendientes de 8.10 | pendiente |
-| 1.13.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
-| 1.14.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, numeración sin colisiones (1.3) | pendiente |
-| 1.15.0 | Skill de diseño propia, construida a partir del uso del plugin `design` de Anthropic (hasta entonces, dependencia externa; README → "Dependencias") | pendiente |
+| 1.12.0 | Investigación del nicho, territorios de identidad, paleta de movimiento y superficies; ejes `fondo` y `movimiento` | ✅ |
+| 1.13.0 | Carriles `/fix`, `/hotfix`, `/refactor`, `/chore` (4.1) y `/sync` (4.2); pendientes de 8.10 | pendiente |
+| 1.14.0 | Escalabilidad (5.1): NFR cuantificados, capacidad, carga en `release`, fitness functions | pendiente |
+| 1.15.0 | SBOM y licencias (2.2), `/amend`, deuda técnica, flags, `/next`, numeración sin colisiones (1.3) | pendiente |
+| 1.16.0 | Skill de diseño propia, construida a partir del uso del plugin `design` de Anthropic (hasta entonces, dependencia externa; README → "Dependencias") | pendiente |
 | 2.0.0 | Equipos y repos grandes (5.2, 5.3), `/security-audit`, evals del plugin (6) | pendiente |
 
 ## Fuentes

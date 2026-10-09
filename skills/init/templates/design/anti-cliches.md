@@ -17,6 +17,9 @@ añade al final los clichés del sector del producto (Ronda 4b), cada uno con su
 | Tríada de tarjetas icono + título + texto para presentar la empresa o las ventajas | Una forma propia de la idea: texto corrido, una pieza destacada o datos reales |
 | Fuente del sistema como tipografía de marca | Familia elegida e incrustada |
 | Mismo esqueleto con otra piel en cada opción | Composición distinta de la pantalla principal |
+| Fondos de moda sin relación con la idea (manchas difusas, degradado de malla, vidrio esmerilado, grano en toda la página) | Superficies que salen del territorio, o color sólido elegido a propósito |
+| Todo entra con fundido al hacer scroll, parallax, contadores que suben | Paleta de movimiento con un protagonista y microinteracciones sobrias |
+| Copiar la estética de un competidor concreto | Estudiar el patrón del sector (`nicho.md`) y resolverlo con el territorio propio |
 <!-- frontend / fullstack (web) -->
 | Hero genérico con ilustración stock y "Bienvenido a X" | La tarea principal del usuario visible desde el inicio |
 | Grid de cards idénticas sin jerarquía | Elemento destacado y variaciones de tamaño |
@@ -26,5 +29,5 @@ añade al final los clichés del sector del producto (Ronda 4b), cada uno con su
 | Splash con logo animado largo | Contenido útil en el primer segundo |
 | Pestañas inferiores para una app de una sola tarea | La tarea principal en la primera pantalla |
 | Modales encadenados | Pantallas o hojas inferiores con retorno claro |
-<!-- sector del producto (Ronda 4b) -->
+<!-- sector del producto ("Lo que todos repiten" de nicho.md y Ronda 4b) -->
 | {{cliché visual típico del sector}} | {{alternativa dentro de la dirección}} |

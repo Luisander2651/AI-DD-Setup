@@ -31,20 +31,25 @@ Comprueba qué ofrece la sesión antes de empezar y dilo en una línea:
 
 ## 2. Greenfield
 
-### 2.1 Entrevista
-`interview.md` → Ronda 4b. Lo que ya responden la constitución o el tipo (nivel WCAG, toque
+### 2.1 Investigación del nicho y entrevista
+Antes de la entrevista, investiga el nicho con `nicho.md` (profundidad según el tipo de producto) y
+escribe `docs/design/nicho.md`. Después, `interview.md` → Ronda 4b, que propone los territorios de
+identidad salidos de esa investigación. Lo que ya responden la constitución o el tipo (nivel WCAG, toque
 ≥ 44 pt/48 dp en `mobile`) no se pregunta: se anota como `implícita`.
 
 ### 2.2 Documentos de partida
 Con las respuestas escribe, desde `../templates/design/`:
+- `docs/design/nicho.md` (si no se escribió ya en §2.1), con el territorio elegido en "Elección".
 - `docs/design/brief.md`.
 - `docs/design/creative-direction.md`: referencias de sensación **con nombre** (productos, sitios o
   apps concretos, no adjetivos) y, si el usuario lo dio, el **concepto firma**: la idea que debe
   reconocerse en el producto y el momento en que se ve (p. ej. "el código se escribe y se compila
   en la tarjeta de presentación"). Si no lo dio, la sección dice "lo deciden las opciones".
+  Con un territorio de identidad elegido (`nicho.md` §4), escribe también "Identidad",
+  "Movimiento" y "Superficies y fondos" desde ese territorio.
 - `docs/design/anti-cliches.md`: conserva las filas de "todos los tipos" y las del tipo del
   proyecto, borra las demás, añade los clichés que el usuario rechazó en "Referencias" y los
-  **del sector** del producto (Ronda 4b), cada uno con una alternativa dentro de la dirección, no
+  **del sector** del producto ("Lo que todos repiten" de `nicho.md` y Ronda 4b), cada uno con una alternativa dentro de la dirección, no
   solo la prohibición.
 
 Muéstralos y pide aprobación antes de generar nada: las opciones cuestan tokens.
@@ -54,7 +59,7 @@ Muéstralos y pide aprobación antes de generar nada: las opciones cuestan token
 tipografía, forma, densidad y composición, no el color). Regístralo en `brief.md` (`options:`).
 
 Qué se explora depende de `creative-direction.md`:
-- **Con concepto firma:** la dirección ya está decidida; las opciones son **composiciones** de esa
+- **Con concepto firma** (dado por el usuario o por el territorio elegido): la dirección ya está decidida; las opciones son **composiciones** de esa
   idea (cómo se ordena y se presenta el contenido principal, dónde vive el momento firma), con la
   misma estética de partida.
 - **Sin concepto firma:** cada opción es una **dirección** con su propia idea y su propio momento
@@ -85,15 +90,27 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    escribe con `@container`, no con `@media` (el marco no es la ventana).
 7. **Idea** en una frase, anclada en un dato concreto de `brief.md` (público, contexto de uso,
    producto, lugar) o en el concepto firma; debajo, las 2–3 decisiones de **estructura** que la
-   materializan, y el riesgo asumido. Ejemplo: "Campo al sol — se usa en el teléfono a pleno sol:
-   bordes gruesos y sombra dura, cuerpo de 19 px, botones de 56 px". Una idea que no cambia la
+   materializan, y el riesgo asumido. Ejemplos de forma (de sectores distintos): "La ficha del
+   paciente — la clínica se reconoce por su expediente: cabecera de datos fija, secciones en
+   pestañas de archivo, cifras en monoespaciada"; "El lomo del libro — la librería se recorre como
+   un estante: portadas de canto, títulos en vertical, color por sección". Una idea que no cambia la
    estructura es solo un nombre: rehaz la opción.
-8. Un solo **momento firma**, derivado de la idea, dibujado en fotogramas (inicio → medio → final)
-   con su versión sin movimiento; el resto, sobrio.
+8. **Paleta de movimiento**, derivada de la idea y del territorio: el **momento firma** (uno, el
+   protagonista), las microinteracciones (botones, filtros, tarjetas, campos), las entradas al
+   hacer scroll si las hay y las transiciones. Cada efecto con disparador, propiedades (solo
+   `transform`, `opacity` o `filter` salvo justificación), duración y curva con tokens y su
+   versión sin movimiento. El momento firma va en fotogramas y **en vivo** en la sección
+   "Movimiento" de `option.html`; el resto, sobrio.
+9. **Superficies y fondos**, derivados del territorio (no de una moda): fondo de página, cambios
+   entre secciones, texturas o patrones, tratamiento de imagen o ilustración y separadores. En
+   CSS o SVG ligero, sin imágenes pesadas ni vídeo de fondo. El texto se mide sobre la **zona más
+   difícil** del fondo: define `--surface-worst` con ese color para que la página calcule el par.
+   Un color sólido es una elección válida si la idea lo pide; dilo.
 
 Las opciones deben ser **distintas de verdad**: cambian **siempre la composición** de la pantalla
 principal (orden, jerarquía y forma de presentar el contenido principal) y además al menos uno de
-familia de color, pareja tipográfica, forma y densidad. Si comparten esqueleto (mismas secciones
+familia de color, pareja tipográfica, forma y densidad, superficies y movimiento. Si comparten
+esqueleto (mismas secciones
 en el mismo orden, mismos textos, misma rejilla) son la misma opción con otra piel: rehazlas. Evita
 los clichés de `anti-cliches.md` y, salvo que el brief lo pida, los rasgos por defecto de las
 interfaces generadas (§6).
@@ -144,6 +161,8 @@ Si es `declined` o el sistema es `extracted`, no aplica: es §3b o un rediseño.
    (una opción como base, o elementos sueltos de otras). Repite de la Ronda 4b solo lo que cambie
    la siguiente ronda: casi siempre el concepto firma (punto 5), los clichés del sector y las
    referencias. Las respuestas van a "Decisiones" de `brief.md` (tipo `diseño`, fuente `usuario`).
+   Si no existe `docs/design/nicho.md` (proyecto anterior a 1.12.0), ofrece investigar el nicho
+   (`nicho.md`) antes de la nueva ronda: es la causa más común de opciones genéricas.
 2. **Documentos de partida.** Actualiza `brief.md`, `creative-direction.md` y `anti-cliches.md`
    (§2.2) con lo nuevo: lo rechazado pasa a `anti-cliches.md` con su alternativa, y una base
    elegida se convierte en el concepto firma. Muestra el cambio y pide aprobación.
@@ -168,7 +187,8 @@ gusta la letra"). Rehacer las opciones completas tiraría lo que funciona.
 
 **Cómo se pide:** en `/init`, `--upgrade --redo-options --only <eje> --base <a|b|c>`; en `/plan`
 (opciones de una spec), al elegir (`../../plan/references/design.md` §2, paso 3). Ejes:
-`tipografia`, `color`, `forma` (radios, bordes, sombras, densidad). La composición no es un eje:
+`tipografia`, `color`, `forma` (radios, bordes, sombras, densidad), `fondo` (superficies,
+texturas, tratamiento de imagen) y `movimiento` (paleta de movimiento). La composición no es un eje:
 cambiarla es §2.7. Mismas condiciones que §2.7: sin sistema `approved`.
 
 1. **Congela la base.** Composición, textos y los demás ejes no cambian. Solo cambian los tokens
@@ -178,19 +198,22 @@ cambiarla es §2.7. Mismas condiciones que §2.7: sin sistema `approved`.
    | `tipografia` | `--font-*`, `--text-*` (tamaño, interlineado, peso, interletrado) y el bloque `fonts` |
    | `color` | `--color-*` |
    | `forma` | `--radius-*`, `--border-*`, `--shadow-*`, `--space-*` |
+   | `fondo` | `--surface-*` y las reglas de fondo, textura e imagen del bloque de componentes |
+   | `movimiento` | `--duration-*`, `--ease-*` y las reglas de animación del bloque de componentes |
    Un ajuste de otro eje que el usuario pida a la vez (p. ej. aligerar bordes) se aplica a la
    base **antes** de la comparación y se registra aparte, nunca mezclado en las variantes.
 2. **Criterios primero.** Antes de proponer variantes, escribe 3–4 criterios del eje sacados de
    `brief.md` (tipografía: legibilidad en el contexto de uso, tono, cifras, acentos; color:
-   contraste, lectura al sol, significado de los colores en el sector; forma: toque mínimo,
-   densidad). Muéstralos al usuario junto con las variantes.
+   contraste, lectura en el contexto de uso, significado de los colores en el sector; forma: toque
+   mínimo, densidad; fondo: legibilidad del texto encima, peso, relación con el territorio;
+   movimiento: jerarquía, rendimiento, versión sin movimiento). Muéstralos al usuario junto con las variantes.
 3. **2–3 variantes**, cada una justificada contra los criterios, con su riesgo. Nada de §6 sin
    motivo del brief.
 4. **Lámina comparativa** desde `../templates/design/eje.html`, en la misma carpeta que las
    opciones (`eje-<eje>.html`): las mismas piezas de la base con cada variante, lado a lado al ancho
    más chico de `design.widths` y el hero a ancho completo. La página comprueba la carga de las
-   fuentes y el contraste de cada variante y tiene "Simular sol"; anota el peso de las fuentes en
-   KB. Ábrela en un navegador (o pide al usuario que lo haga) antes de enseñarla: ninguna fuente
+   fuentes y el contraste de cada variante y tiene "Simular luz exterior" (pantalla con brillo alto y contraste reducido); anota el peso de las fuentes en
+   KB. En `movimiento`, cada variante se reproduce en vivo con el botón "Reproducir". Ábrela en un navegador (o pide al usuario que lo haga) antes de enseñarla: ninguna fuente
    "no cargada", ningún par que no cumpla. Con la skill `design`, añade la lámina al canvas.
 5. **Elección.** La variante elegida se aplica a la opción base (su HTML y el canvas); la decisión
    va a "Decisiones" de `brief.md` (o del plan) con el criterio que la decidió; la lámina se
@@ -296,6 +319,8 @@ Objetivo: <de brief.md o de la spec>
 Dirección creativa: <resumen de docs/design/creative-direction.md, con sus referencias con nombre>
 Concepto firma: <el de creative-direction.md, o "ninguno: cada opción propone el suyo">
 Clichés del sector: <los de anti-cliches.md, con su alternativa>
+Nicho: <convenciones, materiales y territorio elegido de docs/design/nicho.md>
+Movimiento y superficies: <los de creative-direction.md>
 Sistema de diseño: <tokens clave de system.md, o "a definir" en modo sistema>
 Contenido real: <textos y datos exactos; nunca lorem ipsum>
 Artboards:
@@ -303,7 +328,9 @@ Artboards:
     en una frase, anclada en un dato del brief, y las decisiones de estructura que la materializan
   - Cada una a <design.widths>
   - Estados: vacío, carga, error, foco, deshabilitado
-  - Movimiento como fotogramas anotados (inicio → medio → final), con versión sin movimiento
+  - Movimiento como fotogramas anotados (inicio → medio → final), con versión sin movimiento;
+    paleta de movimiento (momento firma, microinteracciones, entradas, transiciones)
+  - Superficies y fondos de cada opción, con el texto sobre la zona más difícil del fondo
 Restricciones: <constitución: WCAG, toque mínimo, plataforma>; sin clichés de anti-cliches.md;
   solo tokens del sistema (modo spec)
 ```
@@ -330,5 +357,10 @@ generada sin dirección:
 - animaciones de entrada en cada sección en lugar de un único momento con sentido;
 - el mismo esqueleto de página en todas las opciones, con solo el color, el radio y la sombra
   cambiados.
+
+- fondos de moda sin relación con la idea: manchas de color difusas, degradados de malla, vidrio
+  esmerilado, grano o ruido en toda la página, rejilla de puntos;
+- movimiento genérico: todo entra con fundido y desplazamiento al hacer scroll, parallax, cursores
+  personalizados, contadores que suben, texto que se escribe solo sin motivo.
 
 Gasta la audacia en un solo elemento reconocible y mantén el resto sobrio.

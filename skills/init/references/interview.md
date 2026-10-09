@@ -48,19 +48,22 @@ descarta las brechas que dependían de ellos.
 
 **Ronda 4b — Diseño** (greenfield con interfaz: `frontend`, `fullstack`, `mobile`; ver
 `design.md` §2; y `/specify` de una spec de rediseño). En el `/init` brownfield no se hace: allí
-solo se pregunta, en la Fase 0, si documentar el diseño existente.
+solo se pregunta, en la Fase 0, si documentar el diseño existente. Antes de esta ronda, investiga
+el nicho (`nicho.md`): las preguntas 1, 4 y 5 parten de lo encontrado, no de cero.
 1. Objetivo del diseño y qué debe sentir quien lo usa; público y contexto de uso (prisa, una mano,
    luz exterior, edad).
 2. Marca: ¿hay logo y paleta cerrados? (sí → 2 opciones · no → 3) · colores pedidos y a evitar.
 3. Tipografía preferida o estilo (geométrica, humanista, con cifras tabulares para datos) · claro,
    oscuro o ambos.
 4. Referencias que gustan y que no, **con nombre** (productos, sitios o apps; si solo hay
-   adjetivos, pide un ejemplo) · intensidad del movimiento (sobrio, moderado, protagonista) ·
-   librería de componentes prevista y cuánto se personaliza.
-5. Concepto firma: ¿hay ya una idea que deba reconocerse en el producto y un momento en que se vea?
-   (sí → las opciones componen esa idea · no → cada opción propone una dirección) · clichés del
-   sector que no quiere: propón 3–4 típicos del dominio del producto y pide que confirme, quite o
-   añada.
+   adjetivos, pide un ejemplo; ofrece los referentes de `nicho.md`) · librería de componentes prevista y cuánto se personaliza.
+5. Identidad: presenta los **2–3 territorios** de `nicho.md` §4 (frase, de dónde sale, concepto
+   firma, tono, movimiento y superficies) y pide que elija uno, combine o proponga el suyo; si ya
+   trae un concepto firma, se usa ese (sí → las opciones componen esa idea · ninguno elegido →
+   cada opción desarrolla un territorio) · clichés del sector: propón los de "Lo que todos
+   repiten" y pide que confirme, quite o añada.
+6. Movimiento y fondos: con ejemplos del territorio, ¿qué tanto movimiento (sobrio, moderado,
+   protagonista) y qué superficies (color sólido, textura, patrón, fotografía, ilustración)?
 
 **Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
 **Sin servidor propio** (app móvil o de escritorio sin backend, CLI local): no hay peticiones,

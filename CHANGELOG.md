@@ -3,6 +3,35 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.12.0] - 2026-10-09
+Identidad desde el nicho. Las reglas de 1.11.3–1.11.5 evitan lo genérico, pero no dan de dónde
+sacar algo propio: la idea de cada opción dependía de lo que el agente supiera del sector. Ahora se
+investiga antes de preguntar, y la entrevista propone identidades en lugar de pedirlas en blanco.
+
+### Added
+- **Investigación del nicho** (`init/references/nicho.md`, plantilla `templates/design/nicho.md` →
+  `docs/design/nicho.md`): convenciones del sector, materiales del oficio, 4–6 referentes con
+  enlace, lo que todos repiten (→ `anti-cliches.md`) y contexto de uso; 6–10 búsquedas, como
+  subagente si se puede. Profundidad completa, ligera u omitida según el producto. Límites: no
+  copiar a un competidor, sin estereotipos, sin crear logo ni nombre, fuentes visibles.
+- **Territorios de identidad** en la Ronda 4b (2–3, con concepto firma, tono, movimiento y
+  superficies); el elegido va a `creative-direction.md` y las opciones lo componen.
+- **Paleta de movimiento** por opción (momento firma, microinteracciones, entradas, transiciones) y
+  demo en vivo con "Reproducir" en `option.html` y `eje.html`.
+- **Superficies y fondos** por opción, derivados del territorio, con `--surface-worst` para medir
+  el texto sobre la zona más difícil del fondo; sección nueva en `option.html`.
+- Ejes `fondo` y `movimiento` en la ronda acotada (§2.8).
+
+### Changed
+- `creative-direction.md`: secciones Identidad, Movimiento (con paleta) y Superficies y fondos.
+- §6 y `anti-cliches.md`: fondos de moda (manchas difusas, malla, vidrio esmerilado, grano) y
+  movimiento genérico (todo con fundido al hacer scroll, parallax, contadores); copiar a un
+  competidor.
+- "Distintas de verdad" cuenta también superficies y movimiento como ejes.
+- Los ejemplos de las reglas vienen de sectores variados, no de un proyecto concreto; "Simular sol"
+  pasa a "Simular luz exterior".
+- `--redo-options` ofrece investigar el nicho si falta; `--upgrade` solo lo menciona.
+
 ## [1.11.5] - 2026-10-09
 Ronda acotada a un eje. En la ronda 3 de AgroSana una opción convencía en composición pero no en
 tipografía (Barlow, Bricolage y Epilogue: elegidas por estética, sin relación con el brief), y la

@@ -20,6 +20,9 @@ Respuestas de la entrevista de diseño de `/init` (Ronda 4b). Lo usan las opcion
 ## Tipografía y modo
 {{familias o estilo preferido; claro, oscuro o ambos}}
 
+## Nicho
+Investigación en `nicho.md` ({{completa | ligera | omitida}}); territorio elegido: {{…}}.
+
 ## Referencias
 - Gustan: {{…}}
 - No gustan: {{…}}

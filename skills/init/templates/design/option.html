@@ -239,6 +239,7 @@
       <li><a href="#espaciado">Espaciado y forma</a></li>
       <li><a href="#componentes">Componentes</a></li>
       <li><a href="#pantallas">Pantallas</a></li>
+      <li><a href="#superficies">Superficies</a></li>
       <li><a href="#movimiento">Movimiento</a></li>
     </ul>
   </div>
@@ -260,6 +261,7 @@
       <li class="v-pair" data-fg="--color-text" data-bg="--color-warning-bg" data-min="4.5" data-optional>Texto sobre aviso</li>
       <li class="v-pair" data-fg="--color-border" data-bg="--color-surface" data-min="3">Borde de campo sobre superficie</li>
       <li class="v-pair" data-fg="--color-focus" data-bg="--color-bg" data-min="3" data-optional>Anillo de foco sobre fondo</li>
+      <li class="v-pair" data-fg="--color-text" data-bg="--surface-worst" data-min="4.5" data-optional>Texto sobre la zona más difícil del fondo</li>
     </ul>
   </section>
 
@@ -362,11 +364,28 @@
     </div>
   </section>
 
+  <section class="v-section" id="superficies">
+    <h2>Superficies y fondos</h2>
+    <p class="v-note">{{De dónde salen en el territorio. Fondo de página, cambio entre secciones,
+      textura o patrón, tratamiento de imagen y separadores, con texto real encima de la zona más
+      difícil (su color en --surface-worst, que mide el par de "Color").}}</p>
+    <div class="v-stage"><div class="opt">
+      {{muestras: fondo de página con texto, transición entre dos secciones, imagen tratada, separador}}
+    </div></div>
+  </section>
+
   <section class="v-section" id="movimiento">
     <h2>Movimiento</h2>
+    <p class="v-note">Paleta de movimiento. Las animaciones se escriben en el bloque "components" bajo
+      <code>.opt[data-play]</code>, con su versión en <code>.opt[data-motion="reduced"]</code>.</p>
     <ul class="v-motion">
-      <li><strong>{{Nombre}}</strong>: {{disparador, propiedades, duración y curva con tokens}}. Sin movimiento: {{versión estática}}.</li>
+      <li><strong>{{Momento firma}}</strong>: {{disparador, propiedades, duración y curva con tokens}}. Sin movimiento: {{versión estática}}.</li>
+      <li><strong>{{Microinteracción}}</strong>: {{…}}. Sin movimiento: {{…}}.</li>
     </ul>
+    <button type="button" class="v-toggle" id="replay">Reproducir</button>
+    <div class="v-stage"><div class="opt" id="motion-demo" data-play>
+      {{las piezas que se animan: el momento firma y los controles con sus microinteracciones}}
+    </div></div>
   </section>
 </main>
 
@@ -487,6 +506,10 @@
   };
   bMotion.addEventListener('click', () => setMotion(bMotion.getAttribute('aria-pressed') !== 'true'));
   if (reduced) setMotion(true);
+  const demo = document.getElementById('motion-demo');
+  document.getElementById('replay').addEventListener('click', () => {
+    demo.removeAttribute('data-play'); void demo.offsetWidth; demo.setAttribute('data-play', '');
+  });
 
   paint(); spaceDemo(); fit();
   addEventListener('resize', fit);
