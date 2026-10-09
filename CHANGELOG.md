@@ -3,6 +3,25 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.11.5] - 2026-10-09
+Ronda acotada a un eje. En la ronda 3 de AgroSana una opción convencía en composición pero no en
+tipografía (Barlow, Bricolage y Epilogue: elegidas por estética, sin relación con el brief), y la
+única salida era rehacer las tres opciones completas.
+
+### Added
+- `/init --upgrade --redo-options --only <tipografia|color|forma> --base <opción>` y, en `/plan`,
+  "afinar un eje" al elegir (`design.md` §2.8): base congelada, solo los tokens del eje, criterios
+  sacados del brief antes de proponer, 2–3 variantes justificadas y una lámina comparativa.
+- Plantilla `templates/design/eje.html`: mismas piezas por variante, lado a lado al ancho más chico
+  y a ancho completo; comprueba la carga de fuentes y el contraste, y tiene "Simular sol". Test de
+  que no carga nada externo.
+
+### Changed
+- La tipografía de cada opción se justifica contra el brief, no por estética; §6 añade las fuentes
+  de moda elegidas sin motivo.
+- `/plan` ofrece tres caminos al elegir: elegir, afinar un eje (antes de "Cambios a incorporar al
+  sistema") o rehacer.
+
 ## [1.11.4] - 2026-10-09
 Rehacer las opciones de diseño antes de elegir. Entre "se generaron las opciones" y "hay sistema
 aprobado" no había camino: si ninguna convencía, el usuario aprobaba una a medias para abrir un

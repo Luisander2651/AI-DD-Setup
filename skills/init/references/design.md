@@ -69,7 +69,9 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
 2. Componentes ajustados a la dirección en el bloque `components`, solo con tokens.
 3. Tipografía real: la fuente de marca no es una fuente del sistema (system-ui, Segoe, Roboto,
    Arial, Verdana, Trebuchet, Bahnschrift…) salvo que el brief lo pida; varían por equipo y aplanan
-   cualquier dirección. Incrusta en el bloque `fonts` cada peso que
+   cualquier dirección. Tampoco se elige por estética: escribe antes qué debe lograr la letra
+   según `brief.md` (legibilidad en el contexto de uso, tono, cifras, idioma) y justifica cada
+   familia contra eso en la "Idea" de la opción. Incrusta en el bloque `fonts` cada peso que
    uses como `@font-face` con el subconjunto latino en woff2 y base64, tomado del mismo paquete o
    archivo que usará la app (p. ej. `@fontsource/<familia>/files/<familia>-latin-400-normal.woff2`);
    sin él, el usuario elegiría sobre la fuente de reemplazo. Comprueba que carga
@@ -159,6 +161,42 @@ En un rediseño (spec propia), las opciones viven en la carpeta de la spec: apli
 desde `/plan` (`../../plan/references/design.md` §2), archivando en
 `docs/specs/NNN-<slug>/design/history/ronda-<N>/`.
 
+### 2.8 Ronda acotada a un eje
+
+Para cuando una opción ya convence en composición pero falla en un solo aspecto ("la A, pero no me
+gusta la letra"). Rehacer las opciones completas tiraría lo que funciona.
+
+**Cómo se pide:** en `/init`, `--upgrade --redo-options --only <eje> --base <a|b|c>`; en `/plan`
+(opciones de una spec), al elegir (`../../plan/references/design.md` §2, paso 3). Ejes:
+`tipografia`, `color`, `forma` (radios, bordes, sombras, densidad). La composición no es un eje:
+cambiarla es §2.7. Mismas condiciones que §2.7: sin sistema `approved`.
+
+1. **Congela la base.** Composición, textos y los demás ejes no cambian. Solo cambian los tokens
+   del eje:
+   | Eje | Tokens que cambian |
+   |---|---|
+   | `tipografia` | `--font-*`, `--text-*` (tamaño, interlineado, peso, interletrado) y el bloque `fonts` |
+   | `color` | `--color-*` |
+   | `forma` | `--radius-*`, `--border-*`, `--shadow-*`, `--space-*` |
+   Un ajuste de otro eje que el usuario pida a la vez (p. ej. aligerar bordes) se aplica a la
+   base **antes** de la comparación y se registra aparte, nunca mezclado en las variantes.
+2. **Criterios primero.** Antes de proponer variantes, escribe 3–4 criterios del eje sacados de
+   `brief.md` (tipografía: legibilidad en el contexto de uso, tono, cifras, acentos; color:
+   contraste, lectura al sol, significado de los colores en el sector; forma: toque mínimo,
+   densidad). Muéstralos al usuario junto con las variantes.
+3. **2–3 variantes**, cada una justificada contra los criterios, con su riesgo. Nada de §6 sin
+   motivo del brief.
+4. **Lámina comparativa** desde `../templates/design/eje.html`, en la misma carpeta que las
+   opciones (`eje-<eje>.html`): las mismas piezas de la base con cada variante, lado a lado al ancho
+   más chico de `design.widths` y el hero a ancho completo. La página comprueba la carga de las
+   fuentes y el contraste de cada variante y tiene "Simular sol"; anota el peso de las fuentes en
+   KB. Ábrela en un navegador (o pide al usuario que lo haga) antes de enseñarla: ninguna fuente
+   "no cargada", ningún par que no cumpla. Con la skill `design`, añade la lámina al canvas.
+5. **Elección.** La variante elegida se aplica a la opción base (su HTML y el canvas); la decisión
+   va a "Decisiones" de `brief.md` (o del plan) con el criterio que la decidió; la lámina se
+   archiva en `history/ronda-<N>-<eje>/`. Después se sigue con §2.5 (o con el plan) usando la base
+   ya afinada. Se puede encadenar otra ronda de otro eje.
+
 ## 3. Brownfield: documentar el diseño existente
 
 **Pregunta en la Fase 0**, al detectar interfaz y antes de explorar: *"¿Documento el diseño que
@@ -246,7 +284,8 @@ aplica a un sistema `chosen` (cambiarlo es un rediseño: spec propia).
 `upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
 re-explorar el resto del código: lanza únicamente el subagente G. Con un sistema extraído por un
 procedimiento anterior, ofrece §3b (re-extraer); `--redo-design` lo ejecuta directamente.
-`--redo-options` sigue §2.7 (rehacer las opciones de un proyecto nuevo antes de elegir sistema).
+`--redo-options` sigue §2.7 (rehacer las opciones de un proyecto nuevo antes de elegir sistema);
+con `--only <eje> --base <opción>`, §2.8 (afinar un solo eje de una opción).
 
 ## 5. Brief (para la skill `design` y para escribir el HTML)
 
@@ -281,7 +320,9 @@ generada sin dirección:
 - todo troceado en tarjetas idénticas con el mismo radio y la misma sombra suave, y degradados
   como decoración; en especial la tríada de tarjetas icono + título + texto para "quiénes somos"
   o las ventajas;
-- fuentes del sistema como tipografía de marca; botones y filtros en píldora con hero de color
+- fuentes del sistema como tipografía de marca, o fuentes de moda elegidas sin motivo del brief
+  (Bricolage Grotesque, Epilogue, Space Grotesk, Inter, DM Sans, Manrope, Plus Jakarta Sans);
+  botones y filtros en píldora con hero de color
   plano y un botón de acento como única decisión;
 - etiquetas en mayúsculas espaciadas sobre cada título, metadatos unidos con puntos medios,
   monoespaciada para cualquier dato pequeño, flechas añadidas a todos los botones;

@@ -1,0 +1,216 @@
+<!doctype html>
+<!--
+  Plantilla de ai-dd para una ronda acotada a un eje (init/references/design.md §2.8):
+  docs/design/opciones/eje-<eje>.html (o docs/specs/NNN-<slug>/design/eje-<eje>.html).
+  Compara 2-3 variantes de UN eje (tipografía, color o forma) sobre una opción base congelada.
+  Autocontenida: sin fuentes, scripts ni imágenes externas, para que se abra sin red.
+
+  Cómo rellenarla:
+  (Los bloques de estilos se llaman por su id; este comentario no repite sus etiquetas para que
+  buscar la etiqueta no caiga aquí.)
+  1. Bloque "base": copia literal de los bloques de tokens y de componentes de la opción base,
+     sin cambiar nada. Es lo congelado.
+  2. Bloque "fonts": un @font-face por familia y peso de TODAS las variantes, en woff2 base64
+     (subconjunto latino), tomado del paquete que usará la app. Eje color o forma: vacío salvo la
+     fuente de la base.
+  3. Bloque "variantes": una regla .opt[data-var="N"] por variante con SOLO los tokens del eje:
+       tipografía → --font-*, --text-* (tamaño, interlineado, peso, interletrado);
+       color      → --color-*;
+       forma      → --radius-*, --border-*, --shadow-*, --space-*.
+     Un token de otro eje aquí invalida la comparación.
+  4. Cabecera: eje, opción base y los criterios del eje sacados de brief.md (escritos ANTES de
+     elegir las variantes). Cada variante dice en "Por qué" qué criterio cumple y cómo.
+  5. Piezas: el MISMO HTML en cada variante, copiado de la base (clases c-* de la base): hero,
+     una ficha o tarjeta del contenido principal, un aviso, botones y filtros o campos, y un
+     párrafo de texto corrido real. Sustituye cada {{…}} por contenido real (nunca lorem ipsum).
+  6. data-fonts de cada variante: las familias que debe cargar (se comprueba en la página).
+     data-weight: peso total de sus archivos de fuente en KB (lo mides tú al incrustarlos).
+  El contraste de cada par y la carga de las fuentes los calcula la propia página.
+-->
+<html lang="{{es}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{Proyecto}} — Ronda de {{eje}} sobre la opción {{A}}</title>
+
+<style id="viewer">
+  :root {
+    --ui-bg: #f6f7f8; --ui-panel: #ffffff; --ui-text: #1d2125; --ui-muted: #5b636b;
+    --ui-line: #d9dde1; --ui-ok: #1e7a3c; --ui-fail: #b42318; --ui-focus: #1f5fd1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-viewer="light"]) {
+      --ui-bg: #17191c; --ui-panel: #1f2226; --ui-text: #e8eaed; --ui-muted: #a3a9b0;
+      --ui-line: #343940; --ui-ok: #6fd08c; --ui-fail: #ff8a80; --ui-focus: #8ab4ff;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ui-bg); color: var(--ui-text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  :focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+  .v-wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+  .v-head { padding: 40px 0 24px; border-bottom: 1px solid var(--ui-line); }
+  .v-head h1 { margin: 0 0 8px; font-size: 26px; line-height: 1.2; }
+  .v-muted { color: var(--ui-muted); margin: 0 0 12px; max-width: 75ch; }
+  .v-criteria { margin: 0 0 16px; padding-left: 20px; max-width: 75ch; }
+  .v-toggle { min-height: 40px; padding: 0 14px; border: 1px solid var(--ui-line); border-radius: 6px;
+              background: var(--ui-panel); color: var(--ui-text); font: inherit; cursor: pointer; }
+  .v-toggle[aria-pressed="true"] { border-color: var(--ui-focus); box-shadow: inset 0 0 0 1px var(--ui-focus); }
+  .v-section { padding: 32px 0; border-bottom: 1px solid var(--ui-line); }
+  .v-section h2 { margin: 0 0 6px; font-size: 20px; }
+  .v-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; align-items: start; }
+  .v-col { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 8px; overflow: hidden; }
+  .v-col-head { padding: 14px 16px; border-bottom: 1px solid var(--ui-line); }
+  .v-col-head h3 { margin: 0 0 4px; font-size: 16px; }
+  .v-col-head p { margin: 0 0 4px; font-size: 14px; }
+  .v-checks { list-style: none; margin: 8px 0 0; padding: 0; font-size: 13px; }
+  .v-checks li { margin: 2px 0; }
+  .v-ok { color: var(--ui-ok); } .v-fail { color: var(--ui-fail); }
+  .v-narrow { width: 360px; max-width: 100%; margin: 0 auto; }
+  .v-label { display: block; padding: 8px 16px; font-size: 12px; color: var(--ui-muted);
+             border-top: 1px dashed var(--ui-line); }
+  .v-full { background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: 8px;
+            margin: 0 0 16px; overflow: hidden; }
+  .v-full > .v-label { border-top: 0; border-bottom: 1px dashed var(--ui-line); }
+  .opt { container-type: inline-size; }
+  body.v-sun .opt { filter: brightness(1.25) contrast(0.7); }
+  .v-foot { padding: 24px 0 48px; color: var(--ui-muted); font-size: 13px; }
+</style>
+
+<style id="fonts">
+  /* @font-face de todas las variantes (woff2 base64). */
+</style>
+
+<style id="base">
+  /* Copia literal de los tokens y componentes de la opción base (congelados). */
+  .opt { {{tokens de la base}} }
+  {{componentes de la base}}
+</style>
+
+<style id="variantes">
+  /* SOLO los tokens del eje, una regla por variante. */
+  .opt[data-var="1"] { {{tokens del eje · variante 1}} }
+  .opt[data-var="2"] { {{tokens del eje · variante 2}} }
+  .opt[data-var="3"] { {{tokens del eje · variante 3}} }
+</style>
+</head>
+<body>
+<header class="v-head">
+  <div class="v-wrap">
+    <h1>Ronda de {{eje}} sobre la opción {{A · nombre}}</h1>
+    <p class="v-muted">Todo lo demás está congelado: composición, {{los otros ejes}} y textos son los de la
+      opción base. Solo cambian los tokens de {{eje}}.</p>
+    <p><strong>Criterios del eje</strong> (de <code>brief.md</code>, escritos antes de elegir las variantes):</p>
+    <ol class="v-criteria">
+      <li>{{p. ej. legible al sol en un teléfono desde 16 px}}</li>
+      <li>{{p. ej. tono de casa técnica seria, no de startup ni de tienda artesanal}}</li>
+      <li>{{p. ej. cifras claras para composición y dosis; acentos y ñ completos}}</li>
+    </ol>
+    <button type="button" class="v-toggle" id="toggle-sun" aria-pressed="false">Simular sol</button>
+  </div>
+</header>
+
+<main class="v-wrap">
+  <section class="v-section" id="lado-a-lado">
+    <h2>Lado a lado, al ancho más chico</h2>
+    <p class="v-muted">Las mismas piezas con cada variante, al ancho mínimo de <code>design.widths</code>.</p>
+    <div class="v-cols">
+
+      <!-- Una .v-col por variante; copia el bloque entero cambiando N, nombre, por qué y fuentes. -->
+      <article class="v-col" data-var="1" data-fonts="{{Familia títulos}}, {{Familia texto}}" data-weight="{{KB}}">
+        <div class="v-col-head">
+          <h3>{{1 · Familia títulos + Familia texto}}</h3>
+          <p>{{Por qué: qué criterio cumple cada familia y cómo.}}</p>
+          <p class="v-muted">Riesgo: {{qué se sacrifica}}</p>
+          <ul class="v-checks"></ul>
+        </div>
+        <div class="v-narrow"><div class="opt" data-var="1">
+          {{hero de la base}}
+          <span class="v-label">Ficha</span>
+          {{una ficha o tarjeta del contenido principal}}
+          <span class="v-label">Aviso</span>
+          {{aviso o precaución}}
+          <span class="v-label">Controles</span>
+          {{botones, filtros o campos}}
+          <span class="v-label">Texto corrido</span>
+          {{un párrafo real a tamaño de cuerpo}}
+        </div></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="v-section" id="ancho-completo">
+    <h2>A ancho completo</h2>
+    <p class="v-muted">El hero de cada variante a todo el ancho, una debajo de otra.</p>
+    <div class="v-full"><span class="v-label">Variante 1</span><div class="opt" data-var="1">{{hero de la base}}</div></div>
+    <div class="v-full"><span class="v-label">Variante 2</span><div class="opt" data-var="2">{{hero de la base}}</div></div>
+    <div class="v-full"><span class="v-label">Variante 3</span><div class="opt" data-var="3">{{hero de la base}}</div></div>
+  </section>
+</main>
+
+<footer class="v-wrap v-foot">
+  Ronda acotada a un eje · ai-dd · la elegida se aplica a la opción base y la lámina se archiva en
+  <code>history/ronda-&lt;N&gt;-&lt;eje&gt;/</code>.
+</footer>
+
+<template id="pairs">
+  <!-- Pares cuyo contraste se calcula en cada variante; deja los que existan en la base. -->
+  <li data-fg="--color-text" data-bg="--color-bg" data-min="4.5">Texto sobre fondo</li>
+  <li data-fg="--color-text-muted" data-bg="--color-bg" data-min="4.5">Texto secundario</li>
+  <li data-fg="--color-on-primary" data-bg="--color-primary" data-min="4.5">Botón principal</li>
+  <li data-fg="--color-text" data-bg="--color-warning-bg" data-min="4.5">Texto sobre aviso</li>
+</template>
+
+<script>
+(() => {
+  const probe = document.createElement('span');
+  probe.style.display = 'none';
+  function rgbOf(host, token) {
+    if (!getComputedStyle(host).getPropertyValue(token).trim()) return null;
+    host.appendChild(probe);
+    probe.style.color = `var(${token})`;
+    const m = getComputedStyle(probe).color.match(/[\d.]+/g);
+    probe.remove();
+    return m ? m.slice(0, 3).map(Number) : null;
+  }
+  const lum = ([r, g, b]) => {
+    const c = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  function ratio(a, b) { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); }
+  const item = (ok, text) => `<li class="${ok ? 'v-ok' : 'v-fail'}">${ok ? '✓' : '✗'} ${text}</li>`;
+
+  async function checks() {
+    await document.fonts.ready;
+    const pairs = [...document.getElementById('pairs').content.querySelectorAll('li')];
+    for (const col of document.querySelectorAll('.v-col')) {
+      const host = col.querySelector('.opt');
+      const out = col.querySelector('.v-checks');
+      let html = '';
+      for (const fam of (col.dataset.fonts || '').split(',').map(s => s.trim()).filter(Boolean)) {
+        const loaded = [...document.fonts].some(f => f.family.replace(/["']/g, '') === fam && f.status === 'loaded');
+        html += item(loaded, `Fuente ${fam} ${loaded ? 'cargada' : 'no cargada (se ve la de reemplazo)'}`);
+      }
+      if (col.dataset.weight) html += `<li>Peso de las fuentes: ${col.dataset.weight} KB</li>`;
+      for (const p of pairs) {
+        const fg = rgbOf(host, p.dataset.fg), bg = rgbOf(host, p.dataset.bg);
+        if (!fg || !bg) continue;
+        const r = ratio(fg, bg), min = Number(p.dataset.min);
+        html += item(r >= min, `${p.textContent} ${r.toFixed(2)}:1 (mín. ${min})`);
+      }
+      out.innerHTML = html;
+    }
+  }
+  document.getElementById('toggle-sun').addEventListener('click', e => {
+    const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+    e.currentTarget.setAttribute('aria-pressed', String(on));
+    document.body.classList.toggle('v-sun', on);
+  });
+  checks();
+})();
+</script>
+</body>
+</html>

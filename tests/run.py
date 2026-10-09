@@ -285,7 +285,12 @@ def scenario_design_templates():
     ext = _re.findall(r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']+|@import|url\(\s*["']?(?:https?:)?//""", html)
     check("option.html no carga nada externo (se abre sin red)", not ext, str(ext))
     check("option.html calcula el contraste en la página", "function ratio" in html or "const ratio" in html)
-    for name in ("system.md", "brief.md", "creative-direction.md", "anti-cliches.md", "option.html"):
+    eje = open(os.path.join(base, "eje.html"), encoding="utf-8").read()
+    ext = _re.findall(r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']+|@import|url\(\s*["']?(?:https?:)?//""", eje)
+    check("eje.html no carga nada externo (se abre sin red)", not ext, str(ext))
+    check("eje.html calcula el contraste y comprueba la carga de fuentes",
+          "function ratio" in eje and "document.fonts" in eje)
+    for name in ("system.md", "brief.md", "creative-direction.md", "anti-cliches.md", "option.html", "eje.html"):
         check(f"existe templates/design/{name}", os.path.isfile(os.path.join(base, name)))
 
 

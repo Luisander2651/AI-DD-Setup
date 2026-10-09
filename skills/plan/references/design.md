@@ -33,7 +33,14 @@ Un rediseño **siempre** es una spec propia; `/init` nunca lo hace. Antes del Pa
    defecto, 2 si se mantiene la marca**; con la skill `design` si la sesión la ofrece (el canvas se
    enlaza en el plan), siempre también en HTML. Mismas reglas que en `/init`: distintas de verdad,
    contraste sin ningún "no cumple", sin clichés de `docs/design/anti-cliches.md`.
-3. El usuario elige; la elección va a "Decisiones" del plan (tipo `diseño`).
+3. El usuario decide entre tres caminos:
+   - **Elegir** una opción (o combinar elementos): va a "Decisiones" del plan (tipo `diseño`).
+   - **Afinar un eje de una opción** (tipografía, color o forma): sigue
+     `../../init/references/design.md` §2.8 en la carpeta de la spec y vuelve aquí con la base
+     afinada. Hazlo **antes** de escribir "Cambios a incorporar al sistema": cambiarlo después
+     obliga a `/plan NNN --fix`.
+   - **Rehacer** las opciones: §2.7 de ese archivo, archivando en
+     `docs/specs/NNN-<slug>/design/history/ronda-<N>/`.
 4. "Cambios a incorporar al sistema" recoge todo lo que cambia de `system.md` (tokens, componentes,
    pantallas) y la primera tarea lo aplica, subiendo `version` de `system.md`.
 5. **Migración por pantalla:** una tarea por pantalla (o grupo pequeño), cada una con su

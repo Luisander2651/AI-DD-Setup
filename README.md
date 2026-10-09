@@ -12,7 +12,7 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (7 si documenta el diseño existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior. | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (7 si documenta el diseño existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color o la forma de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -46,6 +46,45 @@ así que no chocan con comandos integrados como `/init`.
 - **Probar antes de planear.** Lo que el plan da por hecho de una herramienta o framework nuevo se
   comprueba con una prueba de concepto; los valores por defecto de una plantilla se auditan contra
   la constitución.
+
+## Diseño
+
+Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Detalle en
+`skills/init/references/design.md` y `skills/plan/references/design.md`.
+
+### Cuándo se diseña
+| Situación | Qué pasa |
+|---|---|
+| Proyecto nuevo | `/init` hace la entrevista de diseño (Ronda 4b), escribe `brief.md`, `creative-direction.md` y `anti-cliches.md`, genera 3 opciones en HTML (2 si la marca ya está cerrada) y la elegida pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
+| Proyecto existente | `/init` solo **documenta** el diseño actual si lo aceptas (capturas reales, deuda `DS`); nunca rediseña. `--upgrade --redo-design` lo vuelve a documentar. |
+| Rediseño o pantallas nuevas | Siempre una spec propia: `/specify` hace la entrevista y `/plan` genera las opciones en la carpeta de la spec; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
+
+### Cómo se generan opciones que no parezcan de plantilla
+- **Concepto firma.** La entrevista pregunta si ya hay una idea que deba reconocerse (p. ej. "el
+  código se escribe y se compila en la tarjeta"). Con ella, las opciones son **composiciones** de
+  esa idea; sin ella, cada opción es una **dirección** con su propia idea y su momento firma.
+- **Referencias con nombre** (productos, sitios o apps), no adjetivos.
+- **Distintas de verdad.** Entre opciones cambia siempre la composición de la pantalla principal y
+  al menos otro eje. Mismo esqueleto con otra piel = rehacer.
+- **Idea anclada en el brief.** Cada opción declara su idea en una frase, ligada a un dato real
+  (público, contexto de uso, producto, lugar), y las 2–3 decisiones de estructura que la
+  materializan; un solo momento firma, dibujado en fotogramas.
+- **Clichés del sector.** Además de la lista por tipo de proyecto, la entrevista añade los del
+  dominio del producto, cada uno con su alternativa.
+- **Tipografía justificada.** Nada de fuentes del sistema como marca ni de fuentes de moda elegidas
+  por estética: cada familia se justifica contra el brief y se incrusta en woff2.
+- **Repaso antes de enseñar** cada opción contra los rasgos por defecto de las interfaces generadas
+  (`design.md` §6) y contra `anti-cliches.md`, con o sin el plugin `design`.
+
+### Iterar antes de elegir
+| Si… | Usa | Qué hace |
+|---|---|---|
+| Ninguna opción convence | `/init --upgrade --redo-options` (o "rehacer" en `/plan`) | Pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `history/ronda-<N>/` y genera otra con "qué cambia respecto a la ronda anterior". |
+| Una opción convence salvo un aspecto | `/init --upgrade --redo-options --only <tipografia\|color\|forma> --base <opción>` (o "afinar un eje" en `/plan`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula el sol. |
+| Ya hay sistema aprobado | `/specify "rediseño de …"` | Spec de rediseño (ver arriba). |
+
+En `/plan`, la tipografía o el color se afinan **antes** de "Cambios a incorporar al sistema";
+cambiarlos después obliga a `/plan NNN --fix`.
 
 ## Validador y guardia
 
@@ -136,7 +175,8 @@ día el validador, las plantillas y `.ai/project.yaml`; ver "Mantenimiento" → 
 
 - **Python 3.8+** para el validador (`.ai/bin/aidd.py`) y el hook.
 - **Skill `design`** (opcional; crea un canvas Design a partir de un brief): si la sesión la
-  ofrece, `/init` y `/plan` generan con ella las opciones de diseño y enlazan el canvas. Sin ella,
+  ofrece, `/init` y `/plan` generan con ella las opciones de diseño (y las láminas de una ronda
+  acotada a un eje) y enlazan el canvas. Sin ella,
   las opciones se generan igual en HTML con `skills/init/templates/design/option.html`. El HTML es
   siempre el entregable: queda en el repo y se abre sin red.
 - **Plugin oficial `design` de Anthropic** (opcional, recomendado en proyectos con interfaz:

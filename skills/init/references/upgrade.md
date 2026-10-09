@@ -64,7 +64,8 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    el sistema anterior: se archiva en `docs/design/history/`.
    **Rehacer opciones (desde 1.11.4):** con `--upgrade --redo-options`, sigue `design.md` §2.7 y
    nada más del paso. Sin el argumento, si hay `docs/design/opciones/` y `design.status` es `none`
-   (opciones sin elegir), menciona en el resumen que existe. Si `skills.enabled` no tiene
+   (opciones sin elegir), menciona en el resumen que existe. Con `--only <eje> --base <opción>`,
+   sigue `design.md` §2.8 (ronda acotada a un eje, desde 1.11.5). Si `skills.enabled` no tiene
    `design` y el plugin está instalado, ofrece registrarlo.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
