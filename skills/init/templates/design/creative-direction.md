@@ -4,7 +4,12 @@ Decisiones fijadas con el usuario a partir de `brief.md`. Cambiarlas requiere pe
 las skills la leen antes de diseñar cualquier pantalla.
 
 ## Estética
-- {{sensación y referencias de sensación, en 2–4 puntos}}
+- {{sensación en 2–4 puntos}}
+- Referencias de sensación: {{productos, sitios o apps con nombre; qué se toma de cada uno}}
+
+## Concepto firma
+{{la idea que debe reconocerse y el momento en que se ve, en una o dos frases; o "lo deciden las
+opciones" si el usuario no dio ninguno}}
 
 ## Color y tipografía
 - {{papel del color de marca; familias y su uso}}

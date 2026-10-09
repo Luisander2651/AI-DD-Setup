@@ -54,8 +54,13 @@ solo se pregunta, en la Fase 0, si documentar el diseño existente.
 2. Marca: ¿hay logo y paleta cerrados? (sí → 2 opciones · no → 3) · colores pedidos y a evitar.
 3. Tipografía preferida o estilo (geométrica, humanista, con cifras tabulares para datos) · claro,
    oscuro o ambos.
-4. Referencias que gustan y que no · intensidad del movimiento (sobrio, moderado, protagonista) ·
+4. Referencias que gustan y que no, **con nombre** (productos, sitios o apps; si solo hay
+   adjetivos, pide un ejemplo) · intensidad del movimiento (sobrio, moderado, protagonista) ·
    librería de componentes prevista y cuánto se personaliza.
+5. Concepto firma: ¿hay ya una idea que deba reconocerse en el producto y un momento en que se vea?
+   (sí → las opciones componen esa idea · no → cada opción propone una dirección) · clichés del
+   sector que no quiere: propón 3–4 típicos del dominio del producto y pide que confirme, quite o
+   añada.
 
 **Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
 **Sin servidor propio** (app móvil o de escritorio sin backend, CLI local): no hay peticiones,

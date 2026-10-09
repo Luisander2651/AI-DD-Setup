@@ -24,6 +24,10 @@ Respuestas de la entrevista de diseño de `/init` (Ronda 4b). Lo usan las opcion
 - Gustan: {{…}}
 - No gustan: {{…}}
 
+## Concepto firma y clichés del sector
+- Concepto firma: {{idea y momento en que se ve, o "ninguno: lo proponen las opciones"}}
+- Clichés del sector a evitar: {{…}}
+
 ## Movimiento y densidad
 {{intensidad del movimiento; densidad de información}}
 

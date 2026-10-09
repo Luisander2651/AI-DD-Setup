@@ -38,15 +38,27 @@ Comprueba qué ofrece la sesión antes de empezar y dilo en una línea:
 ### 2.2 Documentos de partida
 Con las respuestas escribe, desde `../templates/design/`:
 - `docs/design/brief.md`.
-- `docs/design/creative-direction.md`.
+- `docs/design/creative-direction.md`: referencias de sensación **con nombre** (productos, sitios o
+  apps concretos, no adjetivos) y, si el usuario lo dio, el **concepto firma**: la idea que debe
+  reconocerse en el producto y el momento en que se ve (p. ej. "el código se escribe y se compila
+  en la tarjeta de presentación"). Si no lo dio, la sección dice "lo deciden las opciones".
 - `docs/design/anti-cliches.md`: conserva las filas de "todos los tipos" y las del tipo del
-  proyecto, borra las demás, añade los clichés que el usuario rechazó en "Referencias".
+  proyecto, borra las demás, añade los clichés que el usuario rechazó en "Referencias" y los
+  **del sector** del producto (Ronda 4b), cada uno con una alternativa dentro de la dirección, no
+  solo la prohibición.
 
 Muéstralos y pide aprobación antes de generar nada: las opciones cuestan tokens.
 
 ### 2.3 Número de opciones
 **3 por defecto. 2 si el usuario ya trae marca y paleta cerradas** (las opciones cambian
 tipografía, forma, densidad y composición, no el color). Regístralo en `brief.md` (`options:`).
+
+Qué se explora depende de `creative-direction.md`:
+- **Con concepto firma:** la dirección ya está decidida; las opciones son **composiciones** de esa
+  idea (cómo se ordena y se presenta el contenido principal, dónde vive el momento firma), con la
+  misma estética de partida.
+- **Sin concepto firma:** cada opción es una **dirección** con su propia idea y su propio momento
+  firma.
 
 ### 2.4 Generar las opciones
 Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`:
@@ -55,7 +67,9 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    redefinidos). Para rellenar los bloques, busca la etiqueta **después** del comentario de
    instrucciones de la plantilla (el comentario los nombra).
 2. Componentes ajustados a la dirección en el bloque `components`, solo con tokens.
-3. Tipografía real: si la fuente no es del sistema, incrusta en el bloque `fonts` cada peso que
+3. Tipografía real: la fuente de marca no es una fuente del sistema (system-ui, Segoe, Roboto,
+   Arial, Verdana, Trebuchet, Bahnschrift…) salvo que el brief lo pida; varían por equipo y aplanan
+   cualquier dirección. Incrusta en el bloque `fonts` cada peso que
    uses como `@font-face` con el subconjunto latino en woff2 y base64, tomado del mismo paquete o
    archivo que usará la app (p. ej. `@fontsource/<familia>/files/<familia>-latin-400-normal.woff2`);
    sin él, el usuario elegiría sobre la fuente de reemplazo. Comprueba que carga
@@ -67,14 +81,25 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    prueba realistas; nunca lorem ipsum ni cifras inventadas.
 6. Pantallas: 1–2 principales en cada ancho de `design.widths`. Lo que cambia con el ancho se
    escribe con `@container`, no con `@media` (el marco no es la ventana).
-7. "Por qué" en una o dos frases ligadas al brief, y el riesgo asumido.
+7. **Idea** en una frase, anclada en un dato concreto de `brief.md` (público, contexto de uso,
+   producto, lugar) o en el concepto firma; debajo, las 2–3 decisiones de **estructura** que la
+   materializan, y el riesgo asumido. Ejemplo: "Campo al sol — se usa en el teléfono a pleno sol:
+   bordes gruesos y sombra dura, cuerpo de 19 px, botones de 56 px". Una idea que no cambia la
+   estructura es solo un nombre: rehaz la opción.
+8. Un solo **momento firma**, derivado de la idea, dibujado en fotogramas (inicio → medio → final)
+   con su versión sin movimiento; el resto, sobrio.
 
-Las opciones deben ser **distintas de verdad**: cambian al menos dos de familia de color,
-pareja tipográfica, forma y densidad, y composición de la pantalla principal. No tres tonos de lo
-mismo. Evita los clichés de `anti-cliches.md` y, salvo que el brief lo pida, los rasgos por
-defecto de las interfaces generadas (§6).
+Las opciones deben ser **distintas de verdad**: cambian **siempre la composición** de la pantalla
+principal (orden, jerarquía y forma de presentar el contenido principal) y además al menos uno de
+familia de color, pareja tipográfica, forma y densidad. Si comparten esqueleto (mismas secciones
+en el mismo orden, mismos textos, misma rejilla) son la misma opción con otra piel: rehazlas. Evita
+los clichés de `anti-cliches.md` y, salvo que el brief lo pida, los rasgos por defecto de las
+interfaces generadas (§6).
 
 **Antes de enseñarlas:**
+- Repasa cada opción contra §6 y `anti-cliches.md`, rasgo por rasgo, haya o no plugin `design`;
+  corrige lo que aparezca o, si el brief lo pide, dilo en su "Idea". Compara también las opciones
+  entre sí con la regla de composición de arriba.
 - Abre cada HTML en un navegador si lo hay (o pídele al usuario que lo abra) en claro, oscuro y
   "Sin movimiento". Ningún par de "Color" puede salir "no cumple": corrige los tokens, no el umbral.
 - Si el plugin `design` está habilitado: `design:design-critique` y `design:accessibility-review`
@@ -197,11 +222,14 @@ procedimiento anterior, ofrece §3b (re-extraer); `--redo-design` lo ejecuta dir
 Proyecto: <nombre> — <descripción de AGENTS.md> (<tipo>, <stack de UI>)
 Modo: sistema | spec NNN-slug
 Objetivo: <de brief.md o de la spec>
-Dirección creativa: <resumen de docs/design/creative-direction.md>
+Dirección creativa: <resumen de docs/design/creative-direction.md, con sus referencias con nombre>
+Concepto firma: <el de creative-direction.md, o "ninguno: cada opción propone el suyo">
+Clichés del sector: <los de anti-cliches.md, con su alternativa>
 Sistema de diseño: <tokens clave de system.md, o "a definir" en modo sistema>
 Contenido real: <textos y datos exactos; nunca lorem ipsum>
 Artboards:
-  - Opciones A, B (y C), claramente distintas entre sí
+  - Opciones A, B (y C) con composición distinta de la pantalla principal; cada una con su idea
+    en una frase, anclada en un dato del brief, y las decisiones de estructura que la materializan
   - Cada una a <design.widths>
   - Estados: vacío, carga, error, foco, deshabilitado
   - Movimiento como fotogramas anotados (inicio → medio → final), con versión sin movimiento
@@ -219,10 +247,15 @@ generada sin dirección:
 - fondo crema con serif de alto contraste y acento terracota; negro casi puro con un único acento
   ácido;
 - todo troceado en tarjetas idénticas con el mismo radio y la misma sombra suave, y degradados
-  como decoración;
+  como decoración; en especial la tríada de tarjetas icono + título + texto para "quiénes somos"
+  o las ventajas;
+- fuentes del sistema como tipografía de marca; botones y filtros en píldora con hero de color
+  plano y un botón de acento como única decisión;
 - etiquetas en mayúsculas espaciadas sobre cada título, metadatos unidos con puntos medios,
   monoespaciada para cualquier dato pequeño, flechas añadidas a todos los botones;
 - numeración decorativa (01, 02, 03) en contenido que no es una secuencia;
-- animaciones de entrada en cada sección en lugar de un único momento con sentido.
+- animaciones de entrada en cada sección en lugar de un único momento con sentido;
+- el mismo esqueleto de página en todas las opciones, con solo el color, el radio y la sombra
+  cambiados.
 
 Gasta la audacia en un solo elemento reconocible y mantén el resto sobrio.

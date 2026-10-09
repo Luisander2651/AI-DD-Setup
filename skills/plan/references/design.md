@@ -26,7 +26,9 @@ Un rediseño **siempre** es una spec propia; `/init` nunca lo hace. Antes del Pa
    (`../../init/references/interview.md` → Ronda 4b; `/specify` ya la habrá hecho si la spec es de
    rediseño, y sus respuestas están en "Decisiones") y créalos desde `../../init/templates/design/`
    (`../../init/references/design.md` §2.2), con aprobación del usuario, antes de generar opciones.
-1. Brief en modo spec (`../../init/references/design.md` §5) con el contenido real de la spec.
+1. Brief en modo spec (`../../init/references/design.md` §5) con el contenido real de la spec. Si
+   `creative-direction.md` tiene concepto firma, las opciones son composiciones de esa idea; si
+   no, cada opción es una dirección con su idea y su momento firma (§2.3 de ese archivo).
 2. Opciones en `docs/specs/NNN-<slug>/design/opcion-<a|b|c>.html` desde `option.html`: **3 por
    defecto, 2 si se mantiene la marca**; con la skill `design` si la sesión la ofrece (el canvas se
    enlaza en el plan), siempre también en HTML. Mismas reglas que en `/init`: distintas de verdad,

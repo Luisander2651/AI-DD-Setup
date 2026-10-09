@@ -3,6 +3,27 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.11.3] - 2026-10-09
+Opciones de diseño con idea propia. En un proyecto real (landing de una casa agroquímica) dos de
+tres opciones eran la misma página con otra piel: mismo esqueleto y textos, tríada de tarjetas,
+píldoras y fuentes del sistema; la regla "distintas de verdad" se cumplía cambiando color y forma.
+El portafolio personal, con dirección creativa y concepto firma fijados antes de generar, no tuvo
+ese problema.
+
+### Changed
+- **Distintas de verdad:** la composición de la pantalla principal cambia siempre, más otro eje;
+  mismo esqueleto con otra piel = rehacer.
+- **Idea por opción** en una frase, anclada en un dato del brief, con las 2–3 decisiones de
+  estructura que la materializan, y un solo momento firma en fotogramas.
+- **Concepto firma** en la Ronda 4b, `brief.md` y `creative-direction.md`: con él, las opciones son
+  composiciones de esa idea; sin él, cada opción es una dirección. Referencias de sensación con
+  nombre.
+- **Clichés del sector** en la entrevista y en `anti-cliches.md`, cada uno con su alternativa;
+  filas nuevas para la tríada de tarjetas, las fuentes del sistema y el mismo esqueleto.
+- Fuentes del sistema no valen como tipografía de marca salvo que el brief lo pida.
+- Repaso obligatorio de cada opción contra §6 y `anti-cliches.md` antes de enseñarlas, con o sin
+  el plugin `design`; §6 suma los rasgos vistos.
+
 ## [1.11.2] - 2026-10-03
 Fidelidad del diseño extraído. En un proyecto real (clínica dental, Laravel) documentado con 1.11.0,
 `system.html` no se parecía a la app: sin capturas, el agente redibujó 3–4 pantallas con los
