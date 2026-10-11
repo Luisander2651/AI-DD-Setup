@@ -52,6 +52,11 @@ design:                        # solo proyectos con interfaz (frontend, fullstac
   html: docs/design/system.html
   canvas: {{null}}             # enlace del canvas si se usó la skill design
   widths: [{{390, 1440}}]      # anchos de comprobación (mobile: [360, 412])
+seo:                           # solo sitios web públicos (shared/contract.md → "SEO técnico")
+  status: {{none|declined|proposed|inferred|approved}}   # declined: el usuario no lo quiso (no se vuelve a preguntar)
+  indexable: {{true|false|null}}    # true: el sitio debe aparecer en buscadores
+  site_url: {{https://…|null}}      # URL pública canónica; canónica, sitemap y og:url se construyen con ella
+  rendering: {{static|ssr|spa|hybrid|null}}   # cómo llega el HTML de cada ruta indexable
 skills:
   enabled: [{{enabled_skills}}]  # p. ej. [design] (plugin oficial de Anthropic, si está instalado)
 paths:
@@ -61,6 +66,7 @@ paths:
   deployment: docs/deployment.md
   security: docs/security.md
   observability: docs/observability.md
+  seo: docs/seo.md             # solo si seo.indexable es true
   changelog: CHANGELOG.md
   specs: docs/specs
   adr: docs/adr

@@ -51,6 +51,16 @@ Conteo: bloqueante {{n}} · importante {{n}} · menor {{n}}
 - Datos sensibles en logs del código tocado: {{ninguno / hallazgos}}
 - `request_id` presente en los logs nuevos: {{…}}
 
+<!-- if seo.indexable=true -->
+## SEO
+<!-- Revisor de SEO sobre el HTML generado de las rutas del diff (shared/seo-checklist.md). Sin
+     build disponible: `no determinado`, nunca ✅. -->
+| Tema | Resultado | Evidencia |
+|---|---|---|
+| {{3. Indexación y canónica}} | ✅ / ➖ / ❌ / no determinado | {{archivo generado o comando}} |
+- Sección "Descubribilidad" del plan aplicada: {{sí/no + rutas}}
+<!-- endif -->
+
 ## Hallazgos
 | ID | Severidad | Archivo:línea | Hallazgo | Sugerencia |
 |---|---|---|---|---|

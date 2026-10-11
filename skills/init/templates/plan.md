@@ -52,6 +52,19 @@ o amenaza sin test es un error del plan.
 - Métricas y alertas: {{…}}
 - Cómo se verifica tras el deploy: {{consulta o dashboard}}
 
+<!-- if seo.indexable=true -->
+## Descubribilidad
+<!-- Obligatoria si la spec crea o cambia rutas públicas; en otro caso, `No aplica: <motivo>`.
+     Una fila por ruta nueva o modificada, según docs/seo.md y shared/seo-checklist.md. -->
+| Ruta | Indexable | Título | Descripción | Canónica | Sitemap | Datos estructurados | Test |
+|---|---|---|---|---|---|---|---|
+| {{/ruta/}} | {{sí · no (motivo)}} | {{…}} | {{…}} | {{URL absoluta}} | {{sí · no}} | {{tipo de schema.org · —}} | {{test sobre el HTML generado}} |
+
+- Renderizado de las rutas nuevas: {{igual que `seo.rendering` · cambio (→ ADR)}}
+- Open Graph: {{imagen por defecto · imagen propia (ruta, 1200×630)}}
+- Brechas `SE` que atiende: {{SE1.a dentro · SE1.b fuera → objetivo N · ninguna}}
+<!-- endif -->
+
 ## Rollout
 - Feature flag: {{nombre o "no aplica"}}
 - Orden de despliegue: {{migraciones → backend → frontend, etc.}}
