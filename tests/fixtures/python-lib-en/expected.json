@@ -3,6 +3,8 @@
   "contains": [],
   "warnings_not_contains": [
     "declara RS1 mitigado",
-    "cita ['RS1']"
+    "cita ['RS1']",
+    "seo.md",
+    "Descubribilidad"
   ]
 }

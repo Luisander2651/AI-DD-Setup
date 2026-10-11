@@ -384,6 +384,47 @@ def scenario_design_contrast_rule():
         check("contraste sin ':1' sigue avisando", "--color-danger es color de texto" in out, out)
 
 
+def scenario_seo():
+    print("SEO técnico (seo.md y bloque seo):")
+
+    def project(yaml, seo_md=None):
+        tmp = tempfile.mkdtemp()
+        os.makedirs(os.path.join(tmp, ".ai"))
+        os.makedirs(os.path.join(tmp, "docs"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write(yaml)
+        if seo_md is not None:
+            open(os.path.join(tmp, "docs/seo.md"), "w", encoding="utf-8").write(seo_md)
+        _, out = run(["validate"], tmp)
+        shutil.rmtree(tmp, ignore_errors=True)
+        return out
+
+    site = "type: frontend\nlanguage: es\nseo:\n  status: {st}\n  indexable: true\n" \
+           "  site_url: https://ejemplo.mx\n  rendering: {r}\n"
+    gap = "---\nstatus: proposed\n---\n## Brechas\n### SE1 · Alta — {t}\n- SE1.a {c} — estado: pendiente\n"
+
+    out = project(site.format(st="proposed", r="spa"), gap.format(t="Sin sitemap", c="Generar sitemap"))
+    check("spa sin brecha de renderizado → aviso", "rendering spa sin brecha" in out, out)
+    out = project(site.format(st="proposed", r="spa"),
+                  gap.format(t="Todas las rutas sirven el mismo HTML", c="Prerenderizar las rutas indexables"))
+    check("spa con brecha de renderizado → sin aviso", "rendering spa" not in out, out)
+    out = project(site.format(st="proposed", r="spa"),
+                  "---\nstatus: proposed\n---\n## Reglas del sitio\n- Renderizado: SPA; solo la home es "
+                  "indexable (decisión del usuario, 2026-10-11)\n")
+    check("spa justificada por decisión del usuario → sin aviso", "rendering spa" not in out, out)
+    out = project(site.format(st="none", r="static"))
+    check("indexable sin seo.md con status none → aviso, no error",
+          "aviso: seo.indexable true pero no existe docs/seo.md" in out and "error:" not in out, out)
+    out = project(site.format(st="inferred", r="static"))
+    check("status inferred sin seo.md → error", "error: seo.indexable true y seo.status inferred" in out, out)
+    out = project(site.format(st="declined", r="static"))
+    check("declined → sin avisos de seo.md", "seo.md" not in out and "seo.indexable" not in out, out)
+    out = project(site.format(st="proposed", r="static").replace("type: frontend", "type: backend"), "")
+    check("indexable en backend → aviso", "seo.indexable true en un proyecto backend" in out, out)
+    out = project("type: frontend\nlanguage: en\nseo:\n  status: proposed\n  indexable: maybe\n"
+                  "  site_url: null\n  rendering: null\n")
+    check("indexable inválido → error", "seo.indexable inválido ('maybe'" in out, out)
+
+
 def scenario_templates():
     print("templates (huellas de docs/templates/):")
     with tempfile.TemporaryDirectory() as tmp:
@@ -459,6 +500,7 @@ if __name__ == "__main__":
     scenario_closed_specs()
     scenario_release_status()
     scenario_design_contrast_rule()
+    scenario_seo()
     scenario_templates()
     scenario_design_inventory()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")

@@ -38,7 +38,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.11.2"
+VERSION = "1.12.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -74,9 +74,14 @@ VOCAB = {
     "color": ["Color", "Colour"],
     "design_debt": ["Deuda de diseño", "Design debt"],
     "view_inventory": ["Inventario de vistas", "View inventory"],
+    "discoverability": ["Descubribilidad", "Discoverability"],
+    "route_inventory": ["Inventario de rutas", "Route inventory"],
 }
 DESIGN_STATES = {"none", "declined", "draft", "approved"}
 DESIGN_SOURCES = {"chosen", "extracted", "null", ""}
+# SEO técnico (shared/contract.md → "SEO técnico", shared/seo-checklist.md).
+SEO_STATES = {"none", "declined", "proposed", "inferred", "approved"}
+SEO_RENDERING = {"static", "ssr", "spa", "hybrid"}
 # Tipos de "Decisiones" (shared/contract.md → "Decisiones").
 DECISION_TYPES = {
     "brecha": "gap", "gap": "gap",
@@ -112,6 +117,11 @@ W = {
     "obsolete": r"(?:obsoleta|obsolete):",
     "user": r"\b(?:usuario|user)\b",
     "verified_by": r"(?:c[oó]mo se verifica|how (?:it is )?verified|verificaci[oó]n|verification)",
+    "indexable_col": r"^\s*indexable\s*$",
+    "indexable_yes": r"^(?:s[ií]|yes)$",
+    "indexable_no": r"^no\b\s*[(:—-]\s*\S",
+    "user_decision": r"\((?:decisi[oó]n del usuario|user decision|confirmado por el usuario|confirmed by the user)\b",
+    "spa_gap": r"\b(?:spa|javascript|js|prerender\w*|pre-?renderiz\w*|renderiz\w*|render\w*|ssr|hidrat\w*|hydrat\w*)\b",
 }
 PLACEHOLDER_RE = re.compile(r"\{\{[^}]*\}\}")
 COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
@@ -190,6 +200,19 @@ def design_config(root):
     if block is None:
         return None
     return {k: (yaml_scalar(block, k) or "") for k in ("status", "source", "system", "html")}
+
+
+def seo_config(root):
+    """Bloque `seo` de project.yaml (None si no existe). Valores en minúsculas; `null` → ''."""
+    p = os.path.join(root, ".ai", "project.yaml") if root else ""
+    block = yaml_block(read(p), "seo") if p and os.path.isfile(p) else None
+    if block is None:
+        return None
+    cfg = {}
+    for k in ("status", "indexable", "site_url", "rendering"):
+        v = (yaml_scalar(block, k) or "").strip()
+        cfg[k] = "" if v.lower() in {"null", "~"} else (v if k == "site_url" else v.lower())
+    return cfg
 
 
 def yaml_list(text, key):
@@ -439,8 +462,8 @@ def git(root, *args):
     return p.returncode, p.stdout.decode("utf-8", "replace")
 
 
-RISK_DOCS = ("security.md", "observability.md", "deployment.md")
-RISK_RE = r"(?:RS|OB|RD)\d+"
+RISK_DOCS = ("security.md", "observability.md", "deployment.md", "seo.md")
+RISK_RE = r"(?:RS|OB|RD|SE)\d+"
 
 
 def load_risks(root):
@@ -479,7 +502,7 @@ def coverage_rows(spec_text):
     sec = section(body(spec_text), "risk_coverage") or ""
     rows = {}
     for line in sec.splitlines():
-        for cid in re.findall(r"\b((?:RS|OB|RD)\d+\.[a-z])\b", line):
+        for cid in re.findall(r"\b(" + RISK_RE + r"\.[a-z])\b", line):
             cells = [c.strip() for c in line.split("|")]
             idx = next((i for i, c in enumerate(cells) if cid in c), None)
             # Columna "Alcance / Scope": la celda siguiente a la de la corrección.
@@ -706,6 +729,11 @@ def validate_spec_dir(d, root):
         if sensitive and ptype != "library" and section(body(ptext), "observability") is None:
             rep.warn("plan: la spec toca datos sensibles o permisos y el plan no tiene sección "
                      "'Observabilidad' (logs, eventos de auditoría, métricas)")
+        scfg = seo_config(root)
+        if scfg and scfg["indexable"] == "true" and scfg["status"] != "declined" \
+                and section(body(ptext), "discoverability") is None:
+            rep.warn("plan: el sitio es indexable (seo.indexable) y el plan no tiene sección "
+                     "'Descubribilidad' (rutas, metadatos, sitemap, indexable o no; o 'No aplica: <motivo>')")
 
     # --- tasks
     if s["tasks"]:
@@ -899,6 +927,69 @@ def validate_design(root):
     return len(rep.errors)
 
 
+def validate_seo(root):
+    """Bloque `seo` de project.yaml y docs/seo.md (shared/contract.md → "SEO técnico")."""
+    cfg = seo_config(root)
+    if cfg is None:
+        return 0
+    rep = Report("docs/seo.md")
+    st, idx, rend, url = cfg["status"], cfg["indexable"], cfg["rendering"], cfg["site_url"]
+    if st not in SEO_STATES:
+        rep.err(f"project.yaml: seo.status inválido ({st!r}; none, declined, proposed, inferred, approved)")
+    if idx not in {"true", "false", ""}:
+        rep.err(f"project.yaml: seo.indexable inválido ({idx!r}; true, false o null)")
+    if rend and rend not in SEO_RENDERING:
+        rep.err(f"project.yaml: seo.rendering inválido ({rend!r}; static, ssr, spa, hybrid)")
+    if url and not re.match(r"^https://[^\s/]+\.[^\s]+$", url):
+        rep.err(f"project.yaml: seo.site_url debe ser una URL https absoluta ({url!r})")
+    ptype = yaml_scalar(read(os.path.join(root, ".ai", "project.yaml")), "type")
+    if idx == "true" and ptype in {"backend", "library"}:
+        rep.warn(f"project.yaml: seo.indexable true en un proyecto {ptype} (el SEO aplica a sitios web públicos)")
+    path = os.path.join(root, "docs", "seo.md")
+    if idx == "true" and st != "declined":
+        if not os.path.isfile(path):
+            (rep.err if st in {"proposed", "inferred", "approved"} else rep.warn)(
+                f"seo.indexable true{' y seo.status ' + st if st and st != 'none' else ''} "
+                "pero no existe docs/seo.md")
+        if not url:
+            rep.warn("seo.indexable true sin seo.site_url (canónica, sitemap y og:url se construyen con ella)")
+        if not rend:
+            rep.warn("seo.indexable true sin seo.rendering (static, ssr, spa, hybrid)")
+    if os.path.isfile(path):
+        txt = read(path)
+        clean = COMMENT_RE.sub("", txt)
+        if PLACEHOLDER_RE.search(clean):
+            rep.err("seo.md: quedan {{placeholders}} sin sustituir")
+        heads = re.findall(r"^###\s+(SE\d+)\b", clean, re.M)
+        dup = sorted({h for h in heads if heads.count(h) > 1}, key=lambda x: int(x[2:]))
+        if dup:
+            rep.err(f"seo.md: IDs de brecha repetidos {dup} (un ID no se reutiliza)")
+        if rend == "spa" and idx == "true":
+            gaps = re.findall(r"^###\s+SE\d+\b(.*?)(?=^###\s|^##\s|\Z)", clean, re.M | re.S)
+            decided = any(re.search(r"\bspa\b", l, re.I) and re.search(W["user_decision"], l, re.I)
+                          for l in clean.splitlines())
+            if not decided and not any(re.search(W["spa_gap"], g, re.I) for g in gaps):
+                rep.warn("seo.md: rendering spa sin brecha SE sobre el renderizado ni decisión del usuario "
+                         "que lo justifique (un rastreador sin JavaScript ve el mismo HTML en todas las rutas)")
+        check_route_inventory(rep, clean)
+    if rep.errors or rep.warnings:
+        rep.print()
+    return len(rep.errors)
+
+
+def check_route_inventory(rep, txt):
+    """Columna Indexable del inventario de rutas: sí/yes o no (motivo)."""
+    for header, cells in table_rows(section(body(txt), "route_inventory")):
+        col = next((i for i, h in enumerate(header) if re.search(W["indexable_col"], h, re.I)), None)
+        if col is None or col >= len(cells) or not cells[0].strip():
+            continue
+        val = cells[col].strip()
+        if re.match(W["indexable_yes"], val, re.I) or re.match(W["indexable_no"], val, re.I):
+            continue
+        hint = " sin motivo" if re.match(r"^no$", val, re.I) else f" con valor '{val[:20]}'"
+        rep.warn(f"seo.md: ruta '{cells[0].strip()[:30]}'{hint} en Indexable (sí, yes, no (motivo))")
+
+
 VIEW_STATES = r"^(?:capturada|captured|sin captura|not captured|no accesible|not reachable)\b"
 DS_RE = r"\bDS\d+\b"
 
@@ -967,12 +1058,13 @@ def cmd_validate(args):
     for a in args:
         a = os.path.abspath(a)
         targets.append(os.path.dirname(a) if os.path.isfile(a) else a)
-    design_errors = validate_design(root) if not args else 0
+    design_errors = (validate_design(root) + validate_seo(root)) if not args else 0
     if not targets:
         targets = spec_dirs(root)
         if not targets:
+            # Sin specs (p. ej. recién inicializado) el roadmap ya puede citar brechas: se valida igual.
             print("No hay specs en docs/specs/.")
-            return 1 if design_errors else 0
+            return 1 if design_errors + validate_roadmap(root) else 0
     seen, errors = set(), 0
     nums = {}
     for d in targets:

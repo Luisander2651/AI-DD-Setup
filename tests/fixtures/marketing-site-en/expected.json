@@ -1,0 +1,13 @@
+{
+  "errors": 0,
+  "contains": [],
+  "warnings_contains": [
+    "no tiene sección 'Descubribilidad'"
+  ],
+  "warnings_not_contains": [
+    "seo.md:",
+    "seo.indexable true sin",
+    "cita ['SE1']",
+    "sin declarar las correcciones"
+  ]
+}

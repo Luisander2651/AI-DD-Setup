@@ -1,0 +1,8 @@
+name: lumen-studio
+type: frontend
+language: en
+seo:
+  status: approved
+  indexable: true
+  site_url: https://lumen.example.com
+  rendering: static

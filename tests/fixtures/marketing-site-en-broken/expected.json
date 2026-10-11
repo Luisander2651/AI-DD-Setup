@@ -1,0 +1,14 @@
+{
+  "errors": 5,
+  "contains": [
+    "seo.site_url debe ser una URL https absoluta",
+    "seo.rendering inválido ('dynamic'",
+    "seo.md: quedan {{placeholders}}",
+    "seo.md: IDs de brecha repetidos ['SE2']",
+    "objetivo 1: cita SE1 sin declarar las correcciones ['SE1.b']"
+  ],
+  "warnings_contains": [
+    "ruta '`/search/`' sin motivo en Indexable",
+    "ruta '`/blog/`' con valor 'maybe' en Indexable"
+  ]
+}
