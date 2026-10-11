@@ -43,11 +43,22 @@ Dónde: `generado`, `servidor`.
 - La navegación interna usa enlaces `<a href>` rastreables; una ruta indexable a la que solo se
   llega por un manejador de clic no existe para el rastreador.
 
-## 2. Códigos HTTP y redirecciones
-Dónde: `servidor`, `producción`.
+## 2. Códigos HTTP, redirecciones y páginas de error
+Dónde: `servidor`, `producción`; la existencia y el contenido de las páginas de error, también en
+`generado`.
 - Cada ruta indexable responde `200`.
 - Una URL inexistente responde `404` real; una página de error con `200` ("404 blando") se indexa
   como contenido.
+- **Página 404 propia** (no la genérica del hosting o del framework): dice que la página no existe,
+  ofrece enlaces a la portada o a las secciones principales, mantiene la navegación del sitio y no
+  está en el sitemap.
+- **Rutas que exigen inicio de sesión o permisos:** sin sesión, redirigen al inicio de sesión
+  (`302`/`303`) o responden `401`/`403` con una **página propia** que lo explica y ofrece cómo
+  entrar o volver. Nunca `200` con la página de error ni con un aviso dentro de la plantilla normal.
+  El inicio de sesión, la página de no autorizado y las rutas privadas llevan `noindex` y no están
+  en el sitemap. Si una ruta privada devuelve su contenido sin sesión, no es un tema de SEO: es un
+  fallo de control de acceso y se reporta también como hallazgo de seguridad
+  (`security-checklist.md` §1).
 - Redirecciones permanentes (`301`/`308`) en un solo salto, sin cadenas ni bucles.
 - Una sola variante de cada URL: `https`, con o sin `www` y con o sin barra final según
   `docs/seo.md`; las demás redirigen a ella.
@@ -123,8 +134,8 @@ Dónde: `servidor` (staging), `producción`.
 | Severidad | Criterio |
 |---|---|
 | alta | Una ruta indexable no se puede rastrear, indexar o atribuir a su URL: `noindex` o `Disallow: /` en producción, canónica hacia otra URL o dominio, metadatos solo después de JavaScript, sitemap con un dominio que no es `seo.site_url`. |
-| media | Se indexa, pero mal: título o descripción ausentes o repetidos, sin sitemap o incompleto, 404 blando, varios `h1`, JSON-LD que no se parsea, sin `lang`, Lighthouse SEO < 90. |
-| baja | Mejora: sin Open Graph o sin datos estructurados, títulos fuera del rango orientativo, `alt` ausente en imágenes que no son de contenido. |
+| media | Se indexa, pero mal: título o descripción ausentes o repetidos, sin sitemap o incompleto, 404 blando, una ruta privada o la página de no autorizado que responde `200` o es indexable, varios `h1`, JSON-LD que no se parsea, sin `lang`, Lighthouse SEO < 90. |
+| baja | Mejora: sin página 404 o de no autorizado propias (se usa la genérica, con el código correcto), sin Open Graph o sin datos estructurados, títulos fuera del rango orientativo, `alt` ausente en imágenes que no son de contenido. |
 
 En `/review`, **alta es bloqueante**; media es importante; baja es menor. Las brechas `SE` de
 `docs/seo.md` usan la misma escala.

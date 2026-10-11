@@ -133,7 +133,9 @@ Si `seo.indexable` es `true` y el diff toca rutas públicas, layouts, metadatos,
 sitemap o la configuración del hosting, añade un subagente de SEO. Recibe **el resultado**, no el
 código: el HTML de esas rutas en la carpeta de salida de la build del Paso 1 (con `ssr`, las
 respuestas de la vista previa local que guardas tú con `curl -s`), más `sitemap.xml` y
-`robots.txt`. Recorre los temas `generado` del checklist y comprueba que la sección
+`robots.txt`. Si el diff toca páginas de error, la protección de rutas o el hosting, pide tú a la
+vista previa local una URL inexistente y una ruta privada sin sesión y pásale el código de estado
+y la respuesta (tema 2). Recorre los temas `generado` del checklist y comprueba que la sección
 "Descubribilidad" del plan está aplicada y que cada fila tiene su test sobre el HTML generado.
 Severidad: alta → `bloqueante`, media → `importante`, baja → `menor`. Sin build disponible, los
 temas quedan `no determinado` en la sección "SEO" de `review.md` y en el Resumen; nunca ✅. Si el

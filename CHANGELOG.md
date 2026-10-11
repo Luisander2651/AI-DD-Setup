@@ -11,9 +11,11 @@ se documenta con brechas numeradas, se concilia con el roadmap y se verifica en 
 Solo lo técnico y comprobable, siempre sobre el resultado y no sobre el código fuente.
 
 ### Added
-- `shared/seo-checklist.md`: 11 temas (rastreo, códigos HTTP, indexación y canónica, metadatos por
-  ruta, contenido sin JavaScript, imágenes, Open Graph, datos estructurados, idiomas, rendimiento,
-  entornos), cada uno con dónde se comprueba (HTML generado, servidor, producción) y severidad.
+- `shared/seo-checklist.md`: 11 temas (rastreo, códigos HTTP y páginas de error, indexación y
+  canónica, metadatos por ruta, contenido sin JavaScript, imágenes, Open Graph, datos
+  estructurados, idiomas, rendimiento, entornos), cada uno con dónde se comprueba (HTML generado,
+  servidor, producción) y severidad. Incluye página 404 propia y qué ve quien entra sin sesión a
+  una ruta privada (redirección o 401/403 con página propia, nunca `200`, siempre `noindex`).
 - `docs/seo.md` (plantilla `templates/seo.md`): reglas del sitio, inventario de rutas, brechas
   `SE<n>` con correcciones `SE<n>.<letra>`, brechas por confirmar, verificación en producción y
   pendientes operativos.

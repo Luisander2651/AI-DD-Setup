@@ -17,6 +17,9 @@ No incluye palabras clave, estrategia de contenido ni enlaces externos.
 - Renderizado: {{static · ssr · spa · hybrid}} — {{cómo llega el HTML de cada ruta indexable}}.
 - No se indexa: {{404, resultados de búsqueda interna, rutas tras inicio de sesión, staging y
   vistas previas}} — mecanismo: {{`noindex` en meta · `X-Robots-Tag` · contraseña}}.
+- Páginas de error: 404 propia {{ruta del archivo o componente · genérica del hosting}};
+  rutas privadas sin sesión → {{redirección a /login · 401/403 con página propia · no hay rutas
+  privadas}}; ambas con `noindex` y fuera del sitemap.
 - Archivos generados: `robots.txt` y `sitemap.xml` {{en la build · por el servidor · por el
   hosting}}, construidos desde la URL canónica.
 - Compartir: Open Graph {{sí}}{{; tarjetas `twitter:*` sí/no}}; imagen por defecto

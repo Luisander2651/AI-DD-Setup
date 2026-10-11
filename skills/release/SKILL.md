@@ -132,7 +132,8 @@ Pide la confirmación inequívoca. Registra en cada `tasks.md` bajo T096:
 4. **Sitio indexable** y la versión toca rutas públicas o su configuración: recorre los temas
    `producción` de `../../shared/seo-checklist.md` con `GET` a la URL pública: `robots.txt` y
    `sitemap.xml` responden `200` con URLs de `seo.site_url`, las rutas indexables de la versión
-   no llevan `noindex`, una URL inexistente responde `404`. Pide al usuario que confirme con las
+   no llevan `noindex`, una URL inexistente responde `404` con la página propia y una ruta privada
+   sin sesión redirige al inicio de sesión o responde `401`/`403`. Pide al usuario que confirme con las
    herramientas de los buscadores y las redes los datos estructurados y la vista previa al
    compartir. Registra cada comprobación en `docs/seo.md → Verificación en producción` (lo del
    usuario, con `(confirmado por el usuario, AAAA-MM-DD)`). Un `noindex` o `Disallow: /` en
