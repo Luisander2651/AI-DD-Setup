@@ -30,7 +30,7 @@ revisa todas las skills afectadas.
   (`declined` si no) y un rediseño es siempre una spec propia.
 - **Jerarquía de fuentes.** Ante un conflicto entre documentos prevalece, en este orden: este
   contrato y `shared/agent-security.md` → `docs/constitution.md` → `AGENTS.md` → `docs/security.md`,
-  `docs/architecture.md` y el sistema de diseño del proyecto (si existe) → specs `approved`,
+  `docs/architecture.md`, el sistema de diseño y `docs/seo.md` del proyecto (si existen) → specs `approved`,
   `implemented` o `released` (las que extiende) → la petición actual. Un conflicto nunca se
   resuelve en silencio a favor de la fuente de menor rango: se pregunta y se registra como
   `contradicción` en "Decisiones".
@@ -113,6 +113,18 @@ revisa todas las skills afectadas.
   `/review` verifica que los eventos se emiten y que no hay datos sensibles en logs, y
   `/release` usa el `request_id` en la verificación post-deploy. Una herramienta *presente* no
   cuenta como capacidad cubierta hasta estar *en uso*.
+- **SEO técnico:** aplica solo a sitios web públicos (`.ai/project.yaml → seo.indexable: true`;
+  por defecto `frontend`, `fullstack` y paquetes web de un monorepo, nunca `backend` ni `library`,
+  y `mobile` solo si también publica una web). `docs/seo.md` es la fuente de verdad: URL canónica,
+  idiomas, renderizado, qué no se indexa, inventario de rutas y brechas `SE`; los temas a comprobar
+  están en `shared/seo-checklist.md`. Lo leen `/init`, `/specify`, `/plan`, `/review` y `/release`.
+  `/specify` añade requisitos no funcionales de descubribilidad si la spec crea o cambia rutas
+  públicas, `/plan` la sección "Descubribilidad" (o `No aplica: <motivo>`), `/review` un revisor
+  condicional y `/release` la verificación en producción. Se audita **el resultado** (HTML
+  generado, respuesta del servidor), nunca solo el código fuente; sin build ni servidor, el tema es
+  *no determinado*. Cubre solo lo técnico y comprobable: ninguna skill elige palabras clave,
+  escribe contenido para posicionar ni promete posiciones en buscadores. `seo.status: declined`
+  significa que el usuario no lo quiso: no se vuelve a preguntar.
 - **Declarado ≠ real:** `.env.example`, los valores por defecto del código y la documentación son
   configuración declarada. Lo que depende de la configuración real no versionada es *no
   determinado* hasta que el usuario lo confirme (esos valores se preguntan; `.env` no se lee). Ninguna
@@ -122,7 +134,7 @@ revisa todas las skills afectadas.
   re-sincronizar; ante una contradicción con evidencia nueva, pregunta. Los documentos
   `approved` solo reciben propuestas por sección (`skills/init/references/brownfield.md` §5).
 - **Cobertura de riesgos:** los riesgos y brechas llevan ID (`RS<n>` en `security.md`, `OB<n>` en
-  `observability.md`, `RD<n>` en `deployment.md`) y cada corrección un subíndice (`RS1.a`). Todo
+  `observability.md`, `RD<n>` en `deployment.md`, `SE<n>` en `seo.md`) y cada corrección un subíndice (`RS1.a`). Todo
   objetivo del roadmap, spec, plan o tarea que cite un riesgo declara **cada** corrección como
   dentro o fuera de su alcance (fuera: con motivo y destino). Nunca se resume un riesgo citando solo
   su número. Si alguna corrección queda fuera, se dice "atiende RS1 **parcialmente**".

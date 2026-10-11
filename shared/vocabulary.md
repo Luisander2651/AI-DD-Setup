@@ -27,6 +27,9 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | Rollout | Rollout | plan (una cita de riesgo aquí es contexto, no cobertura) |
 | Enmiendas | Amendments | `docs/constitution.md` |
 | Observabilidad | Observability | plan |
+| Descubribilidad | Discoverability | plan (sitio indexable; puede decir `No aplica: <motivo>`) |
+| Inventario de rutas | Route inventory | `docs/seo.md` |
+| Brechas por confirmar | Gaps to confirm | `docs/seo.md`, `docs/observability.md` |
 | Aceptados | Accepted | analysis |
 | Aceptados sin tarea | Accepted without task | review |
 
@@ -42,6 +45,9 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `hecho cuando:` | `done when:` | tarea |
 | `capturada` · `sin captura (motivo)` · `no accesible (motivo)` | `captured` · `not captured (reason)` · `not reachable (reason)` | estado de una vista del inventario |
 | `DS1` | `DS1` | deuda de diseño; un ID no se reutiliza |
+| `SE1`, `SE1.a` | `SE1`, `SE1.a` | brecha de SEO y su corrección (`docs/seo.md`); un ID no se reutiliza |
+| `sí` · `no (motivo)` | `yes` · `no (reason)` | columna Indexable del inventario de rutas |
+| `no determinado` | `not determined` | tema del checklist de SEO sin build, servidor ni URL que consultar |
 | `MINOR`, `añade`, `nuevo` | `MINOR`, `adds`, `new` | fila de "Enmiendas" que añade un principio |
 | `constitution_version:` | `constitution_version:` | frontmatter del plan y de `analysis.md` |
 | `cubre:` | `covers:` | tarea |
@@ -62,5 +68,5 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `Cómo se verifica` (`test:` · `lint:` · `manual:`) | `How it is verified` | columna del Constitution Check del plan |
 | `Cubre:` | `Covers:` | cuerpo de un commit de tarea |
 
-Los IDs de tarea (`T001`), riesgo (`RS1.a`, `OB2`, `RD3`), deuda de diseño (`DS1`), amenaza (`TM1`), principio (`P1`),
+Los IDs de tarea (`T001`), riesgo (`RS1.a`, `OB2`, `RD3`, `SE4`), deuda de diseño (`DS1`), amenaza (`TM1`), principio (`P1`),
 hallazgo (`A1`, `R1`) y las claves del frontmatter (`status`, `round`, `verdict`…) no se traducen.
