@@ -3,6 +3,45 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.13.0] - 2026-10-11
+SEO técnico para sitios públicos. Hasta ahora el flujo solo trataba el SEO si el usuario pedía una
+spec para ello, y sin una lista de qué debía cubrir; nada en `/init`, `/plan` ni `/review` lo
+revisaba. Ahora es un dominio más, con el mismo ciclo que seguridad u observabilidad: se detecta,
+se documenta con brechas numeradas, se concilia con el roadmap y se verifica en cada entrega.
+Solo lo técnico y comprobable, siempre sobre el resultado y no sobre el código fuente.
+
+### Added
+- `shared/seo-checklist.md`: 11 temas (rastreo, códigos HTTP, indexación y canónica, metadatos por
+  ruta, contenido sin JavaScript, imágenes, Open Graph, datos estructurados, idiomas, rendimiento,
+  entornos), cada uno con dónde se comprueba (HTML generado, servidor, producción) y severidad.
+- `docs/seo.md` (plantilla `templates/seo.md`): reglas del sitio, inventario de rutas, brechas
+  `SE<n>` con correcciones `SE<n>.<letra>`, brechas por confirmar, verificación en producción y
+  pendientes operativos.
+- Bloque `seo` en `project.yaml` (`status`, `indexable`, `site_url`, `rendering`) y `paths.seo`.
+- `/init`: pregunta en la Fase 0, subagente H de solo lectura en la Fase 1, Ronda 4c de la
+  entrevista y paso 8b. La auditoría sobre la build la hace el agente principal, con la misma
+  confirmación de confianza que la instalación; solo `GET` a la URL pública y con permiso.
+  Procedimiento en `init/references/seo.md`. `--upgrade` lo ofrece en el paso 9b.
+- `/plan`: sección "Descubribilidad" (una fila y un test sobre el HTML generado por ruta nueva o
+  modificada); cambiar el renderizado de rutas indexables requiere ADR.
+- `/review`: revisor de SEO condicional sobre el HTML generado; una brecha alta es bloqueante.
+- `/release`: `noindex` en staging, comprobaciones en producción registradas en `docs/seo.md` y un
+  `noindex` en producción tratado como incidente.
+- Validador (`aidd.py` 1.12.0): brechas `SE` en la cobertura de riesgos de specs, planes, tareas y
+  roadmap; `validate_seo` (valores del bloque `seo`, placeholders, IDs repetidos, SPA sin brecha
+  ni decisión que lo justifique, columna Indexable); aviso en planes sin "Descubribilidad".
+- Pruebas: `marketing-site-en` y `marketing-site-en-broken` (sitio estático en inglés), escenario
+  `scenario_seo` y casos negativos (`python-lib-en`, `ionic-app-es`).
+
+### Changed
+- `shared/contract.md`: regla "SEO técnico", `docs/seo.md` en la jerarquía de fuentes y `SE` en
+  "Cobertura de riesgos". `shared/vocabulary.md`: Descubribilidad, Inventario de rutas, Brechas por
+  confirmar, `SE1`, `sí · no (motivo)` y `no determinado`.
+- `/specify`: requisitos no funcionales de descubribilidad si la spec crea o cambia rutas públicas.
+- `project-types.md`: principios de sitio indexable que se proponen a la constitución.
+- El validador revisa el roadmap aunque el proyecto aún no tenga specs (recién inicializado).
+- `SE` en las listas de riesgos de `/analyze`, `/review` y las plantillas de spec y roadmap.
+
 ## [1.12.0] - 2026-10-09
 Identidad desde el nicho. Las reglas de 1.11.3–1.11.5 evitan lo genérico, pero no dan de dónde
 sacar algo propio: la idea de cada opción dependía de lo que el agente supiera del sector. Ahora se

@@ -12,14 +12,14 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (7 si documenta el diseño existente) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color, la forma, el fondo o el movimiento de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (uno más si documenta el diseño existente y otro si el sitio es público e indexable) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color, la forma, el fondo o el movimiento de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), `seo.md` (sitio indexable), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
 | `tasks` | Divide el plan en tareas pequeñas y verificables, con cobertura de criterios y amenazas. | `tasks.md` |
 | `analyze` | Verificación independiente de consistencia entre spec, plan, tareas y constitución; puerta antes de implementar. | `analysis.md` (pass/fail) |
 | `implement` | Ejecuta las tareas una a una, con tests primero y escaneo de seguridad. | código, `tasks.md` marcado |
-| `review` | Revisión independiente con subagentes: spec, plan, constitución, seguridad OWASP y calidad. | `review.md` con veredicto |
+| `review` | Revisión independiente con subagentes: spec, plan, constitución, seguridad OWASP, calidad y, si aplica, accesibilidad y SEO técnico. | `review.md` con veredicto |
 | `release` | Versión, changelog, staging y producción **solo con aprobación explícita**; rollback guiado. | tag/PR, `CHANGELOG.md` |
 
 Dentro de un plugin las skills se invocan con el prefijo del plugin (por ejemplo `/ai-dd:init`),
@@ -43,6 +43,10 @@ así que no chocan con comandos integrados como `/init`.
   petición y logs sin datos personales, desde la spec hasta la verificación post-deploy.
 - **El agente también es una superficie de ataque.** Contenido de terceros como dato,
   verificación de dependencias nuevas (slopsquatting), rutas y comandos protegidos.
+- **SEO técnico sobre el resultado.** En un sitio público, `docs/seo.md` fija la URL canónica, qué
+  se indexa y las brechas `SE`; `/plan`, `/review` y `/release` comprueban el HTML generado y la
+  respuesta del servidor, no el código fuente. Solo lo técnico y comprobable: sin palabras clave
+  ni promesas de posicionamiento.
 - **Probar antes de planear.** Lo que el plan da por hecho de una herramienta o framework nuevo se
   comprueba con una prueba de concepto; los valores por defecto de una plantilla se auditan contra
   la constitución.
@@ -138,6 +142,8 @@ scripts/aidd.py        # validate · status · hash · templates · snapshot · 
 shared/
   contract.md          # reglas comunes: estados, numeración, puertas de aprobación
   security-checklist.md  # seguridad del código (OWASP por temas)
+  seo-checklist.md     # SEO técnico por temas, con dónde se comprueba cada uno
+  vocabulary.md        # títulos y marcadores que lee el validador, en español e inglés
   agent-security.md    # seguridad del proceso con agentes
 skills/
   init/                # SKILL.md + references/ + templates/
