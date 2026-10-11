@@ -96,6 +96,8 @@ todos los comandos posteriores leen y respetan.
 5. **Interfaz y diseño** (`frontend`, `fullstack`, `mobile`): sigue `references/design.md`. En
    brownfield, pregunta ahora si documentar el diseño existente (sin cambiar código); con un no,
    `design.status: declined`. En greenfield, el diseño se decide en la entrevista.
+6. **SEO** (sitio web público): sigue `references/seo.md` §1 y pregunta si debe aparecer en
+   buscadores; registra el bloque `seo` (`declined` si no lo quiere documentar).
 
 Informa en una línea qué detectaste antes de continuar.
 
@@ -117,6 +119,7 @@ exactos están en `references/explore-agents.md`:
 | E. Seguridad | Autenticación y autorización, datos sensibles, puntos de entrada, manejo de secretos, herramientas de seguridad existentes, riesgos evidentes |
 | F. Observabilidad y auditoría | Qué se registra realmente: configuración de logs, emisión desde el código, correlación de peticiones, eventos de auditoría, datos sensibles en logs, métricas y alertas |
 | G. Interfaz y diseño (solo si el usuario aceptó documentarlo) | Tokens declarados y valores fijos, tipografía, componentes y sus estados, pantallas principales |
+| H. SEO técnico (solo si el sitio es indexable) | Renderizado, rutas, fuentes de metadatos, robots y sitemap, hosting, build y carpeta de salida |
 
 Cada subagente devuelve un informe estructurado con **evidencia** (rutas de archivo) y un nivel de
 confianza (`alta`/`media`/`baja`) por hallazgo. No generan documentos: solo informan.
@@ -156,6 +159,7 @@ Bloques obligatorios:
 9. Diseño (greenfield con interfaz): primero investiga el nicho (`references/nicho.md` →
    `docs/design/nicho.md`); después objetivo, marca y colores, tipografía, referencias, territorio
    de identidad, movimiento y fondos (→ `docs/design/`, `references/design.md` §2).
+10. SEO (sitio indexable): URL canónica, idiomas y qué no se indexa (→ `docs/seo.md`, Ronda 4c).
 
 ---
 
@@ -208,8 +212,10 @@ contenido se queda).
    - Brownfield: `status: inferred`, a partir del subagente F, marcando cada capacidad como
      presente / configurada / en uso. Los huecos (sin correlación, sin auditoría, datos
      sensibles en logs, nivel `debug` por defecto) van a "Brechas".
+8b. `docs/seo.md` ← `templates/seo.md` (sitio indexable): `references/seo.md` §2 en greenfield;
+   en brownfield, auditoría sobre la build y brechas `SE` (§3).
 9. `docs/roadmap.md` ← `templates/roadmap.md`. Si el roadmap ya existe (re-sincronización),
-   no lo regeneres: concilia las brechas de observabilidad, seguridad y despliegue con
+   no lo regeneres: concilia las brechas de observabilidad, seguridad, despliegue y SEO con
    `references/brownfield.md` §4. Si es nuevo, las brechas prioritarias entran como objetivos.
    Un objetivo que nace de un riesgo **cita cada corrección** en su criterio de éxito: las que
    cubre y las que deja fuera con su destino (otro objetivo, spec o excepción). No resumas: si el
@@ -293,6 +299,7 @@ Entrega al usuario, sin recapitular los pasos:
   falta el registro de auditoría de accesos a datos sensibles.
 - Diseño: opciones generadas y elegida, o sistema extraído con su deuda `DS`, con las rutas de los
   HTML para abrirlos; o `declined`.
+- SEO: rutas auditadas sobre la build, brechas `SE` y por confirmar; o `declined`.
 - Conciliación con el roadmap (si ya existía): brechas cubiertas por objetivos existentes,
   propuestas aplicadas o rechazadas y lo que los objetivos del usuario mencionan y la
   exploración no detectó.

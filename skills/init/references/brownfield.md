@@ -56,7 +56,7 @@ Si el subagente B encuentra specs, diseños o planes previos (p. ej. `features/`
 ## 4. Conciliar brechas con el roadmap
 
 Aplica cuando `/init` o `/init --upgrade` detectan brechas (en `docs/observability.md`,
-`docs/security.md` → Riesgos, `docs/deployment.md` → Riesgos) y el proyecto ya tiene
+`docs/security.md` → Riesgos, `docs/deployment.md` → Riesgos, `docs/seo.md` → Brechas) y el proyecto ya tiene
 `docs/roadmap.md`. **El roadmap es del usuario:** nunca añadas, renumeres ni reescribas objetivos
 sin su confirmación.
 

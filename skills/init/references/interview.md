@@ -65,6 +65,18 @@ el nicho (`nicho.md`): las preguntas 1, 4 y 5 parten de lo encontrado, no de cer
 6. Movimiento y fondos: con ejemplos del territorio, ¿qué tanto movimiento (sobrio, moderado,
    protagonista) y qué superficies (color sólido, textura, patrón, fotografía, ilustración)?
 
+**Ronda 4c — SEO** (solo si el sitio es indexable: `seo.md` §1). En brownfield, confirma lo que
+detectó H.
+1. Qué debe aparecer en buscadores: todo el sitio público · solo algunas rutas (cuáles) · nada →
+   `seo.indexable: false`.
+2. URL pública canónica (`https://…`) y variante única: con o sin `www`, con o sin barra final.
+   Sin dominio todavía → `TODO(init)` y brecha por confirmar.
+3. Idiomas o regiones del contenido (uno · varios: cuáles y cómo se separan en las URLs).
+4. Qué **no** se indexa: propone 404, resultados de búsqueda interna, rutas tras inicio de sesión,
+   staging y vistas previas; el usuario añade o quita. ¿Habrá vista previa al compartir (imagen
+   Open Graph) y datos estructurados (tipo de entidad: organización, persona, negocio local,
+   productos, artículos)?
+
 **Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
 **Sin servidor propio** (app móvil o de escritorio sin backend, CLI local): no hay peticiones,
 correlación ni registro de auditoría central. Sustituye la ronda por: (1) informes de fallos y

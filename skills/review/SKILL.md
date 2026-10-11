@@ -34,8 +34,9 @@ para desplegarse. Produce un veredicto que `/release` exige.
 - **No inventes hallazgos para parecer exhaustivo.** Una review sin hallazgos es válida.
 - **Severidades:**
   - `bloqueante`: incumple un criterio de aceptación, viola la constitución, rompe tests, hay una
-    vulnerabilidad crítica o alta (ver severidades en `../../shared/security-checklist.md`) o hace
-    el rollback imposible.
+    vulnerabilidad crítica o alta (ver severidades en `../../shared/security-checklist.md`), una
+    brecha de SEO alta en una ruta indexable (`../../shared/seo-checklist.md`) o hace el rollback
+    imposible.
   - `importante`: riesgo real (bug probable, caso límite sin manejar, test que no prueba lo que
     dice), pero no incumple un criterio.
   - `menor`: estilo, nombres, legibilidad.
@@ -91,8 +92,9 @@ el número de revisores.
 | C. Constitución + D. Calidad (un solo agente) | `docs/constitution.md`, `AGENTS.md` (convenciones), `code.diff` |
 | S. Seguridad | `context.md` (modelo de amenazas, observabilidad), `code.diff`, `deps.stat`, los temas de `shared/security-checklist.md` que apliquen al diff, resultados de las herramientas |
 | Accesibilidad (si aplica) | solo las vistas y el JS del diff |
+| SEO (si aplica) | el HTML generado de las rutas del diff, `sitemap.xml`, `robots.txt`, "Descubribilidad" del plan y los temas aplicables de `shared/seo-checklist.md` |
 
-El estado de los riesgos (`RS`, `OB`, `RD`) en `docs/` lo actualiza `/release`; que siga
+El estado de los riesgos (`RS`, `OB`, `RD`, `SE`) en `docs/` lo actualiza `/release`; que siga
 "pendiente" antes de liberar no es un hallazgo. Ninguno lee `tasks.md` completo, las rondas de
 `history/` ni documentación fuera de su encargo;
 si necesitan un archivo concreto, lo abren. Todos devuelven **solo** la tabla de hallazgos
@@ -126,6 +128,16 @@ del plan aplicados en `system.md`). Si `design` está en
 `skills.enabled`, ese subagente usa `design:accessibility-review` y `design:design-critique` del
 plugin de Anthropic además de esta lista; si la sesión no los ofrece, aplica la lista y dilo en el
 Resumen de `review.md` (contrato → "Dependencias externas").
+
+Si `seo.indexable` es `true` y el diff toca rutas públicas, layouts, metadatos, `robots.txt`, el
+sitemap o la configuración del hosting, añade un subagente de SEO. Recibe **el resultado**, no el
+código: el HTML de esas rutas en la carpeta de salida de la build del Paso 1 (con `ssr`, las
+respuestas de la vista previa local que guardas tú con `curl -s`), más `sitemap.xml` y
+`robots.txt`. Recorre los temas `generado` del checklist y comprueba que la sección
+"Descubribilidad" del plan está aplicada y que cada fila tiene su test sobre el HTML generado.
+Severidad: alta → `bloqueante`, media → `importante`, baja → `menor`. Sin build disponible, los
+temas quedan `no determinado` en la sección "SEO" de `review.md` y en el Resumen; nunca ✅. Si el
+sitio no es indexable, elimina esa sección de `review.md`.
 
 ## Paso 3 — Preparación para release
 

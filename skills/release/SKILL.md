@@ -99,7 +99,9 @@ Si existe staging:
 4. Si `security.tools.dast` tiene `status: instalada` o `en-ci`, pide confirmación y ejecútalo **solo contra la URL de
    staging** de `docs/deployment.md` (nunca contra producción ni contra dominios de terceros).
    Hallazgos críticos o altos detienen el release como en el Paso 0.
-5. Marca T095 en cada `tasks.md`.
+5. Sitio indexable (`seo.indexable: true`): staging responde con `noindex` (meta o
+   `X-Robots-Tag`) o está protegido con contraseña.
+6. Marca T095 en cada `tasks.md`.
 Si falla, **no sigas a producción**: reporta, revierte staging si hace falta y sugiere volver a
 `/implement` con una tarea nueva.
 
@@ -127,7 +129,15 @@ Pide la confirmación inequívoca. Registra en cada `tasks.md` bajo T096:
    `docs/observability.md`.
 3. Vigila las métricas del Rollout durante la ventana definida en `docs/deployment.md` (por
    defecto 15 minutos) y reporta.
-4. Marca T097.
+4. **Sitio indexable** y la versión toca rutas públicas o su configuración: recorre los temas
+   `producción` de `../../shared/seo-checklist.md` con `GET` a la URL pública: `robots.txt` y
+   `sitemap.xml` responden `200` con URLs de `seo.site_url`, las rutas indexables de la versión
+   no llevan `noindex`, una URL inexistente responde `404`. Pide al usuario que confirme con las
+   herramientas de los buscadores y las redes los datos estructurados y la vista previa al
+   compartir. Registra cada comprobación en `docs/seo.md → Verificación en producción` (lo del
+   usuario, con `(confirmado por el usuario, AAAA-MM-DD)`). Un `noindex` o `Disallow: /` en
+   producción es un incidente: sigue "Si algo sale mal".
+5. Marca T097.
 **Si algo sale mal:** detén el avance, muestra la evidencia y propone el rollback de
 `docs/deployment.md`. Ejecútalo solo con confirmación del usuario, salvo que `deployment.md`
 defina un rollback automático. Después, crea una entrada en `docs/roadmap.md → Pendientes` con el
@@ -141,7 +151,7 @@ Para cada spec:
 3. En `docs/roadmap.md`, marca los objetivos cumplidos.
 4. Si hay feature flags, añade en `docs/roadmap.md → Pendientes` la limpieza del flag y, si
    aplica, la migración *contract* para una versión posterior.
-5. **Riesgos:** en `security.md`, `observability.md` y `deployment.md`, marca como
+5. **Riesgos:** en `security.md`, `observability.md`, `deployment.md` y `seo.md`, marca como
    `mitigada (vX.Y.Z)` solo las correcciones que la spec liberada declara "dentro". El riesgo pasa
    a mitigado únicamente si todas sus correcciones están mitigadas o aceptadas como excepción.
 6. **Aceptados sin tarea de `/review`** (sección "Aceptados sin tarea" de `review.md` y de **todas**

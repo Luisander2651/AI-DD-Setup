@@ -29,3 +29,21 @@ Referencia de `/plan` Paso 3 (sección "Contratos y datos" del plan).
   amenaza también a su control MASVS (`MASVS-STORAGE`, `-PLATFORM`, `-PRIVACY`…), no solo al
   OWASP Top 10.
 - `library`: cambios en la API pública y su impacto en SemVer (patch, minor o major).
+
+## Sitio indexable (`seo.indexable: true`)
+
+Sección "Descubribilidad", según `docs/seo.md` y `../../../shared/seo-checklist.md`:
+- **Una fila por ruta nueva o modificada** (o por plantilla de ruta: `/blog/[slug]/`): indexable o
+  no (con motivo), título y descripción (o de dónde salen, si vienen de datos), canónica absoluta
+  desde `seo.site_url`, si entra al sitemap, datos estructurados (tipo de schema.org que describe
+  lo visible, sin datos inventados) y su test.
+- **Tests sobre el HTML generado** (la build o la respuesta del servidor), no sobre el componente
+  aislado: una sola canónica, título y descripción únicos entre rutas, un solo `h1`, JSON-LD que se
+  parsea, la ruta en el sitemap o con `noindex` según su fila. Cada requisito de descubribilidad
+  de la spec va a Trazabilidad como `RNF:` con su test.
+- **Renderizado:** una ruta indexable nueva usa el `seo.rendering` del proyecto. Cambiarlo (p. ej.
+  pasar rutas de una SPA a prerenderizadas) es una decisión → ADR, con su prueba de concepto
+  (Paso 1b) si el framework aún no lo hace en el proyecto.
+- **Lo que solo se comprueba en producción** (vista previa real al compartir, validador de
+  resultados enriquecidos) va como `verificación manual:` a T095.
+- Si la spec atiende brechas `SE`, cita cada corrección dentro o fuera, como cualquier riesgo.

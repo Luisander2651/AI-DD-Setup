@@ -57,7 +57,8 @@ Lee, en este orden y solo lo necesario:
 - `docs/roadmap.md` (¿esta feature está en los objetivos?).
 - `docs/security.md` (clasificación de datos y modelo de permisos), si existe.
 - `docs/observability.md` (eventos de auditoría obligatorios), si existe.
-- Si la idea viene de un riesgo o brecha (`RS`, `OB`, `RD`) o de un objetivo del roadmap que los
+- `docs/seo.md` (reglas del sitio y rutas indexables), si `seo.indexable` es `true`.
+- Si la idea viene de un riesgo o brecha (`RS`, `OB`, `RD`, `SE`) o de un objetivo del roadmap que los
   cita, lee el riesgo **en su documento de origen**, no solo el resumen del roadmap: la spec parte
   de la lista completa de correcciones.
 - `docs/specs/README.md` y los títulos de las specs existentes.
@@ -120,7 +121,7 @@ Completa la plantilla. Guía por sección:
 | Cobertura de riesgos | Solo si la spec atiende riesgos o brechas documentados. Una fila por **cada** corrección de cada riesgo citado (`RS1.a`, `RS1.b`…): dentro (con los `CA` que la cubren) o fuera (con motivo y destino: spec, objetivo o excepción). Si alguna queda fuera, el Problema dice que atiende el riesgo "parcialmente". Una decisión técnica pendiente (p. ej. "fijar el provider") no se deja solo en "Notas para /plan": es una corrección dentro o fuera. |
 | Auditoría | Solo si la feature toca datos sensibles, autenticación o permisos. Si `.ai/project.yaml → observability.audit.required` es `false` (p. ej. app de un solo usuario sin cuentas), escribe "No aplica" y el motivo. Qué eventos deben quedar registrados (según `docs/observability.md`), cada uno como criterio `CA` verificable: "Dado X, cuando Y, entonces queda registrado quién, qué, sobre qué recurso y con qué resultado". Sin mecanismo técnico. |
 | Diseño | Solo si la spec tiene interfaz. Qué debe sentir quien la usa y qué pantallas toca, enlazando `docs/design/system.md` si existe; sin tecnología ni valores visuales (los decide `/plan` con el sistema). Si el usuario pide un **rediseño**, es esta spec: dilo aquí, haz la entrevista de diseño (`../init/references/interview.md` → Ronda 4b; sus respuestas van a "Decisiones" con fuente `usuario`) y `/plan` creará los documentos de partida que falten y generará las opciones. |
-| Requisitos no funcionales | Solo los que apliquen, medibles. Incluye los que exija la constitución según el tipo (p. ej. WCAG AA en frontend). |
+| Requisitos no funcionales | Solo los que apliquen, medibles. Incluye los que exija la constitución según el tipo (p. ej. WCAG AA en frontend). Si el sitio es indexable (`seo.indexable: true`) y la spec crea o cambia rutas públicas, añade los de **descubribilidad**, sin tecnología: qué rutas deben aparecer en buscadores y cuáles no, qué muestra el resultado de búsqueda (título y descripción propios) y la vista previa al compartir (`docs/seo.md`). |
 | Preguntas abiertas | Marcadores `[NECESITA ACLARACIÓN]`. **Máximo 3.** |
 
 Completa también, aunque la plantilla no las traiga:
@@ -163,6 +164,7 @@ Antes de escribir, confirma cada punto; corrige lo que falle:
 - [ ] Si toca datos sensibles, permisos o entradas externas: al menos un caso de abuso con su
       `CA (abuso)` (acceso a datos de otro usuario, entradas maliciosas, abuso de volumen…).
 - [ ] Si toca datos sensibles, autenticación o permisos: sección "Auditoría" con sus `CA`.
+- [ ] Si el sitio es indexable y crea o cambia rutas públicas: requisitos de descubribilidad.
 - [ ] Si cita riesgos: "Cobertura de riesgos" con **todas** sus correcciones, y "parcialmente"
       en el Problema si alguna queda fuera.
 

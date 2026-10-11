@@ -70,6 +70,13 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    `docs/design/nicho.md`, no lo crees en el upgrade: menciónalo en el resumen; se investiga en la
    siguiente ronda de opciones o spec de rediseño. Si `skills.enabled` no tiene
    `design` y el plugin está instalado, ofrece registrarlo.
+9b. **SEO técnico (desde 1.13.0).** Si el proyecto tiene interfaz web (`frontend`, `fullstack`,
+    paquete web de un monorepo) y no tiene bloque `seo` o `seo.status` está vacío, sigue
+    `seo.md` §4: pregunta si el sitio debe aparecer en buscadores; con un sí, ejecuta **solo** el
+    subagente H y la auditoría sobre la build (`seo.md` §3), genera `docs/seo.md` y concilia sus
+    brechas `SE` con el roadmap (`brownfield.md` §4). Con `declined` o `indexable: false`, no hagas
+    nada. Las specs abiertas con plan sin "Descubribilidad" reciben un aviso del validador:
+    propón añadir la sección o `No aplica: <motivo>`; las cerradas no se tocan.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
     avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

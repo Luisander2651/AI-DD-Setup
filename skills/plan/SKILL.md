@@ -65,6 +65,7 @@ Lee:
 - `docs/constitution.md`, `docs/architecture.md`, `docs/deployment.md`, `docs/security.md`,
   `docs/observability.md`.
 - `../../shared/security-checklist.md` (relativo a este archivo) para el modelo de amenazas.
+- Si `seo.indexable` es `true`: `docs/seo.md` y `../../shared/seo-checklist.md`.
 - ADRs vigentes en `docs/adr/` (ignora los `superseded`).
 - Planes de specs relacionadas o que esta extiende.
 **Línea base de dependencias:** ejecuta la herramienta SCA de `.ai/project.yaml → security.tools`
@@ -147,6 +148,11 @@ Completa `docs/templates/plan.md`. Guía por sección:
 migraciones, pantallas y estados con accesibilidad medible, tabla "Qué ve cada rol" si cambian
 permisos, contrato compartido, compatibilidad con versiones instaladas y Rollout en `mobile`, SemVer
 en `library`). Léelo siempre que la spec toque esas áreas.
+
+**Descubribilidad:** si `seo.indexable` es `true`, completa la sección y quita sus marcadores
+`<!-- if … -->` (`references/contracts-by-type.md` → "Sitio indexable"); si la spec no crea ni
+cambia rutas públicas, escribe `No aplica: <motivo>`. Si el sitio no es indexable, elimina la
+sección entera.
 
 Añade siempre esta sección, aunque la plantilla no la traiga:
 
@@ -247,6 +253,8 @@ habría que considerar al configurarlo.
 - [ ] Las dependencias nuevas tienen ADR.
 - [ ] Rollout completo o justificado como no aplicable.
 - [ ] Observabilidad completa (o motivo de no aplicar); cada criterio de Auditoría con su test.
+- [ ] Sitio indexable: "Descubribilidad" con una fila y un test por ruta nueva o modificada (o
+      `No aplica: <motivo>`).
 - [ ] Riesgos: el plan nunca dice que un riesgo queda "mitigado" si la spec deja alguna de sus
       correcciones fuera; habla por corrección ("RS1.a y RS1.d mitigadas; RS1.b y RS1.c
       pendientes → destino"). Las decisiones de diseño que cubren una corrección de forma
