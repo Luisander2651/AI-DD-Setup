@@ -22,6 +22,13 @@
      (<img src="capturas/<vista>-<ancho>.png">), los componentes son recortes de esas capturas, los
      textos y el logo son los de la app (logo incrustado desde el repo) y una vista sin captura
      se muestra como hueco "sin captura (motivo)", nunca como maqueta.
+  6. Sección "compartir": íconos (pestaña a 16 px, 32 px y 180 px) y, si el sitio es indexable, la
+     tarjeta para compartir a 1200×630 en versión general y de una página real, compuestas desde la
+     idea de la opción con solo tokens (clases c-icon y c-share del bloque "components"). Lo
+     esencial (marca y título) dentro de la zona segura: el botón "Zona segura" la muestra. Sin
+     logo, un monograma provisional; el plugin no diseña logos. En un sistema EXTRAÍDO, los íconos
+     y la imagen son los del repo incrustados (o el hueco "no existe", que es deuda DS). Sin sitio
+     indexable, borra las tarjetas y deja los íconos.
   El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano. Un par
   con data-optional se oculta si la opción no define alguno de sus tokens; uno sin él sale como
   "falta el token".
@@ -98,6 +105,23 @@
   .v-motion { margin: 0; padding-left: 20px; max-width: 75ch; }
   .v-motion li { margin-bottom: 10px; }
   .v-foot { padding: 28px 0 48px; color: var(--ui-muted); font-size: 13px; }
+  /* Sección "compartir": pestaña del navegador, zona segura y vista previa de enlace (neutros). */
+  .v-tab { display: inline-flex; align-items: center; gap: 8px; max-width: 260px; padding: 8px 12px;
+           border: 1px solid var(--ui-line); border-bottom: 0; border-radius: 10px 10px 0 0; background: var(--ui-panel); }
+  .v-tab-icon, .v-tab-icon > * { width: 16px; height: 16px; flex: none; display: block; }
+  .v-tab-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .v-share .opt { position: relative; overflow: hidden; --share-margin: 60px; --share-safe-x: 285px; }
+  .v-safe { display: none; position: absolute; inset: 0; pointer-events: none; }
+  body[data-safe] .v-safe { display: block; }
+  .v-safe::before, .v-safe::after { content: ""; position: absolute; border: 2px dashed var(--ui-fail); }
+  .v-safe::before { inset: 60px; }                          /* margen de 60 px */
+  .v-safe::after { top: 0; bottom: 0; left: 285px; width: 630px; } /* cuadrado central 630×630 */
+  .v-icons.opt { display: flex; align-items: flex-end; gap: 24px; background: transparent; }
+  .v-link { max-width: 420px; border: 1px solid var(--ui-line); border-radius: 12px; overflow: hidden; background: var(--ui-panel); }
+  .v-link .v-frame { margin: 0; } .v-link .v-viewport { border: 0; border-radius: 0; }
+  .v-link-text { padding: 10px 14px 14px; display: grid; gap: 2px; }
+  .v-link-text p { margin: 0; } .v-link-domain { font-size: 12px; color: var(--ui-muted); }
+  .v-link-title { font-weight: 600; } .v-link-desc { font-size: 13px; color: var(--ui-muted); }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 
@@ -214,6 +238,24 @@
   .opt .c-screen { display: grid; gap: var(--space-5); padding: var(--space-5) var(--space-gutter); }
   .opt .c-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
                 padding: var(--space-3) var(--space-gutter); border-bottom: var(--border-width) solid var(--color-border); }
+
+  /* Íconos y tarjeta para compartir: componer desde la idea de la opción, solo con tokens.
+     --share-margin y --share-safe-x los da el visor (márgenes y zona segura de 1200×630). */
+  .opt .c-icon { display: grid; place-items: center; background: var(--color-bg); color: var(--color-text); }
+  .opt .c-icon > * { width: 100%; height: 100%; }
+  .opt .c-icon--32 { width: calc(var(--space-6)); height: calc(var(--space-6)); }
+  .opt .c-icon--180 { width: calc(var(--space-8) * 2.8125); height: calc(var(--space-8) * 2.8125);
+                padding: var(--space-5); border-radius: var(--radius-lg); }
+  .opt .c-share { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+                gap: var(--space-4); background: var(--share-bg, var(--color-bg)); color: var(--color-text);
+                padding: var(--share-margin) calc(var(--share-safe-x) + var(--space-5)); }
+  .opt .c-share-brand { height: var(--space-8); }
+  .opt .c-share-brand > * { height: 100%; width: auto; }
+  .opt .c-share-title { margin: 0; font-size: calc(var(--text-h1) * 1.5); line-height: 1.15;
+                font-weight: var(--weight-strong); display: -webkit-box; -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical; overflow: hidden; }
+  .opt .c-share-context { margin: 0; font-size: calc(var(--text-h2) * 1.1); color: var(--color-text-muted);
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>
 </head>
 
@@ -240,6 +282,7 @@
       <li><a href="#componentes">Componentes</a></li>
       <li><a href="#pantallas">Pantallas</a></li>
       <li><a href="#superficies">Superficies</a></li>
+      <li><a href="#compartir">Al compartir</a></li>
       <li><a href="#movimiento">Movimiento</a></li>
     </ul>
   </div>
@@ -262,6 +305,7 @@
       <li class="v-pair" data-fg="--color-border" data-bg="--color-surface" data-min="3">Borde de campo sobre superficie</li>
       <li class="v-pair" data-fg="--color-focus" data-bg="--color-bg" data-min="3" data-optional>Anillo de foco sobre fondo</li>
       <li class="v-pair" data-fg="--color-text" data-bg="--surface-worst" data-min="4.5" data-optional>Texto sobre la zona más difícil del fondo</li>
+      <li class="v-pair" data-fg="--color-text" data-bg="--share-bg" data-min="4.5" data-optional>Título de la tarjeta para compartir</li>
     </ul>
   </section>
 
@@ -372,6 +416,71 @@
     <div class="v-stage"><div class="opt">
       {{muestras: fondo de página con texto, transición entre dos secciones, imagen tratada, separador}}
     </div></div>
+  </section>
+
+  <section class="v-section" id="compartir">
+    <h2>Al compartir</h2>
+    <p class="v-note">Íconos del sitio y tarjeta para compartir (<code>system.md</code> → "Marca en el
+      navegador y al compartir"). La tarjeta se dibuja a 1200×630 y se escala; "Zona segura" marca el
+      margen de 60 px y el cuadrado central que algunas apps recortan.</p>
+    <div class="v-grid">
+      <div>
+        <span class="v-label">Pestaña del navegador (16 px)</span>
+        <div class="v-tab"><span class="v-tab-icon">{{SVG del ícono}}</span><span class="v-tab-title">{{Título real de la portada}}</span></div>
+      </div>
+      <div>
+        <span class="v-label">32 px y pantalla de inicio (180 px)</span>
+        <div class="opt v-icons">
+          <div class="c-icon c-icon--32">{{SVG del ícono}}</div>
+          <div class="c-icon c-icon--180">{{SVG del ícono}}</div>
+        </div>
+      </div>
+    </div>
+    <!-- if seo.indexable=true -->
+    <p><button type="button" class="v-toggle" id="toggle-safe" aria-pressed="false">Zona segura</button></p>
+    <div class="v-frames">
+      <figure class="v-frame v-share" id="compartir-general" data-width="1200" data-height="630">
+        <figcaption>Tarjeta general a 1200×630</figcaption>
+        <div class="v-viewport"><div class="v-scaler"><div class="opt">
+            <div class="c-share">
+              <div class="c-share-brand">{{SVG del logo o monograma}}</div>
+              <p class="c-share-title">{{Nombre del sitio o título de la portada}}</p>
+              <p class="c-share-context">{{Descripción real del sitio}}</p>
+            </div>
+            <div class="v-safe" aria-hidden="true"></div>
+          </div></div></div>
+      </figure>
+      <figure class="v-frame v-share" id="compartir-pagina" data-width="1200" data-height="630">
+        <figcaption>Tarjeta de una página: {{ruta real, p. ej. /blog/primer-articulo/}}</figcaption>
+        <div class="v-viewport"><div class="v-scaler"><div class="opt">
+            <div class="c-share">
+              <div class="c-share-brand">{{SVG del logo o monograma}}</div>
+              <p class="c-share-title">{{Título real de esa página}}</p>
+              <p class="c-share-context">{{Sección o descripción de esa página}}</p>
+            </div>
+            <div class="v-safe" aria-hidden="true"></div>
+          </div></div></div>
+      </figure>
+    </div>
+    <span class="v-label">Vista previa de un enlace (genérica, no imita ninguna red)</span>
+    <div class="v-link">
+      <figure class="v-frame v-share" data-width="1200" data-height="630">
+        <div class="v-viewport"><div class="v-scaler"><div class="opt">
+            <div class="c-share">
+              <div class="c-share-brand">{{SVG del logo o monograma}}</div>
+              <p class="c-share-title">{{Título real de esa página}}</p>
+              <p class="c-share-context">{{Sección o descripción de esa página}}</p>
+            </div>
+            <div class="v-safe" aria-hidden="true"></div>
+          </div></div></div>
+      </figure>
+      <div class="v-link-text">
+        <p class="v-link-domain">{{dominio}}</p>
+        <p class="v-link-title">{{og:title de la página}}</p>
+        <p class="v-link-desc">{{og:description de la página}}</p>
+      </div>
+    </div>
+    <!-- endif -->
   </section>
 
   <section class="v-section" id="movimiento">
@@ -488,6 +597,13 @@
       sc.querySelector('.opt').style.minHeight = h + 'px';
     }
   }
+
+  const bSafe = document.getElementById('toggle-safe');
+  if (bSafe) bSafe.addEventListener('click', () => {
+    const on = bSafe.getAttribute('aria-pressed') !== 'true';
+    bSafe.setAttribute('aria-pressed', String(on));
+    document.body.toggleAttribute('data-safe', on);
+  });
 
   const hasDark = /\[data-scheme="dark"\]\s*\{[^}]*--color/.test(document.getElementById('tokens').textContent);
   const bScheme = document.getElementById('toggle-scheme');

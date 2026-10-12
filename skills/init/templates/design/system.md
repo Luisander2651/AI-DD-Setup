@@ -98,6 +98,47 @@ margen lateral --space-gutter, altura ≥ --touch-min}}
 Cada animación declara su versión con `prefers-reduced-motion: reduce` (estática equivalente) y
 anima solo `transform` y `opacity` salvo justificación.
 
+## Marca en el navegador y al compartir
+
+Cómo se reconoce el producto fuera de sus pantallas: en la pestaña del navegador, en la pantalla de
+inicio del móvil y en la vista previa de un enlace compartido. Vista: `system.html#compartir`.
+Comprobación técnica: `shared/seo-checklist.md` temas 7 y 12 del plugin.
+
+### Íconos
+
+| Archivo | Tamaño | Origen | Estado |
+|---|---|---|---|
+| `favicon.svg` | vectorial | {{logo del repo · monograma provisional}} | {{✅ · pendiente · DS<n>}} |
+| `favicon-32.png` | 32×32 | {{rasterizado del SVG}} | |
+| `apple-touch-icon.png` | 180×180 | {{con fondo --color-bg y margen interior}} | |
+
+- `theme-color`: `--color-bg` ({{#…}}{{; oscuro: #… si hay modo oscuro}}).
+- Legible a 16 px: {{sin texto pequeño ni trazos finos; qué se simplifica respecto al logo}}.
+- {{Si es monograma: "provisional hasta que el proyecto tenga logo (decisión del usuario pendiente)"}}.
+
+<!-- if seo.indexable=true -->
+### Tarjeta para compartir
+
+Imagen Open Graph de 1200×630, compuesta solo con tokens de este sistema. Peso ≤ 300 kB.
+
+| Zona | Contenido | Sale de | Límite |
+|---|---|---|---|
+| Marca | logo o monograma | `favicon.svg` / logo | {{esquina, alto ≤ 64 px}} |
+| Título | título de la página | `<title>` sin el nombre del sitio | {{2 líneas, recorte con "…"}} |
+| Contexto | sección o descripción | ruta (`Blog`, `Servicios`) o meta description | {{1 línea}} |
+| Fondo | superficie del sistema | {{--color-bg · superficie de "Superficies y fondos"}} | sin fotografía de stock |
+| Imagen (opcional) | imagen principal de la página | la de su contenido, si existe | {{recorte y tratamiento}} |
+
+- **Zona segura:** lo esencial (marca, título) dentro del cuadrado central de 630×630 y a ≥ 60 px
+  de los bordes: algunas apps recortan al centro o en cuadrado.
+- **Contraste:** el título sobre el fondo de la tarjeta, medido ({{n.n:1}}).
+- **Variantes:** general (portada y rutas sin imagen propia) · {{por tipo de página: artículo,
+  servicio, producto}}. El texto nunca se inventa: si falta un dato, se usa la general.
+- **`og:image:alt`:** {{el título de la página}}.
+- **Generación:** {{estática · generada en la build por ruta (herramienta y ADR en el plan que la
+  introduce)}}.
+<!-- endif -->
+
 ## Pantallas principales
 
 | Pantalla | Móvil | Escritorio | Componentes |

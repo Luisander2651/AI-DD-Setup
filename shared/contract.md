@@ -124,7 +124,10 @@ revisa todas las skills afectadas.
   generado, respuesta del servidor), nunca solo el código fuente; sin build ni servidor, el tema es
   *no determinado*. Cubre solo lo técnico y comprobable: ninguna skill elige palabras clave,
   escribe contenido para posicionar ni promete posiciones en buscadores. `seo.status: declined`
-  significa que el usuario no lo quiso: no se vuelve a preguntar.
+  significa que el usuario no lo quiso: no se vuelve a preguntar. Los **íconos del sitio**
+  (checklist, tema 12) aplican a toda interfaz web, indexable o no; la **tarjeta para compartir** es
+  un componente del sistema de diseño (`system.md` → "Marca en el navegador y al compartir") y la
+  imagen de cada ruta se genera desde él, nunca con texto inventado.
 - **Declarado ≠ real:** `.env.example`, los valores por defecto del código y la documentación son
   configuración declarada. Lo que depende de la configuración real no versionada es *no
   determinado* hasta que el usuario lo confirme (esos valores se preguntan; `.env` no se lee). Ninguna

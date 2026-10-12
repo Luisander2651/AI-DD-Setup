@@ -61,7 +61,7 @@ o amenaza sin test es un error del plan.
 | {{/ruta/}} | {{sí · no (motivo)}} | {{…}} | {{…}} | {{URL absoluta}} | {{sí · no}} | {{tipo de schema.org · —}} | {{test sobre el HTML generado}} |
 
 - Renderizado de las rutas nuevas: {{igual que `seo.rendering` · cambio (→ ADR)}}
-- Open Graph: {{imagen por defecto · imagen propia (ruta, 1200×630)}}
+- Imagen para compartir: {{general · generada por página desde la tarjeta del sistema (herramienta → ADR) · propia (ruta, 1200×630)}}
 - Brechas `SE` que atiende: {{SE1.a dentro · SE1.b fuera → objetivo N · ninguna}}
 <!-- endif -->
 

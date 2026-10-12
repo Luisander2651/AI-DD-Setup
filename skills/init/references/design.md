@@ -106,6 +106,12 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    CSS o SVG ligero, sin imágenes pesadas ni vídeo de fondo. El texto se mide sobre la **zona más
    difícil** del fondo: define `--surface-worst` con ese color para que la página calcule el par.
    Un color sólido es una elección válida si la idea lo pide; dilo.
+10. **Marca en el navegador y al compartir** (sección "Al compartir" de `option.html`): íconos
+   (pestaña a 16 px, 32 px y 180 px) desde el logo del proyecto o, si no hay, un **monograma
+   provisional** marcado como tal (el plugin no diseña logos: `nicho.md`). Si el sitio es
+   indexable, la **tarjeta para compartir** de 1200×630, general y de una página real, compuesta
+   desde la idea de la opción con solo tokens: texto tomado de los metadatos reales, marca y título
+   dentro de la zona segura, título en dos líneas como máximo.
 
 Las opciones deben ser **distintas de verdad**: cambian **siempre la composición** de la pantalla
 principal (orden, jerarquía y forma de presentar el contenido principal) y además al menos uno de
@@ -131,7 +137,9 @@ que elija una o combine elementos.
 1. `docs/design/system.md` con `source: chosen`, `status: draft`: los tokens de la opción elegida
    (y lo combinado; con modo oscuro, columnas "Claro" y "Oscuro" y el contraste como
    `13.0:1 · 15.2:1`), contraste de cada color de texto (el que calculó la página), componentes con
-   estados, pantallas principales y la elección en "Decisiones" (tipo `diseño`, fuente `usuario`).
+   estados, "Marca en el navegador y al compartir" (íconos y, si el sitio es indexable, la tarjeta
+   para compartir con sus zonas, variantes y modo de generación), pantallas principales y la
+   elección en "Decisiones" (tipo `diseño`, fuente `usuario`).
    Con el plugin habilitado, redacta componentes y patrones con `design:design-system document`.
 2. `docs/design/system.html`: la opción elegida ajustada, con "sistema de diseño aprobado" en la
    cabecera. Las opciones se quedan en `opciones/` (también las descartadas).
@@ -273,6 +281,11 @@ queda marcado como pendiente.
    `brownfield.md` §4; el usuario decide.
 9. Constitución: el principio "solo tokens" se propone con la regla de "Código previo": aplica a
    pantallas nuevas o modificadas; el código anterior no bloquea.
+10. **Marca en el navegador y al compartir:** documenta los íconos enlazados en el `<head>` y las
+   imágenes Open Graph que ya existen (archivo, tamaño, de dónde salen, si son estáticas o
+   generadas), incrustados en `system.html#compartir`. Lo que falta o es genérico (favicon de la
+   plantilla del framework, imagen para compartir ausente o la misma captura en todas las rutas de
+   un sitio indexable) es deuda `DS`. No diseñes una tarjeta nueva: eso es una spec.
 
 No propongas rediseño ni generes opciones. Si el usuario lo pide, el resumen indica que es una
 spec propia (`/specify "rediseño de …"`).
@@ -362,5 +375,8 @@ generada sin dirección:
   esmerilado, grano o ruido en toda la página, rejilla de puntos;
 - movimiento genérico: todo entra con fundido y desplazamiento al hacer scroll, parallax, cursores
   personalizados, contadores que suben, texto que se escribe solo sin motivo.
+
+- tarjeta para compartir que es el logo centrado sobre un degradado, o una captura de la página
+  reducida hasta que nada se lee.
 
 Gasta la audacia en un solo elemento reconocible y mantén el resto sobrio.

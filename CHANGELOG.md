@@ -32,14 +32,27 @@ Solo lo técnico y comprobable, siempre sobre el resultado y no sobre el código
 - Validador (`aidd.py` 1.12.0): brechas `SE` en la cobertura de riesgos de specs, planes, tareas y
   roadmap; `validate_seo` (valores del bloque `seo`, placeholders, IDs repetidos, SPA sin brecha
   ni decisión que lo justifique, columna Indexable); aviso en planes sin "Descubribilidad".
+- **Íconos e imagen para compartir.** Tema 12 del checklist (favicon, PNG de 32, ícono de Apple,
+  `theme-color`; nunca el de la plantilla del framework; aplica a toda interfaz web). En
+  `system.md`, sección "Marca en el navegador y al compartir": íconos y el componente **Tarjeta para
+  compartir** (1200×630 con tokens, zonas, de qué metadato sale cada texto, zona segura, variantes
+  general y por tipo de página). En `option.html`, sección "Al compartir" con la pestaña a 16 px,
+  los íconos, la tarjeta a escala, botón "Zona segura" y una vista previa de enlace genérica. Cada
+  opción diseña sus íconos y su tarjeta; sin logo, monograma provisional (el plugin no diseña
+  logos). En brownfield, lo que falta o es genérico es deuda `DS`. `/plan` (`design.md` §7) genera
+  la imagen de cada ruta en la build desde la tarjeta, con la herramienta que elija el plan (ADR) y
+  tests de existencia, tamaño, peso y datos de entrada.
 - Pruebas: `marketing-site-en` y `marketing-site-en-broken` (sitio estático en inglés), escenario
-  `scenario_seo` y casos negativos (`python-lib-en`, `ionic-app-es`).
+  `scenario_seo`, casos negativos (`python-lib-en`, `ionic-app-es`) y comprobación de la sección
+  "Al compartir" en `option.html` y `system.md`.
 
 ### Changed
 - `shared/contract.md`: regla "SEO técnico", `docs/seo.md` en la jerarquía de fuentes y `SE` en
   "Cobertura de riesgos". `shared/vocabulary.md`: Descubribilidad, Inventario de rutas, Brechas por
   confirmar, `SE1`, `sí · no (motivo)` y `no determinado`.
 - `/specify`: requisitos no funcionales de descubribilidad si la spec crea o cambia rutas públicas.
+- Auditoría de valores por defecto (`greenfield.md` §3): favicon y logos de la plantilla, metadatos
+  de ejemplo, `robots.txt` y `noindex` por defecto.
 - `project-types.md`: principios de sitio indexable que se proponen a la constitución.
 - El validador revisa el roadmap aunque el proyecto aún no tenga specs (recién inicializado).
 - `SE` en las listas de riesgos de `/analyze`, `/review` y las plantillas de spec y roadmap.

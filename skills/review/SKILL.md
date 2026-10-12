@@ -127,7 +127,8 @@ y su HTML, si existen: ningún valor visual fuera de los tokens; "Cambios a inco
 del plan aplicados en `system.md`). Si `design` está en
 `skills.enabled`, ese subagente usa `design:accessibility-review` y `design:design-critique` del
 plugin de Anthropic además de esta lista; si la sesión no los ofrece, aplica la lista y dilo en el
-Resumen de `review.md` (contrato → "Dependencias externas").
+Resumen de `review.md` (contrato → "Dependencias externas"). Si el diff toca los íconos del sitio,
+este revisor aplica también el tema 12 de `shared/seo-checklist.md` aunque el sitio no sea indexable.
 
 Si `seo.indexable` es `true` y el diff toca rutas públicas, layouts, metadatos, `robots.txt`, el
 sitemap o la configuración del hosting, añade un subagente de SEO. Recibe **el resultado**, no el

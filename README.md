@@ -46,7 +46,8 @@ así que no chocan con comandos integrados como `/init`.
 - **SEO técnico sobre el resultado.** En un sitio público, `docs/seo.md` fija la URL canónica, qué
   se indexa y las brechas `SE`; `/plan`, `/review` y `/release` comprueban el HTML generado y la
   respuesta del servidor, no el código fuente. Solo lo técnico y comprobable: sin palabras clave
-  ni promesas de posicionamiento.
+  ni promesas de posicionamiento. Los íconos y la imagen al compartir salen del sistema de diseño:
+  la tarjeta es un componente más y la imagen de cada página se genera con su contenido real.
 - **Probar antes de planear.** Lo que el plan da por hecho de una herramienta o framework nuevo se
   comprueba con una prueba de concepto; los valores por defecto de una plantilla se auditan contra
   la constitución.

@@ -102,3 +102,26 @@ Recetas para la Estrategia de pruebas (un principio "solo tokens" se verifica co
   posterior) y se retira al terminar. Una región que aparece ya con su texto no se anuncia de forma
   fiable, y dos regiones a la vez compiten.
 - **Errores:** `role="alert"` con qué pasó, qué pasa con los datos y la acción para reintentar.
+
+## 7. Íconos e imagen para compartir
+
+Aplica si la spec crea o cambia rutas públicas de un sitio indexable, o toca los íconos o la tarjeta
+para compartir (`docs/design/system.md` → "Marca en el navegador y al compartir").
+- **Qué imagen usa cada ruta:** en "Descubribilidad" (`contracts-by-type.md` → "Sitio indexable"):
+  general, **generada** desde su contenido con la tarjeta del sistema o propia. Por defecto, una
+  ruta con contenido propio (artículo, producto, servicio) la genera; el resto usa la general.
+- **Generación en la build:** la herramienta la decide el plan según el stack (una librería que
+  convierte HTML o JSX en imagen, un navegador sin interfaz sobre una plantilla HTML, o un PNG
+  estático en un sitio de una sola página). Una dependencia nueva lleva ADR y la verificación de
+  `../../../shared/agent-security.md` §2; si el proyecto aún no genera imágenes, prueba de concepto en
+  el Paso 1b. Las fuentes de la tarjeta son los archivos que ya usa el sitio, nunca un servicio
+  externo en la build.
+- **La plantilla de la imagen es el componente del sistema:** mismas zonas, tokens y límites. Si la
+  spec la cambia, va a "Cambios a incorporar al sistema".
+- **Tests:** cada ruta indexable de la spec tiene `og:image` que apunta a un archivo generado que
+  existe, de 1200×630 y ≤ 300 kB; los datos que recibe el generador para esa ruta son su título y su
+  sección o descripción (no se hace OCR de la imagen); los íconos existen con sus tamaños, se
+  enlazan en el `<head>` y no son los de la plantilla del framework (compara con su huella).
+- **Verificación manual** en la tarea que construye el generador: dos rutas reales contra
+  `system.html#compartir` (zona segura, recorte del título, contraste). La vista previa real en las
+  redes va a T095.

@@ -2,8 +2,9 @@
 
 Referencia común para `/init` (subagente H de `skills/init/references/explore-agents.md`), `/plan`
 (sección "Descubribilidad"), `/review` (revisor de SEO) y `/release` (verificación en producción).
-Aplica solo si `.ai/project.yaml → seo.indexable` es `true`; las reglas del sitio (URL canónica,
-idiomas, qué no se indexa, renderizado) están en `docs/seo.md`.
+Aplica si `.ai/project.yaml → seo.indexable` es `true`, salvo el tema 12 (íconos), que aplica a
+toda interfaz web aunque el sitio no sea indexable. Las reglas del sitio (URL canónica, idiomas, qué
+no se indexa, renderizado) están en `docs/seo.md`.
 
 Cubre lo técnico y comprobable: que un buscador pueda rastrear, indexar e interpretar cada ruta
 indexable y que el enlace se vea bien al compartirlo. **No** cubre palabras clave, estrategia de
@@ -100,7 +101,13 @@ Dónde: `generado`; la vista previa real, en `producción` (la confirma el usuar
 herramienta de inspección de la red correspondiente).
 - `og:title`, `og:description`, `og:type`, `og:url` (igual a la canónica) y `og:locale`.
 - `og:image` absoluta, pública (sin autenticación), con `og:image:width`, `og:image:height` y
-  `og:image:alt`; tamaño recomendado 1200×630.
+  `og:image:alt`; 1200×630 y ≤ 300 kB.
+- Cada ruta usa la imagen que dice su fila de "Descubribilidad" del plan o `docs/seo.md`: la
+  general del sitio, una **generada** a partir de su contenido o una propia. Si hay sistema de
+  diseño, la imagen sigue su "Tarjeta para compartir" (`docs/design/system.md`): el texto sale de
+  los metadatos de la página (título, sección, descripción), nunca se inventa, y lo importante
+  queda dentro de la zona segura central (algunas apps recortan la imagen en cuadrado).
+- `og:image:alt` describe lo que muestra la imagen (por defecto, el título de la página).
 - Etiquetas `twitter:*` solo si `docs/seo.md` las incluye.
 
 ## 8. Datos estructurados
@@ -130,12 +137,25 @@ Dónde: `servidor` (staging), `producción`.
 - Producción sin `noindex`: comprueba que la variable o la configuración que lo activa en staging
   no viaja a producción.
 
+## 12. Íconos del sitio
+Dónde: `generado` (y `servidor` para el código de estado). Aplica a toda interfaz web, también
+privada: el ícono es la pestaña del navegador.
+- `favicon.svg` (o `favicon.ico`), PNG de 32×32 y `apple-touch-icon` de 180×180, enlazados en el
+  `<head>` de **todas** las rutas y respondiendo `200`.
+- `<meta name="theme-color">` con el color de fondo del sistema de diseño (`--color-bg`) si existe.
+- Salen del logo o de la marca del proyecto (`docs/design/system.md` → "Marca en el navegador y al
+  compartir"); nunca el ícono por defecto de la plantilla del framework (logos de Vite, Astro,
+  Next, Angular, React, Svelte…). Si el proyecto no tiene logo, un monograma provisional marcado
+  como tal hasta que el usuario decida.
+- Solo si el sitio es una PWA: `manifest` con íconos de 192×192 y 512×512 (y versión `maskable`).
+- Fuera de alcance: íconos de tienda y pantallas de arranque de apps móviles.
+
 ## Severidad
 | Severidad | Criterio |
 |---|---|
 | alta | Una ruta indexable no se puede rastrear, indexar o atribuir a su URL: `noindex` o `Disallow: /` en producción, canónica hacia otra URL o dominio, metadatos solo después de JavaScript, sitemap con un dominio que no es `seo.site_url`. |
-| media | Se indexa, pero mal: título o descripción ausentes o repetidos, sin sitemap o incompleto, 404 blando, una ruta privada o la página de no autorizado que responde `200` o es indexable, varios `h1`, JSON-LD que no se parsea, sin `lang`, Lighthouse SEO < 90. |
-| baja | Mejora: sin página 404 o de no autorizado propias (se usa la genérica, con el código correcto), sin Open Graph o sin datos estructurados, títulos fuera del rango orientativo, `alt` ausente en imágenes que no son de contenido. |
+| media | Se indexa, pero mal: título o descripción ausentes o repetidos, sin sitemap o incompleto, 404 blando, una ruta privada o la página de no autorizado que responde `200` o es indexable, varios `h1`, JSON-LD que no se parsea, sin `lang`, Lighthouse SEO < 90, imagen para compartir con texto que no corresponde a la página o inventado. |
+| baja | Mejora: sin página 404 o de no autorizado propias (se usa la genérica, con el código correcto), sin Open Graph o sin datos estructurados, imagen para compartir fuera de tamaño o de peso, títulos fuera del rango orientativo, `alt` ausente en imágenes que no son de contenido, favicon ausente o el de la plantilla del framework. |
 
 En `/review`, **alta es bloqueante**; media es importante; baja es menor. Las brechas `SE` de
 `docs/seo.md` usan la misma escala.

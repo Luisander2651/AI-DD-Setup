@@ -66,7 +66,10 @@ Revisa como mínimo, según el tipo:
   logging del puente nativo; tamaño de los controles frente a los objetivos de toque (p. ej. Ionic
   usa 32–36 px en Android); CSP del WebView.
 - **frontend/fullstack:** contraste y tamaños por defecto del sistema de componentes, `lang` del
-  documento, mapas de código fuente en producción, cabeceras de seguridad.
+  documento, mapas de código fuente en producción, cabeceras de seguridad, favicon y logos de la
+  plantilla (`vite.svg`, `favicon.ico` del framework), metadatos de ejemplo (título "Vite + React",
+  descripción vacía) y, si el sitio es indexable, `robots.txt` y `noindex` por defecto (contra
+  `docs/seo.md`).
 - **backend:** modo debug, CORS abierto, cabeceras, usuario y contraseña de ejemplo, migraciones de
   ejemplo.
 

@@ -22,8 +22,11 @@ No incluye palabras clave, estrategia de contenido ni enlaces externos.
   privadas}}; ambas con `noindex` y fuera del sitemap.
 - Archivos generados: `robots.txt` y `sitemap.xml` {{en la build · por el servidor · por el
   hosting}}, construidos desde la URL canónica.
-- Compartir: Open Graph {{sí}}{{; tarjetas `twitter:*` sí/no}}; imagen por defecto
-  {{ruta, 1200×630}}.
+- Compartir: Open Graph {{sí}}{{; tarjetas `twitter:*` sí/no}}; imagen general {{ruta, 1200×630}};
+  {{solo la general · generada por página desde la tarjeta del sistema de diseño (qué tipos de
+  página) · propia por ruta}}.
+- Íconos: {{favicon.svg, favicon-32.png, apple-touch-icon.png · los de la plantilla del framework
+  (brecha)}}; `theme-color` {{#…}}.
 - Datos estructurados: {{tipos de schema.org por tipo de página, p. ej. `Organization` en la
   home, `Product` en fichas, `Article` en el blog · ninguno}}.
 - Presupuesto: {{JS por ruta y peso de imágenes según la constitución}} · Lighthouse SEO ≥ {{90}}.

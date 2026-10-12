@@ -73,9 +73,11 @@ detectó H.
    Sin dominio todavía → `TODO(init)` y brecha por confirmar.
 3. Idiomas o regiones del contenido (uno · varios: cuáles y cómo se separan en las URLs).
 4. Qué **no** se indexa: propone 404, resultados de búsqueda interna, rutas tras inicio de sesión,
-   staging y vistas previas; el usuario añade o quita. ¿Habrá vista previa al compartir (imagen
-   Open Graph) y datos estructurados (tipo de entidad: organización, persona, negocio local,
-   productos, artículos)?
+   staging y vistas previas; el usuario añade o quita. ¿Datos estructurados (tipo de entidad:
+   organización, persona, negocio local, productos, artículos)? Imagen al compartir: solo una
+   general del sitio · una por página generada desde su contenido con la tarjeta del sistema de
+   diseño (recomendada si hay artículos, productos o servicios) · ninguna. ¿Hay logo para los
+   íconos? (no → monograma provisional).
 
 **Ronda 5 — Observabilidad y auditoría** (obligatoria salvo `library`)
 **Sin servidor propio** (app móvil o de escritorio sin backend, CLI local): no hay peticiones,
