@@ -121,8 +121,10 @@ Encargos:
 Si la spec toca UI (frontend, fullstack o mobile), añade un subagente de accesibilidad con solo las
 vistas y su JS: roles y nombres, anuncios de errores y estados (regiones vivas), foco al abrir y
 cerrar diálogos (una sola región de estado, montada antes de recibir el texto:
-`../plan/references/design.md` §6), tamaño de los objetivos de toque **medido** en el navegador o dispositivo (no
-supuesto por la plantilla), contraste y consistencia con el sistema de diseño (`docs/design/system.md`
+`../design-spec/references/spec-mode.md` §6), tamaño de los objetivos de toque **medido** en el navegador o dispositivo (no
+supuesto por la plantilla), contraste, fidelidad al `design.md` de la spec (composición elegida, componentes exclusivos,
+fichas `M-n` con sus versiones reducida, sin JavaScript y táctil) y consistencia con el sistema de
+diseño, incluidas sus "Reglas de uso" (`docs/design/system.md`
 y su HTML, si existen: ningún valor visual fuera de los tokens; "Cambios a incorporar al sistema"
 del plan aplicados en `system.md`). Si `design` está en
 `skills.enabled`, ese subagente usa `design:accessibility-review` y `design:design-critique` del

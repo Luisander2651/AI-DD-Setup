@@ -6,7 +6,7 @@ sources: {{búsqueda web | sin búsqueda web}}
 
 # Nicho e identidad de {{project_name}}
 
-Investigación previa a la entrevista de diseño (`init/references/nicho.md`). Es contexto para las
+Investigación previa a la entrevista de diseño (`design-spec/references/nicho.md`). Es contexto para las
 opciones, no un requisito: lo que se decide va a `brief.md` y a `creative-direction.md`.
 
 ## Convenciones del sector

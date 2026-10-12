@@ -81,6 +81,9 @@ DESIGN_STATES = {"none", "declined", "draft", "approved"}
 DESIGN_SOURCES = {"chosen", "extracted", "null", ""}
 # SEO técnico (shared/contract.md → "SEO técnico", shared/seo-checklist.md).
 SEO_STATES = {"none", "declined", "proposed", "inferred", "approved"}
+# Diseño de una spec (docs/specs/NNN-<slug>/design.md, /design-spec NNN).
+SPEC_DESIGN_STATES = {"draft", "approved"}
+SPEC_DESIGN_EXPLORATION = {"options", "none"}
 SEO_RENDERING = {"static", "ssr", "spa", "hybrid"}
 # Tipos de "Decisiones" (shared/contract.md → "Decisiones").
 DECISION_TYPES = {
@@ -90,6 +93,7 @@ DECISION_TYPES = {
     "supuesto": "assumption", "assumption": "assumption",
     "diseño": "design", "diseno": "design", "design": "design",
     "cierre": "closure", "closure": "closure",
+    "refinado": "refined", "refined": "refined",
 }
 W = {
     "done_when": r"(?:hecho cuando|done when):",
@@ -264,10 +268,26 @@ class Report:
 
 def load_spec_dir(d):
     spec = {"dir": d, "name": os.path.basename(os.path.normpath(d))}
-    for kind in ("spec", "plan", "tasks", "review", "analysis"):
+    for kind in ("spec", "plan", "tasks", "review", "analysis", "design"):
         p = os.path.join(d, kind + ".md")
         spec[kind] = read(p) if os.path.isfile(p) else None
     return spec
+
+
+def needs_design(s, root):
+    """La spec tiene interfaz (sección 'Diseño' que no dice 'No aplica') y hay sistema de diseño."""
+    if not s["spec"] or frontmatter(s["spec"]).get("status") == "inferred":
+        return False
+    dcfg = design_config(root) if root else None
+    if not dcfg or dcfg["status"].lower() not in {"draft", "approved"}:
+        return False
+    dsec = section(body(COMMENT_RE.sub("", s["spec"])), "design")
+    return dsec is not None and not re.search(W["not_applicable"], dsec, re.I)
+
+
+def spec_design_state(s):
+    """Estado del design.md de la spec: None si no existe."""
+    return frontmatter(s["design"]).get("status") if s.get("design") else None
 
 
 def spec_cas(spec_text):
@@ -614,8 +634,18 @@ def validate_spec_dir(d, root):
     dcfg = design_config(root)
     dsec = section(body(text), "design")
     if dsec is not None and dcfg and dcfg["status"] == "approved" and st not in {"inferred"} \
-            and not re.search(r"system\.md", dsec):
-        rep.warn("spec: tiene sección 'Diseño' pero no enlaza docs/design/system.md (sistema aprobado)")
+            and not re.search(r"(?:system|design)\.md", dsec) and not re.search(W["not_applicable"], dsec, re.I):
+        rep.warn("spec: tiene sección 'Diseño' pero no enlaza su design.md ni docs/design/system.md (sistema aprobado)")
+    if s.get("design"):
+        dfm = frontmatter(s["design"])
+        if dfm.get("status") not in SPEC_DESIGN_STATES:
+            rep.err(f"design.md: status inválido o ausente ({dfm.get('status')!r}; draft, approved)")
+        if dfm.get("exploration") not in SPEC_DESIGN_EXPLORATION:
+            rep.err(f"design.md: exploration inválido o ausente ({dfm.get('exploration')!r}; options, none)")
+        if PLACEHOLDER_RE.search(COMMENT_RE.sub("", s["design"])):
+            rep.err("design.md: quedan {{placeholders}} sin sustituir")
+    if s["plan"] and needs_design(s, root) and spec_design_state(s) != "approved":
+        rep.warn("plan: la spec tiene interfaz y su design.md no está aprobado (/design-spec NNN)")
     for header, cells in table_rows(section(body(text), "decisions")):
         if len(cells) < 5 or PLACEHOLDER_RE.search(" ".join(cells)):
             continue
@@ -1122,7 +1152,7 @@ def release_next(s):
     return "/release"
 
 
-def next_step(s):
+def next_step(s, root=None):
     st = frontmatter(s["spec"]).get("status") if s["spec"] else None
     pst = frontmatter(s["plan"]).get("status") if s["plan"] else None
     tst = frontmatter(s["tasks"]).get("status") if s["tasks"] else None
@@ -1133,6 +1163,12 @@ def next_step(s):
     if st == "draft":
         return "/clarify y aprobar la spec"
     if st == "approved":
+        if not s["plan"] and needs_design(s, root):
+            dst = spec_design_state(s)
+            if dst is None:
+                return "/design-spec"
+            if dst != "approved":
+                return "aprobar el diseño (design.md)"
         if not s["plan"]:
             return "/plan"
         if pst == "blocked":
@@ -1186,7 +1222,7 @@ def cmd_status(args):
             "tasks": f"{sum(t['done'] for t in work)}/{len(work)}" if s["tasks"] else None,
             "review": frontmatter(s["review"]).get("verdict") if s["review"] else None,
             "rondas": rounds(s),
-            "next": next_step(s),
+            "next": next_step(s, root),
         })
     if "--json" in args:
         print(json.dumps(rows, ensure_ascii=False, indent=2))

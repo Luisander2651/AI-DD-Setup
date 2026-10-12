@@ -9,7 +9,7 @@ Referencia de `/plan` Paso 3 (sección "Contratos y datos" del plan).
   abrir y cerrar diálogos, anuncios de errores y estados, tamaño de los objetivos según el nivel
   WCAG de la constitución; 44 pt/48 dp en `mobile`). Si `design` está en `skills.enabled`, añade
   la nota: "Revisar con el plugin `design` (`design:design-handoff`) antes de `/implement`". Con
-  sistema de diseño (`design.status` `draft` o `approved`), sigue `design.md` de esta carpeta.
+  sistema de diseño (`design.status` `draft` o `approved`), sigue el diseño aprobado de la spec (`docs/specs/NNN-<slug>/design.md`, hecho con `/design-spec`).
 - **Si cambian permisos o roles** y hay interfaz: una tabla **"Qué ve cada rol"** por pantalla
   afectada (saludos y textos, menús, columnas, botones y enlaces, estados vacíos). Ocultar un
   control no basta: los textos que prometen una acción ("gestiona", "ver y editar"), las columnas
@@ -37,6 +37,11 @@ Sección "Descubribilidad", según `docs/seo.md` y `../../../shared/seo-checklis
   no (con motivo), título y descripción (o de dónde salen, si vienen de datos), canónica absoluta
   desde `seo.site_url`, si entra al sitemap, datos estructurados (tipo de schema.org que describe
   lo visible, sin datos inventados) y su test.
+- **Valores exactos y su origen** de los metadatos comunes: `og:site_name`, `og:locale` (y
+  alternativos), campos del JSON-LD, `theme-color` (= `--color-bg`) e íconos, para que los tests
+  comparen valores y no solo presencia.
+- **Exclusiones deliberadas** de la spec (p. ej. sin `twitter:*`) con motivo, coherentes con
+  `docs/seo.md`.
 - **Tests sobre el HTML generado** (la build o la respuesta del servidor), no sobre el componente
   aislado: una sola canónica, título y descripción únicos entre rutas, un solo `h1`, JSON-LD que se
   parsea, la ruta en el sitemap o con `noindex` según su fila. Cada requisito de descubribilidad

@@ -60,6 +60,10 @@ Correcciones:
 |---|---|---|---|
 | {{date}} | {{robots.txt y sitemap.xml responden 200 · producción sin noindex · staging con noindex · datos estructurados válidos · vista previa al compartir}} | {{✅ · ❌}} | {{URL, herramienta}} |
 
+## Exclusiones deliberadas
+<!-- Lo que el sitio no hace a propósito, con su motivo; /review no lo marca como brecha. -->
+- {{Sin etiquetas `twitter:*`: Open Graph basta para las redes que se usan}} — {{decisión del usuario, fecha}}
+
 ## Pendientes operativos
 <!-- Fuera del código: alta del sitio y envío del sitemap en las consolas de los buscadores,
      dominio propio, analítica. No son brechas `SE`. -->

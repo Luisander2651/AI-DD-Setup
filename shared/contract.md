@@ -12,7 +12,8 @@ revisa todas las skills afectadas.
 - Ciclo de vida de una spec: `draft` → `approved` → `implemented` → (review) → `released`
   (`inferred` → `approved` para las creadas por `/init`). Una spec `implemented` o `released` no se
   edita: se crea otra que la extienda.
-- `/plan` exige spec `approved`, incluye **Trazabilidad** (criterio → cambio → test) y queda en
+- `/plan` exige spec `approved` (y, si la spec tiene interfaz y hay sistema de diseño, su
+  `design.md` `approved`), incluye **Trazabilidad** (criterio → cambio → test) y queda en
   `draft`, `approved` o `blocked`.
 - `/plan` y `/tasks` incluyen una sección **Constitution Check**: cada principio con
   ✅ cumple / ➖ no aplica / ❌ viola. Un ❌ solo avanza con aceptación explícita del usuario.
@@ -27,7 +28,11 @@ revisa todas las skills afectadas.
   incorporar al sistema" del plan). Las opciones y vistas de diseño son **HTML en el repo**
   (abribles sin red); el canvas de la skill `design`, si se usa, es un complemento enlazado.
   `/init` nunca rediseña: en brownfield solo documenta el diseño existente si el usuario acepta
-  (`declined` si no) y un rediseño es siempre una spec propia.
+  (`declined` si no) y un rediseño es siempre una spec propia. El diseño lo hace **`/design-spec`**:
+  `system` para el sistema (lo llama `/init`) y `NNN` para cada spec que crea o rehace pantallas,
+  entre `/specify` y `/plan`: 2–3 composiciones sobre el sistema, cada una con metáfora del
+  contenido real y distinta de las pantallas vecinas, y `docs/specs/NNN-<slug>/design.md`
+  (`draft` → `approved` por el usuario). El SEO lo hace **`/seo`** (`setup`, `audit`, `verify`).
 - **Jerarquía de fuentes.** Ante un conflicto entre documentos prevalece, en este orden: este
   contrato y `shared/agent-security.md` → `docs/constitution.md` → `AGENTS.md` → `docs/security.md`,
   `docs/architecture.md`, el sistema de diseño y `docs/seo.md` del proyecto (si existen) → specs `approved`,
@@ -38,7 +43,8 @@ revisa todas las skills afectadas.
   Decisión | Fuente |`) cada brecha, contradicción o supuesto resuelto. Tipos: `brecha` (faltaba
   un dato), `contradicción` (dos fuentes chocan; **solo** la resuelve el usuario), `implícita` (la
   responde un documento: no se pregunta, se anota con la ruta como fuente), `supuesto` (valor
-  razonable elegido por el agente, para que el usuario lo revise), `diseño` y `cierre`. La fuente es
+  razonable elegido por el agente, para que el usuario lo revise), `diseño`, `refinado` (cambio de
+  diseño tras una revisión manual, con su motivo) y `cierre`. La fuente es
   `usuario`, la ruta del documento o la skill con el ID del hallazgo (`/analyze A7`). Sustituye a
   "Supuestos" y "Aclaraciones" (que siguen siendo válidas en specs anteriores).
 - **Bloqueo.** Si `/implement` no puede hacer una tarea sin inventar una decisión, se detiene y lo
@@ -54,9 +60,9 @@ revisa todas las skills afectadas.
 - Una skill condicional (p. ej. `design`) empieza así:
   > Lee `.ai/project.yaml`. Si `<skill>` no está en `skills.enabled`, informa que no aplica a este
   > tipo de proyecto y detente, salvo que el usuario insista.
-- **Dependencias externas.** Dos piezas de diseño que este plugin no incluye: la skill `design`
-  (crea un canvas Design a partir de un brief; si la sesión la ofrece, `/init` y `/plan` la usan para
-  las opciones) y el plugin oficial `design` de
+- **Dependencias externas.** Dos piezas de diseño que este plugin no incluye (no confundir con
+  `/design-spec`, que es de este plugin): la skill `design` (crea un canvas Design a partir de un
+  brief; si la sesión la ofrece, `/design-spec` la usa para las opciones) y el plugin oficial `design` de
   Anthropic (skills `design:design-system`, `design:accessibility-review`, `design:design-critique`,
   `design:design-handoff`, `design:ux-copy`; ver README → "Dependencias"). El plugin se usa **solo**
   si `design` está en `skills.enabled`; la skill de canvas, si la sesión la ofrece. Si el plugin

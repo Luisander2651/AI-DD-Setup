@@ -2,7 +2,7 @@
   "errors": 0,
   "contains": [],
   "warnings_contains": [
-    "no enlaza docs/design/system.md"
+    "no enlaza su design.md ni docs/design/system.md"
   ],
   "warnings_not_contains": [
     "no declara su contraste",

@@ -3,7 +3,7 @@
 Paso previo a la entrevista de diseño (Ronda 4b) en `/init` greenfield con interfaz, en una spec de
 rediseño (`/specify`) y, si falta `docs/design/nicho.md`, en `--redo-options`. Su objetivo es que
 las opciones salgan del sector real del producto y no del promedio de las interfaces generadas.
-Produce `docs/design/nicho.md` (plantilla en `../templates/design/nicho.md`).
+Produce `docs/design/nicho.md` (plantilla en `../../init/templates/design/nicho.md`).
 
 ## 1. Cuándo y con qué profundidad
 
@@ -68,5 +68,5 @@ es una forma de ser reconocible en ese sector; cada uno trae:
 
 El usuario elige uno, combina o propone el suyo. Lo elegido va a `creative-direction.md`
 (identidad, concepto firma, movimiento y superficies) y a "Decisiones" de `brief.md`. Con un
-territorio elegido, las opciones son **composiciones** de ese territorio (`design.md` §2.3). Si el
+territorio elegido, las opciones son **composiciones** de ese territorio (`system-mode.md` §2.3). Si el
 usuario prefiere no elegir, cada opción desarrolla un territorio distinto.

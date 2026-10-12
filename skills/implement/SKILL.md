@@ -129,6 +129,8 @@ detente y propone la skill que indica.
      la spec y muéstralas; sin navegador o en un
      dispositivo, pide al usuario la comprobación concreta. **Espera su confirmación** y regístrala:
      `  - nota: verificación manual OK AAAA-MM-DD (usuario)`. Si falla, se corrige dentro de la tarea.
+     Si el usuario pide otro valor o comportamiento visual que `design.md` no fija, no lo
+     improvises: `/design-spec NNN --fix` (decisión `refinado`) y después la tarea.
 5. **Marca** la tarea `[x]` en `tasks.md`. Si hubo algo relevante, añade una nota debajo:
    `  - nota: <decisión menor, archivo extra justificado, deuda detectada>`.
 6. **Commit** según la política elegida.

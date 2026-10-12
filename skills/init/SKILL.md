@@ -8,8 +8,10 @@ description: Inicializa un proyecto para desarrollo guiado por IA (spec-driven) 
 Prepara un repositorio para trabajar con el flujo:
 
 ```
-/init → /specify → /plan → /tasks → /analyze → /implement → /review → /release
+/init → /specify → /design-spec → /plan → /tasks → /analyze → /implement → /review → /release
 ```
+
+Diseño y SEO tienen skills propias: `/init` llama a `/design-spec system` y a `/seo`.
 
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
@@ -21,9 +23,8 @@ todos los comandos posteriores leen y respetan.
 | Argumento | Efecto |
 |---|---|
 | `--upgrade` | Pone al día un proyecto ya inicializado con la versión instalada del plugin, sin re-explorar. Sigue `references/upgrade.md`. |
-| `--upgrade --redo-design` | Re-extrae el sistema de diseño documentado del código (`source: extracted`): archiva el anterior en `docs/design/history/`, captura todas las vistas y concilia la deuda `DS` (`references/design.md` §3b). |
-| `--upgrade --redo-options` | Rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado: pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `docs/design/opciones/history/` y genera otra (`references/design.md` §2.7). |
-| `--upgrade --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <a\|b\|c>` | Afina un solo eje de una opción que ya convence: congela el resto, propone 2–3 variantes justificadas por el brief y las compara en una lámina (`templates/design/eje.html`, `references/design.md` §2.8). |
+| `--upgrade --redo-design` | Atajo de `/design-spec system --redo-design`: re-extrae el sistema documentado del código. |
+| `--upgrade --redo-options [--only <eje> --base <a\|b\|c>]` | Atajo de `/design-spec system --redo-options`: rehace las opciones antes de elegir sistema o afina un solo eje. |
 | `--type <frontend\|backend\|fullstack\|mobile\|monorepo\|library>` | Omite la pregunta de tipo de proyecto |
 | `--force` | Permite sobrescribir archivos existentes (siempre mostrando diff antes) |
 | `--no-explore` | En brownfield, omite los subagentes y solo entrevista |
@@ -93,11 +94,11 @@ todos los comandos posteriores leen y respetan.
 4. **Tipo de proyecto** (si no vino `--type`): en brownfield infiérelo y pide confirmación; en
    greenfield pregúntalo. Señales por tipo en `references/project-types.md` §1 (una app híbrida es
    `mobile`; en monorepo, el tipo va por paquete).
-5. **Interfaz y diseño** (`frontend`, `fullstack`, `mobile`): sigue `references/design.md`. En
-   brownfield, pregunta ahora si documentar el diseño existente (sin cambiar código); con un no,
-   `design.status: declined`. En greenfield, el diseño se decide en la entrevista.
-6. **SEO** (sitio web público): sigue `references/seo.md` §1 y pregunta si debe aparecer en
-   buscadores; registra el bloque `seo` (`declined` si no lo quiere documentar).
+5. **Interfaz y diseño** (`frontend`, `fullstack`, `mobile`): en brownfield, pregunta ahora si
+   documentar el diseño existente, sin cambiar código (`../design-spec/references/system-mode.md`
+   §3); con un no, `design.status: declined`. En greenfield se decide en la entrevista.
+6. **SEO** (sitio web público): pregunta si debe aparecer en buscadores
+   (`../seo/references/audit.md` §1); registra el bloque `seo` (`declined` si no lo quiere).
 
 Informa en una línea qué detectaste antes de continuar.
 
@@ -156,10 +157,8 @@ Bloques obligatorios:
    objetivo y herramientas de seguridad (→ `docs/security.md`).
 8. Observabilidad y auditoría: qué eventos deben quedar registrados, obligaciones legales de
    registro de accesos, retención y quién puede leer los registros (→ `docs/observability.md`).
-9. Diseño (greenfield con interfaz): primero investiga el nicho (`references/nicho.md` →
-   `docs/design/nicho.md`); después objetivo, marca y colores, tipografía, referencias, territorio
-   de identidad, movimiento y fondos (→ `docs/design/`, `references/design.md` §2).
-10. SEO (sitio indexable): URL canónica, idiomas y qué no se indexa (→ `docs/seo.md`, Ronda 4c).
+9. Diseño (greenfield con interfaz): lo conduce `/design-spec system` (nicho y Ronda 4b).
+10. SEO (sitio indexable): URL canónica, idiomas y qué no se indexa (Ronda 4c, para `/seo`).
 
 ---
 
@@ -212,8 +211,8 @@ contenido se queda).
    - Brownfield: `status: inferred`, a partir del subagente F, marcando cada capacidad como
      presente / configurada / en uso. Los huecos (sin correlación, sin auditoría, datos
      sensibles en logs, nivel `debug` por defecto) van a "Brechas".
-8b. `docs/seo.md` ← `templates/seo.md` (sitio indexable): `references/seo.md` §2 en greenfield;
-   en brownfield, auditoría sobre la build y brechas `SE` (§3).
+8b. `docs/seo.md` (sitio indexable): `/seo setup` en greenfield; `/seo audit` en brownfield
+   (auditoría sobre la build y brechas `SE`).
 9. `docs/roadmap.md` ← `templates/roadmap.md`. Si el roadmap ya existe (re-sincronización),
    no lo regeneres: concilia las brechas de observabilidad, seguridad, despliegue y SEO con
    `references/brownfield.md` §4. Si es nuevo, las brechas prioritarias entran como objetivos.
@@ -221,9 +220,9 @@ contenido se queda).
    cubre y las que deja fuera con su destino (otro objetivo, spec o excepción). No resumas: si el
    riesgo propone cuatro correcciones, el objetivo nombra las cuatro. Pregunta al usuario por
    las que propones dejar fuera.
-9a. **Diseño** (proyectos con interfaz): greenfield, opciones en HTML y sistema elegido
-    (`references/design.md` §2); brownfield aceptado, sistema extraído y deuda `DS` (§3). Bloque
-    `design` de `.ai/project.yaml` en ambos casos (`declined` si el usuario no lo quiso).
+9a. **Diseño** (proyectos con interfaz): `/design-spec system` (opciones y sistema elegido en
+    greenfield; sistema extraído y deuda `DS` en brownfield aceptado). Bloque `design` de
+    `.ai/project.yaml` en ambos casos (`declined` si el usuario no lo quiso).
 9b. `docs/specs/README.md` con la tabla de specs (vacía en greenfield): `AGENTS.md` la enlaza.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
     `templates/review.md` y `templates/adr.md` para que los usen las demás skills. Después del

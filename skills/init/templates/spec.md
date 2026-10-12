@@ -51,7 +51,7 @@ Eventos que deben quedar registrados, cada uno como criterio `CA` verificable (s
 
 ## Diseño
 {{qué debe sentir quien la usa y qué pantallas toca}}. Sistema: [docs/design/system.md](../../design/system.md).
-{{Si es un rediseño: "Rediseño de <pantallas>: /plan genera las opciones."}}
+{{Si es un rediseño: "Rediseño de <pantallas>: /design-spec NNN genera las opciones."}}
 <!-- endif -->
 
 ## Requisitos no funcionales

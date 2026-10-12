@@ -43,7 +43,7 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    tabla "Herramientas" de `docs/security.md` (columna Estado y comando nuevo), para que los dos
    documentos no se contradigan. Si `skills.enabled` contiene `design`, pregunta si el plugin
    oficial `design` de Anthropic sigue instalado; si no, quítalo. Si el proyecto es greenfield y
-   `AGENTS.md` sigue con comandos `TODO(init)`, ofrece `references/greenfield.md` §2–§3.
+   `AGENTS.md` sigue con comandos `TODO(init)`, ofrece `greenfield.md` §2–§3.
 8. **Decisiones y verificación (desde 1.10.0).** Nada se migra a la fuerza: las specs con
    "Supuestos" y "Aclaraciones" siguen siendo válidas. Para las specs en `draft` o `approved`
    (mira el estado de la **spec**, no el del plan: el plan de una spec terminada sigue en
@@ -53,30 +53,36 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    reglas nuevas salen como "heredados" en `validate`.
 9. **Diseño (desde 1.11.0).** Si el proyecto tiene interfaz (`frontend`, `fullstack`, `mobile`) y
    `design.status` falta o es `none`, pregunta si documentar el diseño que usa hoy el código. Con
-   un sí, sigue **solo** `design.md` §3 (subagente G, capturas con datos de prueba y medidas,
+   un sí, sigue **solo** `../../design-spec/references/system-mode.md` §3 (subagente G, capturas con datos de prueba y medidas,
    auditoría, `system.md` extraído, `system.html` y deuda `DS`), sin re-explorar el resto del
    código. Con un no, `design.status: declined` y no vuelvas a preguntar. Nunca ofrezcas rediseño
    ni opciones. Si `design.status` es `declined` o el sistema es `source: chosen`, no hagas nada.
    **Re-extracción (desde 1.11.2):** si `system.md` es `source: extracted` y `extracted_with` falta
    o es anterior a 1.11.2, explica qué cambió (inventario completo de vistas con capturas, nada
    dibujado a mano, textos y logo de la app, deuda conciliada) y **ofrece** re-extraer con
-   `design.md` §3b; con `--upgrade --redo-design`, hazlo sin preguntar si ofrecerlo. Nunca borres
+   `../../design-spec/references/system-mode.md` §3b; con `--upgrade --redo-design`, hazlo sin preguntar si ofrecerlo. Nunca borres
    el sistema anterior: se archiva en `docs/design/history/`.
-   **Rehacer opciones (desde 1.11.4):** con `--upgrade --redo-options`, sigue `design.md` §2.7 y
+   **Rehacer opciones (desde 1.11.4):** con `--upgrade --redo-options`, sigue `../../design-spec/references/system-mode.md` §2.7 y
    nada más del paso. Sin el argumento, si hay `docs/design/opciones/` y `design.status` es `none`
    (opciones sin elegir), menciona en el resumen que existe. Con `--only <eje> --base <opción>`,
-   sigue `design.md` §2.8 (ronda acotada a un eje, desde 1.11.5; ejes `fondo` y `movimiento`
+   sigue `../../design-spec/references/system-mode.md` §2.8 (ronda acotada a un eje, desde 1.11.5; ejes `fondo` y `movimiento`
    desde 1.12.0). **Nicho (desde 1.12.0):** si hay diseño `chosen` o en opciones y falta
    `docs/design/nicho.md`, no lo crees en el upgrade: menciónalo en el resumen; se investiga en la
    siguiente ronda de opciones o spec de rediseño. Si `skills.enabled` no tiene
    `design` y el plugin está instalado, ofrece registrarlo.
 9b. **SEO técnico (desde 1.13.0).** Si el proyecto tiene interfaz web (`frontend`, `fullstack`,
     paquete web de un monorepo) y no tiene bloque `seo` o `seo.status` está vacío, sigue
-    `seo.md` §4: pregunta si el sitio debe aparecer en buscadores; con un sí, ejecuta **solo** el
+    `../../seo/references/audit.md` §4: pregunta si el sitio debe aparecer en buscadores; con un sí, ejecuta **solo** el
     subagente H y la auditoría sobre la build (`seo.md` §3), genera `docs/seo.md` y concilia sus
     brechas `SE` con el roadmap (`brownfield.md` §4). Con `declined` o `indexable: false`, no hagas
     nada. Las specs abiertas con plan sin "Descubribilidad" reciben un aviso del validador:
     propón añadir la sección o `No aplica: <motivo>`; las cerradas no se tocan.
+9c. **Diseño por spec (desde 1.13.0).** El diseño de cada spec con pantallas es ahora
+    `/design-spec NNN` (antes lo hacía `/plan`). Nada se migra a la fuerza: las specs abiertas sin
+    plan lo seguirán al planear; a las que ya tienen plan aprobado, el validador les da un aviso:
+    propone crear su `design.md` con `exploration: none` y el motivo ("diseñada antes de 1.13.0 en
+    el plan"). Las cerradas no se tocan. Los argumentos `--redo-design` y `--redo-options` de
+    `/init` siguen funcionando como atajos de `/design-spec system`.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
     avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

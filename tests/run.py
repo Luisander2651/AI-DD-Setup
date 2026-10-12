@@ -302,7 +302,8 @@ def scenario_design_templates():
     check("eje.html no carga nada externo (se abre sin red)", not ext, str(ext))
     check("eje.html calcula el contraste y comprueba la carga de fuentes",
           "function ratio" in eje and "document.fonts" in eje)
-    for name in ("system.md", "brief.md", "creative-direction.md", "anti-cliches.md", "option.html", "eje.html", "nicho.md"):
+    for name in ("system.md", "brief.md", "creative-direction.md", "anti-cliches.md", "option.html", "eje.html", "nicho.md",
+                 "spec-design.md"):
         check(f"existe templates/design/{name}", os.path.isfile(os.path.join(base, name)))
 
 
@@ -435,6 +436,52 @@ def scenario_seo():
     check("indexable inválido → error", "seo.indexable inválido ('maybe'" in out, out)
 
 
+def scenario_spec_design():
+    print("diseño por spec (/design-spec NNN):")
+
+    def project(spec_design="## Design\nWho uses it at the counter, one hand.\n", design_md=None, plan=False,
+                decisions=""):
+        tmp = tempfile.mkdtemp()
+        d = os.path.join(tmp, "docs/specs/001-refill-reminder")
+        os.makedirs(os.path.join(tmp, ".ai")); os.makedirs(d)
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write(
+            "type: mobile\nlanguage: en\ndesign:\n  status: approved\n  source: chosen\n"
+            "  system: docs/design/system.md\n  html: docs/design/system.html\n")
+        open(os.path.join(d, "spec.md"), "w", encoding="utf-8").write(
+            "---\nstatus: approved\n---\n# Refill reminder\n## Problem\nPatients forget refills.\n"
+            "## Acceptance criteria\n- [ ] AC1 A reminder shows three days before the refill date\n"
+            "## Out of scope\nPayments.\n## Security and privacy\nNot applicable: no personal data.\n"
+            + spec_design + decisions)
+        if design_md is not None:
+            open(os.path.join(d, "design.md"), "w", encoding="utf-8").write(design_md)
+        if plan:
+            open(os.path.join(d, "plan.md"), "w", encoding="utf-8").write(
+                "---\nspec: 001-refill-reminder\nstatus: draft\n---\n# Plan\n## Traceability\n"
+                "| Item | Test |\n|---|---|\n| AC1 | test_reminder |\n## Rollout\nStore release.\n")
+        _, st = run(["status"], tmp)
+        _, val = run(["validate"], tmp)
+        shutil.rmtree(tmp, ignore_errors=True)
+        return st, val
+
+    ok_design = "---\nspec: 001-refill-reminder\nstatus: approved\nexploration: options\n---\n# Design\nA · Pill box.\n"
+    st, _ = project()
+    check("spec con interfaz sin design.md → status sugiere /design-spec", "/design-spec" in st, st)
+    st, _ = project(design_md=ok_design.replace("approved", "draft", 1))
+    check("design.md en draft → aprobar el diseño", "aprobar el diseño" in st, st)
+    st, val = project(design_md=ok_design)
+    check("design.md aprobado → /plan", "| /plan |" in st and "design.md:" not in val, st + val)
+    st, _ = project(spec_design="## Design\nNot applicable: no screen changes.\n")
+    check("Diseño 'Not applicable' → /plan sin diseño", "| /plan |" in st, st)
+    _, val = project(plan=True)
+    check("plan sin design.md aprobado → aviso", "design.md no está aprobado" in val, val)
+    _, val = project(design_md="---\nspec: 001\nstatus: final\nexploration: lots\n---\n# Design\n{{x}}\n")
+    check("design.md inválido → errores de status, exploration y placeholders",
+          "status inválido" in val and "exploration inválido" in val and "design.md: quedan" in val, val)
+    _, val = project(design_md=ok_design, decisions="## Decisions\n| Date | Type | Question / conflict | Decision | Source |\n"
+                     "|---|---|---|---|---|\n| 2026-10-12 | refined | Badge size after manual review | 24px | user |\n")
+    check("tipo 'refined' aceptado en Decisiones", "tipo desconocido" not in val, val)
+
+
 def scenario_templates():
     print("templates (huellas de docs/templates/):")
     with tempfile.TemporaryDirectory() as tmp:
@@ -511,6 +558,7 @@ if __name__ == "__main__":
     scenario_release_status()
     scenario_design_contrast_rule()
     scenario_seo()
+    scenario_spec_design()
     scenario_templates()
     scenario_design_inventory()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")

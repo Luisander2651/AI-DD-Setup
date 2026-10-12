@@ -1,10 +1,11 @@
-# SEO técnico en `/init`
+# Procedimiento de `/seo`
 
-Procedimiento de `/init` y `/init --upgrade` para sitios web públicos. Regla común en
+Modos `setup` (§2) y `audit` (§3) de `/seo`, que llaman `/init` y `/init --upgrade` para sitios web
+públicos. Regla común en
 `../../../shared/contract.md` → "SEO técnico"; temas y severidad en
-`../../../shared/seo-checklist.md`; plantilla en `../templates/seo.md`.
+`../../../shared/seo-checklist.md`; plantilla en `../../init/templates/seo.md`.
 
-`/init` **documenta**: no cambia código, no instala paquetes de SEO, no da de alta el sitio en
+`/seo` **documenta**: no cambia código, no instala paquetes de SEO, no da de alta el sitio en
 consolas de buscadores ni reescribe textos para posicionar. Las correcciones son specs.
 
 ## 1. Cuándo aplica (Fase 0)
@@ -33,23 +34,25 @@ En `project.yaml` registra el bloque `seo` en todos los casos con interfaz web.
 
 ## 2. Greenfield
 
-1. **Entrevista** (Ronda 4c de `interview.md`): URL pública, idiomas, qué no se indexa.
+1. **Entrevista** (Ronda 4c de `../../init/references/interview.md`): URL pública, idiomas, qué no se indexa.
 2. **Renderizado.** Un sitio indexable se propone con HTML generado por ruta (`static`, `ssr` o
    `hybrid`). Si el stack elegido es `spa`, dilo antes de fijarlo: un rastreador sin JavaScript y
    las vistas previas de redes ven el mismo HTML en todas las rutas. Si el usuario lo mantiene,
    regístralo en "Reglas del sitio" como `(decisión del usuario, AAAA-MM-DD)` con qué rutas son
    indexables y cómo se compensa (prerenderizar esas rutas, aceptar solo la portada).
 3. **`docs/seo.md`** con `status: proposed`: reglas del sitio completas; inventario con las rutas
-   previstas en estado `no determinado`; sin brechas.
-4. **Constitución:** propone los principios de sitio indexable de `project-types.md` §2.
+   previstas en estado `no determinado`; sin brechas. Anota las **exclusiones deliberadas** (p. ej.
+   sin etiquetas `twitter:*`, sin `manifest`, un solo idioma, sin analítica) con su motivo: `/review`
+   no las marca como brecha.
+4. **Constitución:** propone los principios de sitio indexable de `../../init/references/project-types.md` §2.
 5. **Proyecto base:** si la plantilla del framework trae `robots.txt`, metadatos o `noindex` por
-   defecto, la auditoría de valores por defecto de `greenfield.md` §3 los revisa contra
+   defecto, la auditoría de valores por defecto de `../../init/references/greenfield.md` §3 los revisa contra
    `docs/seo.md`; cada desviación es una tarea con test.
 
 ## 3. Brownfield: auditar el sitio existente
 
 ### 3.1 Exploración (Fase 1)
-Subagente H (`explore-agents.md`): renderizado, rutas, fuentes de metadatos, robots y sitemap,
+Subagente H (`../../init/references/explore-agents.md`): renderizado, rutas, fuentes de metadatos, robots y sitemap,
 configuración del hosting, comando de build y carpeta de salida. Es de solo lectura: lo que
 reporta es **declarado**.
 
@@ -84,11 +87,12 @@ La haces tú, no un subagente, porque compila y sirve el sitio:
   que tiene una sola causa (p. ej. "el layout no recibe título por ruta" en lugar de una brecha
   por página).
 - **Brechas por confirmar:** lo declarado sin verificar, con qué falta para confirmarlo.
+- **Exclusiones deliberadas** que confirme el usuario, con su motivo (no son brechas).
 - **Pendientes operativos:** consolas de buscadores, dominio propio, analítica. No son brechas.
 - `project.yaml`: `seo.status: inferred`, `site_url` (confirmada por el usuario) y `rendering`.
 
 ### 3.4 Roadmap
-Concilia las brechas `SE` con `brownfield.md` §4, como las demás. Propuesta por defecto: las de
+Concilia las brechas `SE` con `../../init/references/brownfield.md` §4, como las demás. Propuesta por defecto: las de
 severidad alta, un objetivo cada una; las medias, agrupadas en un objetivo "sitio indexable
 correctamente" con criterio medible (p. ej. Lighthouse SEO ≥ 90 y título y descripción únicos en
 todas las rutas indexables); las bajas, a "Pendientes y deuda". Cada objetivo cita **todas** sus
@@ -99,10 +103,10 @@ correcciones. El usuario decide; desatendido, deja las propuestas en el resumen.
 Si el proyecto tiene interfaz web y no tiene bloque `seo` (o `seo.status` vacío): haz la pregunta
 de §1. Con un sí, sigue **solo** §3 (H, auditoría, documento y conciliación), sin re-explorar el
 resto del código. Los principios de sitio indexable llegan como propuesta de enmienda de la
-constitución (`upgrade.md` paso 12). Con `declined`, no hagas nada.
+constitución (`../../init/references/upgrade.md` paso 12). Con `declined`, no hagas nada.
 
 ## 5. Re-sincronización
 
 Un ID `SE` no se reutiliza. Una brecha que el resultado ya no muestra se marca
 `resuelta (<fecha>: <evidencia>)`, no se borra; las nuevas toman el siguiente número. Lo
-confirmado o decidido por el usuario se conserva (`brownfield.md` §5).
+confirmado o decidido por el usuario se conserva (`../../init/references/brownfield.md` §5).

@@ -1,18 +1,19 @@
 # Diseño: sistema de diseño y opciones en HTML
 
-Lo usa `/init` (y `/init --upgrade` paso 9) en proyectos con interfaz: `frontend`, `fullstack`,
-`mobile`, o un paquete de esos tipos en un monorepo. En `backend` y `library` no se escribe el
+Modo `system` de `/design-spec` (lo llaman `/init` y `/init --upgrade` paso 9; también se ejecuta
+solo) en proyectos con interfaz: `frontend`, `fullstack`, `mobile`, o un paquete de esos tipos en
+un monorepo. En `backend` y `library` no se escribe el
 bloque `design` de `project.yaml`.
 
 | Caso | Qué haces |
 |---|---|
 | Greenfield con interfaz | §2: entrevista de diseño y opciones en HTML; la elegida es el sistema |
 | Brownfield con interfaz | §3: **solo si el usuario acepta**, documentas el diseño que ya usa el código |
-| Rediseño | Nunca aquí: es una spec propia (`/specify`, y `/plan` sigue `../../plan/references/design.md`) |
+| Rediseño | Nunca aquí: es una spec propia (`/specify`, y `/design-spec NNN` sigue `spec-mode.md` §5) |
 
 El entregable visual es siempre **HTML en el repo** (`docs/design/*.html`, a partir de
-`../templates/design/option.html`): se abre sin red cuantas veces se quiera. Lo escrito vive en
-`docs/design/system.md` (`../templates/design/system.md`).
+`../../init/templates/design/option.html`): se abre sin red cuantas veces se quiera. Lo escrito vive en
+`docs/design/system.md` (`../../init/templates/design/system.md`).
 
 ## 1. Herramientas
 
@@ -33,12 +34,12 @@ Comprueba qué ofrece la sesión antes de empezar y dilo en una línea:
 
 ### 2.1 Investigación del nicho y entrevista
 Antes de la entrevista, investiga el nicho con `nicho.md` (profundidad según el tipo de producto) y
-escribe `docs/design/nicho.md`. Después, `interview.md` → Ronda 4b, que propone los territorios de
+escribe `docs/design/nicho.md`. Después, `../../init/references/interview.md` → Ronda 4b, que propone los territorios de
 identidad salidos de esa investigación. Lo que ya responden la constitución o el tipo (nivel WCAG, toque
 ≥ 44 pt/48 dp en `mobile`) no se pregunta: se anota como `implícita`.
 
 ### 2.2 Documentos de partida
-Con las respuestas escribe, desde `../templates/design/`:
+Con las respuestas escribe, desde `../../init/templates/design/`:
 - `docs/design/nicho.md` (si no se escribió ya en §2.1), con el territorio elegido en "Elección".
 - `docs/design/brief.md`.
 - `docs/design/creative-direction.md`: referencias de sensación **con nombre** (productos, sitios o
@@ -157,9 +158,9 @@ que elija una o combine elementos.
 5. `AGENTS.md` → Documentación: enlaces a `system.md` y `system.html`.
 
 ### 2.6 Proyecto base
-En `greenfield.md` §2, los tokens se escriben en un único archivo de tema del stack (variables CSS,
+En `../../init/references/greenfield.md` §2, los tokens se escriben en un único archivo de tema del stack (variables CSS,
 `src/theme/tokens.css` en Ionic, `ThemeData` de Flutter) **conectados al tema de la librería de
-componentes** (`../../plan/references/design.md` §4), y la auditoría de §3 compara también con
+componentes** (`spec-mode.md` §9), y la auditoría de §3 compara también con
 `system.md`: tamaño de controles, margen lateral de campos y pantallas, colores y radios por
 defecto de la librería.
 
@@ -193,7 +194,7 @@ Si es `declined` o el sistema es `extracted`, no aplica: es §3b o un rediseño.
    sigue con §2.5.
 
 En un rediseño (spec propia), las opciones viven en la carpeta de la spec: aplica los mismos pasos
-desde `/plan` (`../../plan/references/design.md` §2), archivando en
+desde `/design-spec NNN` (`spec-mode.md` §5), archivando en
 `docs/specs/NNN-<slug>/design/history/ronda-<N>/`.
 
 ### 2.8 Ronda acotada a un eje
@@ -201,8 +202,9 @@ desde `/plan` (`../../plan/references/design.md` §2), archivando en
 Para cuando una opción ya convence en composición pero falla en un solo aspecto ("la A, pero no me
 gusta la letra"). Rehacer las opciones completas tiraría lo que funciona.
 
-**Cómo se pide:** en `/init`, `--upgrade --redo-options --only <eje> --base <a|b|c>`; en `/plan`
-(opciones de una spec), al elegir (`../../plan/references/design.md` §2, paso 3). Ejes:
+**Cómo se pide:** `/design-spec system --redo-options --only <eje> --base <a|b|c>` (o su atajo en
+`/init --upgrade`); en las opciones de una spec, `/design-spec NNN` al elegir (`spec-mode.md` §2 y
+§5, paso 3). Ejes:
 `tipografia`, `color`, `forma` (radios, bordes, sombras, densidad), `fondo` (superficies,
 texturas, tratamiento de imagen) y `movimiento` (paleta de movimiento). La composición no es un eje:
 cambiarla es §2.7. Mismas condiciones que §2.7: sin sistema `approved`.
@@ -225,7 +227,7 @@ cambiarla es §2.7. Mismas condiciones que §2.7: sin sistema `approved`.
    movimiento: jerarquía, rendimiento, versión sin movimiento). Muéstralos al usuario junto con las variantes.
 3. **2–3 variantes**, cada una justificada contra los criterios, con su riesgo. Nada de §6 sin
    motivo del brief.
-4. **Lámina comparativa** desde `../templates/design/eje.html`, en la misma carpeta que las
+4. **Lámina comparativa** desde `../../init/templates/design/eje.html`, en la misma carpeta que las
    opciones (`eje-<eje>.html`): las mismas piezas de la base con cada variante, lado a lado al ancho
    más chico de `design.widths` y el hero a ancho completo. La página comprueba la carga de las
    fuentes y el contraste de cada variante y tiene "Simular luz exterior" (pantalla con brillo alto y contraste reducido); anota el peso de las fuentes en
@@ -248,7 +250,7 @@ Con un **sí**, la regla es **fidelidad**: el documento describe la app que ve e
 interpretación. Nada se dibuja a mano ni se redacta: lo que no se puede capturar o leer del código
 queda marcado como pendiente.
 
-1. **Subagente G** (`explore-agents.md`) en la Fase 1, junto a los demás: tokens, valores fijos,
+1. **Subagente G** (`../../init/references/explore-agents.md`) en la Fase 1, junto a los demás: tokens, valores fijos,
    lo declarado que no se carga, **inventario completo de vistas** y recursos de marca.
 2. **Datos de prueba.** Las capturas se hacen **solo con datos de prueba**, nunca con datos reales.
    Para tenerlos, en este orden: helpers o fixtures de los tests de pantalla del proyecto (p. ej.
@@ -286,7 +288,7 @@ queda marcado como pendiente.
    - **Componentes:** recortes de las capturas (botón, campo, fila, tarjeta, aviso, menú), no los
      sintéticos de la plantilla, que no reproducen iconos, librerías ni detalles reales.
 8. **Roadmap:** las `DS` prioritarias se proponen como objetivos con la conciliación de
-   `brownfield.md` §4; el usuario decide.
+   `../../init/references/brownfield.md` §4; el usuario decide.
 9. Constitución: el principio "solo tokens" se propone con la regla de "Código previo": aplica a
    pantallas nuevas o modificadas; el código anterior no bloquea.
 10. **Marca en el navegador y al compartir:** documenta los íconos enlazados en el `<head>` y las
@@ -325,11 +327,12 @@ aplica a un sistema `chosen` (cambiarlo es un rediseño: spec propia).
 
 ## 4. `/init --upgrade`
 
-`upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
+`../../init/references/upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
 re-explorar el resto del código: lanza únicamente el subagente G. Con un sistema extraído por un
 procedimiento anterior, ofrece §3b (re-extraer); `--redo-design` lo ejecuta directamente.
 `--redo-options` sigue §2.7 (rehacer las opciones de un proyecto nuevo antes de elegir sistema);
-con `--only <eje> --base <opción>`, §2.8 (afinar un solo eje de una opción).
+con `--only <eje> --base <opción>`, §2.8 (afinar un solo eje de una opción). Los tres argumentos son
+atajos de `/design-spec system` con el mismo nombre.
 
 ## 5. Brief (para la skill `design` y para escribir el HTML)
 

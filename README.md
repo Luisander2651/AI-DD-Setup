@@ -14,6 +14,8 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 |---|---|---|
 | `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (uno más si documenta el diseño existente y otro si el sitio es público e indexable) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color, la forma, el fondo o el movimiento de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), `seo.md` (sitio indexable), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
+| `design-spec` | Diseño de interfaz. `system`: opciones en HTML y sistema de diseño (o el diseño existente documentado); lo llama `init`. `NNN`: en cada spec con pantallas, 2–3 composiciones sobre el sistema, cada una con metáfora del contenido real y distinta de las pantallas vecinas, antes de planear. `--fix`: refinado tras la revisión manual. | `docs/design/`, `docs/specs/NNN-slug/design.md` + composiciones en HTML |
+| `seo` | SEO técnico de sitios públicos. `setup`: reglas del sitio; `audit`: auditoría sobre la build (y, con permiso, el sitio publicado) con brechas `SE` y propuestas para el roadmap; `verify`: comprobaciones en producción tras un despliegue. La llaman `init` y `release`. | `docs/seo.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
 | `tasks` | Divide el plan en tareas pequeñas y verificables, con cobertura de criterios y amenazas. | `tasks.md` |
@@ -21,6 +23,9 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 | `implement` | Ejecuta las tareas una a una, con tests primero y escaneo de seguridad. | código, `tasks.md` marcado |
 | `review` | Revisión independiente con subagentes: spec, plan, constitución, seguridad OWASP, calidad y, si aplica, accesibilidad y SEO técnico. | `review.md` con veredicto |
 | `release` | Versión, changelog, staging y producción **solo con aprobación explícita**; rollback guiado. | tag/PR, `CHANGELOG.md` |
+
+Orden: `init` → `specify` → `design-spec NNN` (solo si la spec tiene pantallas) → `plan` → `tasks` →
+`analyze` → `implement` → `review` → `release`.
 
 Dentro de un plugin las skills se invocan con el prefijo del plugin (por ejemplo `/ai-dd:init`),
 así que no chocan con comandos integrados como `/init`.
@@ -54,18 +59,20 @@ así que no chocan con comandos integrados como `/init`.
 
 ## Diseño
 
-Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Detalle en
-`skills/init/references/design.md` y `skills/plan/references/design.md`.
+Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Lo hace la skill
+`design-spec`: el sistema en `skills/design-spec/references/system-mode.md` y el diseño de cada spec
+en `skills/design-spec/references/spec-mode.md`.
 
 ### Cuándo se diseña
 | Situación | Qué pasa |
 |---|---|
-| Proyecto nuevo | `/init` investiga el nicho (`nicho.md`), hace la entrevista de diseño (Ronda 4b) con territorios de identidad propuestos, escribe `brief.md`, `creative-direction.md` y `anti-cliches.md`, genera 3 opciones en HTML (2 si la marca ya está cerrada) y la elegida pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
-| Proyecto existente | `/init` solo **documenta** el diseño actual si lo aceptas (capturas reales, deuda `DS`); nunca rediseña. `--upgrade --redo-design` lo vuelve a documentar. |
-| Rediseño o pantallas nuevas | Siempre una spec propia: `/specify` investiga el nicho si falta y hace la entrevista y `/plan` genera las opciones en la carpeta de la spec; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
+| Proyecto nuevo | `/init` (con `/design-spec system`) investiga el nicho (`nicho.md`), hace la entrevista de diseño (Ronda 4b) con territorios de identidad propuestos, escribe `brief.md`, `creative-direction.md` y `anti-cliches.md`, genera 3 opciones en HTML (2 si la marca ya está cerrada) y la elegida pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
+| Proyecto existente | `/init` solo **documenta** el diseño actual si lo aceptas (capturas reales, deuda `DS`); nunca rediseña. `/design-spec system --redo-design` (o `/init --upgrade --redo-design`) lo vuelve a documentar. |
+| Cada spec con pantallas | `/design-spec NNN` entre `/specify` y `/plan`: 2–3 composiciones en HTML sobre el sistema y `design.md` aprobado, que `/plan` sigue. Se omite (`exploration: none`) si la spec no crea ni recompone pantallas. |
+| Rediseño | Siempre una spec propia: `/specify` hace la entrevista y `/design-spec NNN` genera las opciones en la carpeta de la spec; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
 
 ### Cómo se generan opciones que no parezcan de plantilla
-- **Investigación del nicho** (`skills/init/references/nicho.md` → `docs/design/nicho.md`): antes
+- **Investigación del nicho** (`skills/design-spec/references/nicho.md` → `docs/design/nicho.md`): antes
   de la entrevista se estudian las convenciones del sector, los materiales propios del oficio
   (documentos, envases, espacios, herramientas), 4–6 referentes reales con enlace, lo que todos
   repiten (pasa a clichés) y el contexto de uso. Profundidad según el producto: completa en sitios
@@ -94,17 +101,60 @@ Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Detalle en
   y tratamiento de imagen, salidos del territorio y en CSS o SVG ligero. El contraste se mide sobre
   la zona más difícil del fondo (`--surface-worst`).
 - **Repaso antes de enseñar** cada opción contra los rasgos por defecto de las interfaces generadas
-  (`design.md` §6) y contra `anti-cliches.md`, con o sin el plugin `design`.
+  (`system-mode.md` §6) y contra `anti-cliches.md`, con o sin el plugin `design`.
+- **Marca fuera de la pantalla.** Íconos que salen de una marca de la interfaz (texto convertido a
+  trazos, revisados a 16 px en pestaña clara y oscura) y una tarjeta para compartir que repite la
+  pieza firma del sitio, con medidas y datos reales.
+
+### Cada pantalla, su propia composición
+
+Lo que evita que todas las pantallas parezcan la misma plantilla (`spec-mode.md` §1–§4):
+- **2–3 composiciones por spec** sobre el sistema aprobado, cada una con **nombre y metáfora**
+  sacada del contenido real ("la ficha del paciente como expediente con pestañas").
+- **Vecino más parecido:** cada composición dice a qué otra pantalla del producto se parece más y
+  en qué se diferencia; los componentes firma son **exclusivos** de su pantalla.
+- **Jerarquía declarada** con proporciones (destacado 7:5, mosaico 5:7) en lugar de rejillas de
+  iguales sin motivo; **ancho intermedio** revisado cuando hay filas.
+- **Riesgo marcado:** una composición puede llevar a propósito un elemento que roza el cliché, y
+  el usuario decide si se queda.
+- **Adornos desde datos reales** (índices, rutas, código decorativo), ocultos a lectores de pantalla.
+- **Fichas de movimiento** con versión reducida, sin JavaScript y táctil, su coste en JS y reglas
+  de rendimiento (sin `filter` animado en superficies grandes ni `backdrop-filter` en elementos
+  fijos; revelados por disparo, no ligados al scroll).
+- **Reglas de uso contables** del sistema (cuántos momentos protagonistas, dónde se permite el
+  efecto firma) y **anti-clichés por pantalla** con la alternativa usada.
+- **Refinado registrado:** lo que cambia tras la revisión manual queda como decisión `refinado`
+  con su motivo (`/design-spec NNN --fix`).
 
 ### Iterar antes de elegir
 | Si… | Usa | Qué hace |
 |---|---|---|
-| Ninguna opción convence | `/init --upgrade --redo-options` (o "rehacer" en `/plan`) | Pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `history/ronda-<N>/` y genera otra con "qué cambia respecto a la ronda anterior". |
-| Una opción convence salvo un aspecto | `/init --upgrade --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <opción>` (o "afinar un eje" en `/plan`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula luz exterior. |
+| Ninguna opción convence | `/design-spec system --redo-options` (o "rehacer" en `/design-spec NNN`) | Pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `history/ronda-<N>/` y genera otra con "qué cambia respecto a la ronda anterior". |
+| Una opción convence salvo un aspecto | `/design-spec system --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <opción>` (o "afinar un eje" en `/design-spec NNN`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula luz exterior. |
 | Ya hay sistema aprobado | `/specify "rediseño de …"` | Spec de rediseño (ver arriba). |
 
 En `/plan`, la tipografía o el color se afinan **antes** de "Cambios a incorporar al sistema";
 cambiarlos después obliga a `/plan NNN --fix`.
+
+## SEO técnico
+
+Solo en sitios públicos (`seo.indexable: true` en `.ai/project.yaml`); lo hace la skill `seo`
+(`skills/seo/`) con el checklist `shared/seo-checklist.md`. Cubre lo técnico y comprobable; no elige
+palabras clave ni promete posiciones.
+
+| Momento | Qué pasa |
+|---|---|
+| `/init` proyecto nuevo | Pregunta si el sitio debe aparecer en buscadores; `/seo setup` fija URL canónica, idiomas, qué no se indexa, renderizado y exclusiones deliberadas en `docs/seo.md`. |
+| `/init` proyecto existente | El subagente H lee el código; `/seo audit` compila y audita el HTML generado (y, con permiso, solo `GET` al sitio publicado). Lo verificado son brechas `SE` con severidad; lo no comprobable, "por confirmar". Las brechas se concilian con el roadmap. |
+| `/init --upgrade` | Ofrece la auditoría a proyectos web que no la tenían (paso 9b). |
+| `/specify` y `/plan` | Requisitos de descubribilidad y sección "Descubribilidad" del plan: una fila y un test sobre el HTML generado por ruta, con valores exactos y exclusiones. |
+| `/review` | Revisor de SEO sobre el HTML generado de las rutas del diff; una brecha alta bloquea. |
+| `/release` | `/seo verify`: robots, sitemap, 404 propia, rutas privadas, `noindex` solo donde toca y staging protegido; lo que exige herramientas externas lo confirma el usuario. |
+
+El checklist incluye páginas de error propias (404 que responde 404, rutas privadas que redirigen o
+responden 401/403 sin indexarse), íconos del sitio, imagen para compartir por página generada desde
+la tarjeta del sistema de diseño y sitios en varios idiomas (`hreflang`, `og:locale`, sitemap y 404
+por idioma, sin redirecciones automáticas).
 
 ## Validador y guardia
 
@@ -148,6 +198,8 @@ shared/
   agent-security.md    # seguridad del proceso con agentes
 skills/
   init/                # SKILL.md + references/ + templates/
+  design-spec/         # SKILL.md + references/ (system-mode, spec-mode, nicho)
+  seo/                 # SKILL.md + references/audit.md
   specify/ clarify/ plan/ tasks/ analyze/ implement/ review/ release/
 ```
 

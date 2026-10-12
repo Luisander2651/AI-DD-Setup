@@ -58,6 +58,13 @@ valores oscuros de **todos** los colores y el contraste de ambos como `13.0:1 ·
 Fuentes: {{autoalojadas en … / del sistema}}; nunca cargadas desde un servicio externo sin
 aprobarlo en `docs/security.md`.
 
+## Modo de los tokens
+
+Cada token de tamaño declara su **modo**: `fijo` (un valor), `fluido` (interpola entre el ancho
+menor y el mayor de `design.widths`, p. ej. con `clamp()`, y se queda en el extremo fuera de ese
+rango) o `corte N px` (un valor por debajo y otro desde ese ancho). En las tablas, la columna
+"Móvil" lleva el valor fijo o el del ancho menor, y "Escritorio" el del mayor (`—` si es fijo).
+
 ## Espaciado, radios, bordes y sombras
 
 - Escala de espaciado: `--space-1` … `--space-8` = {{4, 8, 12, 16, 24, 32, 48, 64}} px.
@@ -86,6 +93,22 @@ margen lateral --space-gutter, altura ≥ --touch-min}}
 
 ### Estados de pantalla
 {{vacío (con acción), cargando, error (con reintentar)}}
+
+### Componentes exclusivos
+<!-- Componentes firma de una sola pantalla o sección (los declara el design.md de su spec). No se
+     reutilizan en otra; si hace falta compartirlos, se mueven a "Componentes" con una spec. -->
+| Componente | Pantalla o sección | Spec |
+|---|---|---|
+| {{panel de archivo}} | {{Sobre mí}} | {{NNN}} |
+
+## Iconografía
+
+- Estilo: {{línea · relleno}}, retícula de {{24}}, trazo `--icon-stroke` {{1.75}}, extremos {{redondeados}};
+  SVG en línea, sin librerías de íconos salvo ADR.
+- Tamaños: `--icon-size-sm` {{18px}} · `--icon-size-md` {{22px}}; marco táctil ≥ `--touch-min`.
+- Origen y licencia: {{dibujados para el proyecto · set con licencia (nombre, versión, licencia)}}.
+- Logos de terceros (tecnologías, redes): solo donde una spec lo pide, en un solo color del sistema
+  (`currentColor`), con fuente y licencia anotadas.
 
 ## Movimiento
 
@@ -175,7 +198,13 @@ que las capturas citadas existan.
 
 ## Reglas de uso
 
-- {{Una acción principal por pantalla; colores semánticos solo con su significado; …}}
+Reglas **contables** que `/design-spec` respeta y `/review` comprueba:
+- Momento protagonista: {{uno por página}} ({{cuál en cada página}}).
+- Efecto firma ({{luz, borde luminoso, textura…}}): solo en {{elementos interactivos y el componente
+  firma}}; como máximo {{uno}} visible en reposo por pantalla.
+- Color de acento o de luz: {{nunca en párrafos; solo foco, acción principal, estados}}.
+- Colores semánticos siempre acompañados de texto.
+- {{Una acción principal por pantalla; …}}
 - Ningún valor literal de color, tamaño o espaciado fuera de los tokens (principio "solo tokens"
   de la constitución, verificado por test o lint).
 

@@ -19,6 +19,7 @@
 
 ## Flujo de trabajo
 1. `/specify` → spec en `docs/specs/NNN-<slug>/spec.md`
+   - Con pantallas: `/design-spec NNN` → 2–3 composiciones y `design.md` aprobado
 2. `/plan` → `plan.md` con Constitution Check
 3. `/tasks` → `tasks.md`
 4. `/analyze` → verificación independiente de consistencia → `analysis.md`
@@ -26,7 +27,8 @@
 6. `/review` → contra spec, plan y constitución → `review.md`
 7. `/release` → versión, changelog, staging y, con tu aprobación, producción
 
-Usa `/clarify` para cerrar ambigüedades de una spec antes de aprobarla. Estado de todas las specs:
+Usa `/clarify` para cerrar ambigüedades de una spec antes de aprobarla. Sistema de diseño:
+`/design-spec system`. Sitio público: `/seo audit` para re-auditar el SEO técnico. Estado de todas las specs:
 `python .ai/bin/aidd.py status`.
 
 No implementes sin spec aprobada. No hagas commit sin que pasen `{{test}}` y `{{lint}}`.

@@ -68,6 +68,8 @@ Dónde: `servidor`, `producción`; la existencia y el contenido de las páginas 
 Dónde: `generado`, `servidor`.
 - `noindex` (`<meta name="robots">` o cabecera `X-Robots-Tag`) solo en rutas no indexables, la
   404, staging y vistas previas. En producción, sobre una ruta indexable, es severidad alta.
+- Las páginas no indexables (404, no autorizado, inicio de sesión) no llevan canónica, Open Graph
+  ni datos estructurados; sí íconos y `theme-color`. Lighthouse SEO no se les exige.
 - Una sola `<link rel="canonical">` por página, absoluta, construida desde `seo.site_url`, que
   apunta a la propia página o a su versión preferida y coincide con la URL del sitemap.
 
@@ -121,9 +123,19 @@ Dónde: `generado`; validación con una herramienta de schema.org o de resultado
 - Una sola declaración por entidad, sin duplicados contradictorios entre componentes.
 
 ## 9. Varios idiomas o regiones (solo si existen)
-Dónde: `generado`.
-- `hreflang` recíproco entre todas las versiones, con `x-default`.
-- Cada versión con su propia canónica y su `lang`.
+Dónde: `generado`; la 404 y el selector, también en `servidor`.
+- `<link rel="alternate" hreflang>` recíproco entre todas las versiones, con `x-default`, todos
+  absolutos desde `seo.site_url`.
+- Cada versión con su propia canónica (a sí misma), su `<html lang>`, su `og:locale` y
+  `og:locale:alternate` con los demás idiomas, título, descripción y JSON-LD en su idioma, e imagen
+  para compartir en su idioma.
+- El sitemap lista todas las versiones.
+- Un selector de idioma visible enlaza a la versión equivalente (`hreflang` y `lang` en el
+  enlace); **sin redirecciones automáticas** por el idioma del navegador, que impiden al
+  rastreador ver las demás versiones.
+- La 404 se sirve en cada idioma o, si el hosting solo admite una, es bilingüe con un único `h1`.
+- Los textos de interfaz viven en un solo lugar por idioma, con las mismas claves en todos (test).
+  La traducción es contenido aprobado por el usuario, no automática, y no añade datos.
 
 ## 10. Rendimiento
 Dónde: `generado`, medido sobre la build de producción servida en local, no sobre el servidor de

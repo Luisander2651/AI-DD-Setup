@@ -51,7 +51,35 @@ Solo lo técnico y comprobable, siempre sobre el resultado y no sobre el código
   `scenario_seo`, casos negativos (`python-lib-en`, `ionic-app-es`) y comprobación de la sección
   "Al compartir" en `option.html` y `system.md`.
 
+- **Skills nuevas `design-spec` y `seo`.** Diseño y SEO dejan de estar repartidos en `init`, `plan`,
+  `review` y `release`: `design-spec` (`system` para el sistema, `NNN` para cada spec con pantallas,
+  `--fix` para refinar) y `seo` (`setup`, `audit`, `verify`). `init` y `release` las llaman; las
+  referencias se mueven a `design-spec/references/` (`system-mode.md`, `spec-mode.md`, `nicho.md`)
+  y `seo/references/audit.md`. `init/SKILL.md` baja de 2 984 a ~2 900 palabras.
+- **Diseño por spec** (`/design-spec NNN`, paso propio entre `/specify` y `/plan`), aprendido de las
+  specs del portafolio y escrito sin su stack: 2–3 composiciones sobre el sistema con nombre y
+  metáfora del contenido real, vecino más parecido y diferencia, componentes firma exclusivos,
+  jerarquía con proporciones declaradas, ancho intermedio, riesgo marcado, adornos generados desde
+  datos, fichas de movimiento con versiones reducida, sin JavaScript y táctil y su coste, reglas de
+  rendimiento del movimiento y anti-clichés por pantalla con su alternativa. Documento
+  `docs/specs/NNN-<slug>/design.md` (plantilla `templates/design/spec-design.md`), que `/plan`
+  exige aprobado.
+- `system.md`: modo de cada token (`fijo`, `fluido`, corte), componentes exclusivos, iconografía
+  (retícula, trazo, origen y licencia; logos de terceros en un solo color) y "Reglas de uso"
+  contables (momentos protagonistas, dónde y cuántas veces el efecto firma).
+- Tipo de decisión `refinado` / `refined` (vocabulario y validador).
+- Validador: `design.md` de la spec (status, exploration, placeholders), aviso en el plan si la spec
+  tiene interfaz y su diseño no está aprobado, y `status` sugiere `/design-spec` o "aprobar el
+  diseño" antes de `/plan`.
+- SEO: valores exactos y exclusiones en "Descubribilidad", páginas no indexables sin canónica ni
+  Open Graph ni JSON-LD, varios idiomas completo (tema 9), exclusiones deliberadas en `docs/seo.md`,
+  tests de `theme-color` = `--color-bg` y de tokens fluidos, y aviso de regeneración de la imagen
+  estática.
+- Pruebas: escenario `scenario_spec_design` (app móvil en inglés).
+
 ### Changed
+- `/init --upgrade --redo-design` y `--redo-options` pasan a ser atajos de `/design-spec system`;
+  `upgrade.md` paso 9c explica el diseño por spec a proyectos existentes.
 - `shared/contract.md`: regla "SEO técnico", `docs/seo.md` en la jerarquía de fuentes y `SE` en
   "Cobertura de riesgos". `shared/vocabulary.md`: Descubribilidad, Inventario de rutas, Brechas por
   confirmar, `SE1`, `sí · no (motivo)` y `no determinado`.

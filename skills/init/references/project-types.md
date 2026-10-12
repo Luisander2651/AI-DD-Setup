@@ -28,7 +28,7 @@ Aplica según `project.type` (en monorepo, por paquete):
 | mobile | Pantallas y navegación, estado, almacenamiento local y offline, permisos del dispositivo, plugins nativos, versiones mínimas de SO, contrato con el backend, actualizaciones (tiendas, en vivo, forzada) | OWASP MASVS L1; tokens y datos sensibles solo en almacenamiento seguro del sistema (Keychain/Keystore), nunca en `localStorage`/Preferences; permisos mínimos y justificados; accesibilidad de la plataforma; claves de firma fuera del repo; compatibilidad con versiones de la app ya instaladas (la API no rompe clientes antiguos); objetivos de toque ≥ 44 pt/48 dp | `design` |
 | library | API pública, compatibilidad, versionado semántico | SemVer estricto, API pública documentada y testeada, publicación solo desde CI con tag | — |
 
-**Sitio indexable** (`seo.indexable: true`, en cualquiera de los tipos con web; `seo.md`): la
+**Sitio indexable** (`seo.indexable: true`, en cualquiera de los tipos con web; `../../seo/references/audit.md`): la
 arquitectura añade cómo se genera el HTML de cada ruta y dónde se fijan los metadatos; la
 constitución propone título y descripción únicos por ruta indexable, una sola canónica absoluta
 construida desde `seo.site_url`, HTML con el contenido principal sin depender de JavaScript en

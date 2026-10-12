@@ -8,7 +8,7 @@ description: "Genera el plan técnico de una spec aprobada (plan.md con Constitu
 Tercer paso del flujo:
 
 ```
-/init → /specify → [/plan] → /tasks → /analyze → /implement → /review → /release
+/init → /specify → /design-spec → [/plan] → /tasks → /analyze → /implement → /review → /release
 ```
 
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este
@@ -47,6 +47,9 @@ forma de desplegar del proyecto. No escribe código.
    - `status: approved`. Si está en `draft` o `inferred`, detente y sugiere aprobarla con
      `/specify --edit`.
    - Sin marcadores `[NECESITA ACLARACIÓN]`. Si hay, detente.
+   - **Diseño:** si la spec tiene interfaz (sección "Diseño" que no dice "No aplica") y
+     `design.status` es `draft` o `approved`, exige `docs/specs/NNN-<slug>/design.md` en
+     `approved`. Si falta o está en `draft`, detente y sugiere `/design-spec NNN`.
 3. Si ya existe `plan.md` y no vino `--redo` ni `--fix`, muestra su estado y pregunta si
    corregirlo (`--fix`) o regenerarlo (`--redo`).
 4. **Tamaño.** Si la spec tiene más de ~10 criterios, extiende más de 4 specs, o tras leer el
@@ -127,10 +130,12 @@ cambiar la spec, detente y sugiere `/specify --edit` antes de seguir.
 
 ## Paso 3 — Diseño
 
-Si la spec tiene interfaz y el proyecto tiene sistema de diseño (`design.status` `draft` o
-`approved`), lee primero `references/design.md`: pantallas con componentes del sistema, "Cambios a
-incorporar al sistema" y, en una spec de rediseño o con pantallas que el sistema no cubre, las
-opciones en HTML antes de diseñar el resto.
+Si la spec tiene interfaz, el plan **sigue** su `design.md` aprobado: pantallas con sus
+componentes, "Cambios a incorporar al sistema" (la primera tarea los aplica), fichas de movimiento
+`M-n` (cada una con su test o `verificación manual:`) y la composición elegida como referencia de
+las verificaciones visuales. Recetas de tests del sistema: `../design-spec/references/spec-mode.md`
+§10; íconos e imagen para compartir: §7. Si el plan necesita un valor visual que `design.md` no
+fija, no lo inventes: `/design-spec NNN --fix`.
 
 Completa `docs/templates/plan.md`. Guía por sección:
 

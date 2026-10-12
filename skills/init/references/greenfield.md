@@ -36,7 +36,7 @@ Tras la entrevista, con el stack decidido:
      el modo que respeta la antigüedad mínima también en las transitivas (§2.2).
    - Ejecuta el comando con confirmación. Si el comando descarga la plantilla de un dominio que el
      entorno no alcanza, crea el equivalente con el gestor de paquetes y dilo.
-   - Si hay interfaz y sistema de diseño elegido (`design.md` §2), escribe sus tokens en el archivo
+   - Si hay interfaz y sistema de diseño elegido (`../../design-spec/references/system-mode.md` §2), escribe sus tokens en el archivo
      de tema del stack en este mismo paso.
    - Fija en `AGENTS.md` los comandos **reales** (instalar, dev, test, lint, type-check, build) y
      ejecútalos (Fase 4). Si la plantilla no trae tests o lint, añade los mínimos del stack y
