@@ -290,9 +290,13 @@ def scenario_design_templates():
     check("option.html muestra íconos y tarjeta para compartir con su zona segura",
           'id="compartir"' in html and 'data-width="1200"' in html and 'id="toggle-safe"' in html
           and "c-share" in html and "c-icon" in html)
+    check("option.html: pestaña clara y oscura y la tarjeta repite la pieza firma",
+          'data-tab="light"' in html and 'data-tab="dark"' in html and "PIEZA FIRMA" in html
+          and "Pieza firma que repite" in html)
     smd = open(os.path.join(base, "system.md"), encoding="utf-8").read()
     check("system.md documenta la marca en el navegador y al compartir",
-          "## Marca en el navegador y al compartir" in smd and "### Tarjeta para compartir" in smd)
+          "## Marca en el navegador y al compartir" in smd and "### Tarjeta para compartir" in smd
+          and "Pieza firma de origen" in smd and "Texto convertido a trazos" in smd)
     eje = open(os.path.join(base, "eje.html"), encoding="utf-8").read()
     ext = _re.findall(r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']+|@import|url\(\s*["']?(?:https?:)?//""", eje)
     check("eje.html no carga nada externo (se abre sin red)", not ext, str(ext))

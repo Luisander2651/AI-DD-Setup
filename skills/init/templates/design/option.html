@@ -22,13 +22,19 @@
      (<img src="capturas/<vista>-<ancho>.png">), los componentes son recortes de esas capturas, los
      textos y el logo son los de la app (logo incrustado desde el repo) y una vista sin captura
      se muestra como hueco "sin captura (motivo)", nunca como maqueta.
-  6. Sección "compartir": íconos (pestaña a 16 px, 32 px y 180 px) y, si el sitio es indexable, la
-     tarjeta para compartir a 1200×630 en versión general y de una página real, compuestas desde la
-     idea de la opción con solo tokens (clases c-icon y c-share del bloque "components"). Lo
-     esencial (marca y título) dentro de la zona segura: el botón "Zona segura" la muestra. Sin
-     logo, un monograma provisional; el plugin no diseña logos. En un sistema EXTRAÍDO, los íconos
-     y la imagen son los del repo incrustados (o el hueco "no existe", que es deuda DS). Sin sitio
-     indexable, borra las tarjetas y deja los íconos.
+  6. Sección "compartir": íconos (pestaña clara y oscura a 16 px, 32 px y 180 px) y, si el sitio es
+     indexable, la tarjeta para compartir a 1200×630 en versión general y de una página real.
+     - La tarjeta REPITE LA PIEZA FIRMA de esta opción (la tarjeta del hero, el momento firma, la
+       cabecera reconocible) con sus superficies, bordes y luz: quien vea el enlace debe reconocer
+       el sitio. Las reglas c-share del bloque "components" son ANDAMIAJE: una tarjeta que se
+       parece a esa base (marca, título y descripción en columna sobre fondo liso) se rehace.
+     - Datos reales que dan identidad (título, sección, autor, fecha, categoría…), nunca inventados.
+       Marca y título dentro de la zona segura: el botón "Zona segura" la muestra.
+     - El ícono sale de una marca que ya está en la interfaz (letras de la barra, símbolo del logo);
+       sin logo, un monograma provisional (el plugin no diseña logos). En el SVG, el texto va
+       convertido a trazos; aquí se ve con la fuente incrustada.
+     En un sistema EXTRAÍDO, los íconos y la imagen son los del repo incrustados (o el hueco "no
+     existe", que es deuda DS). Sin sitio indexable, borra las tarjetas y deja los íconos.
   El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano. Un par
   con data-optional se oculta si la opción no define alguno de sus tokens; uno sin él sale como
   "falta el token".
@@ -106,8 +112,12 @@
   .v-motion li { margin-bottom: 10px; }
   .v-foot { padding: 28px 0 48px; color: var(--ui-muted); font-size: 13px; }
   /* Sección "compartir": pestaña del navegador, zona segura y vista previa de enlace (neutros). */
-  .v-tab { display: inline-flex; align-items: center; gap: 8px; max-width: 260px; padding: 8px 12px;
-           border: 1px solid var(--ui-line); border-bottom: 0; border-radius: 10px 10px 0 0; background: var(--ui-panel); }
+  .v-tabs { display: flex; flex-wrap: wrap; gap: 12px; }
+  .v-tab { display: inline-flex; align-items: center; gap: 8px; max-width: 240px; padding: 8px 12px;
+           border: 1px solid #c4c9ce; border-bottom: 0; border-radius: 10px 10px 0 0; }
+  .v-tab[data-tab="light"] { background: #ffffff; color: #1d2125; }  /* pestaña de navegador clara */
+  .v-tab[data-tab="dark"] { background: #2b2d31; color: #e8eaed; border-color: #43474d; }  /* y oscura */
+  .v-check { margin: 16px 0 0; padding: 12px 14px; border-left: 3px solid var(--ui-focus); background: var(--ui-panel); max-width: 75ch; }
   .v-tab-icon, .v-tab-icon > * { width: 16px; height: 16px; flex: none; display: block; }
   .v-tab-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .v-share .opt { position: relative; overflow: hidden; --share-margin: 60px; --share-safe-x: 285px; }
@@ -239,7 +249,8 @@
   .opt .c-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
                 padding: var(--space-3) var(--space-gutter); border-bottom: var(--border-width) solid var(--color-border); }
 
-  /* Íconos y tarjeta para compartir: componer desde la idea de la opción, solo con tokens.
+  /* Íconos y tarjeta para compartir. ANDAMIAJE, no diseño: la tarjeta de la opción repite su pieza
+     firma (ver instrucciones, paso 6) y sustituye estas reglas. Solo tokens.
      --share-margin y --share-safe-x los da el visor (márgenes y zona segura de 1200×630). */
   .opt .c-icon { display: grid; place-items: center; background: var(--color-bg); color: var(--color-text); }
   .opt .c-icon > * { width: 100%; height: 100%; }
@@ -425,8 +436,11 @@
       margen de 60 px y el cuadrado central que algunas apps recortan.</p>
     <div class="v-grid">
       <div>
-        <span class="v-label">Pestaña del navegador (16 px)</span>
-        <div class="v-tab"><span class="v-tab-icon">{{SVG del ícono}}</span><span class="v-tab-title">{{Título real de la portada}}</span></div>
+        <span class="v-label">Pestaña del navegador (16 px), clara y oscura</span>
+        <div class="v-tabs">
+          <div class="v-tab" data-tab="light"><span class="v-tab-icon">{{SVG del ícono}}</span><span class="v-tab-title">{{Título real de la portada}}</span></div>
+          <div class="v-tab" data-tab="dark"><span class="v-tab-icon">{{SVG del ícono}}</span><span class="v-tab-title">{{Título real de la portada}}</span></div>
+        </div>
       </div>
       <div>
         <span class="v-label">32 px y pantalla de inicio (180 px)</span>
@@ -480,6 +494,9 @@
         <p class="v-link-desc">{{og:description de la página}}</p>
       </div>
     </div>
+    <p class="v-check"><strong>Pieza firma que repite:</strong> {{qué elemento del sitio y qué conserva}}.
+      Revisión: ¿se reconoce el sitio en la vista previa del enlace? ¿el ícono se distingue a 16 px en
+      las dos pestañas?</p>
     <!-- endif -->
   </section>
 

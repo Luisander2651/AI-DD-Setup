@@ -104,9 +104,10 @@ herramienta de inspección de la red correspondiente).
   `og:image:alt`; 1200×630 y ≤ 300 kB.
 - Cada ruta usa la imagen que dice su fila de "Descubribilidad" del plan o `docs/seo.md`: la
   general del sitio, una **generada** a partir de su contenido o una propia. Si hay sistema de
-  diseño, la imagen sigue su "Tarjeta para compartir" (`docs/design/system.md`): el texto sale de
-  los metadatos de la página (título, sección, descripción), nunca se inventa, y lo importante
-  queda dentro de la zona segura central (algunas apps recortan la imagen en cuadrado).
+  diseño, la imagen sigue su "Tarjeta para compartir" (`docs/design/system.md`): repite la pieza
+  firma del sitio, el texto sale del contenido de la página (título, sección y los datos que la
+  tarjeta define), nunca se inventa, y lo importante queda dentro de la zona segura central
+  (algunas apps recortan la imagen en cuadrado).
 - `og:image:alt` describe lo que muestra la imagen (por defecto, el título de la página).
 - Etiquetas `twitter:*` solo si `docs/seo.md` las incluye.
 
@@ -143,10 +144,13 @@ privada: el ícono es la pestaña del navegador.
 - `favicon.svg` (o `favicon.ico`), PNG de 32×32 y `apple-touch-icon` de 180×180, enlazados en el
   `<head>` de **todas** las rutas y respondiendo `200`.
 - `<meta name="theme-color">` con el color de fondo del sistema de diseño (`--color-bg`) si existe.
-- Salen del logo o de la marca del proyecto (`docs/design/system.md` → "Marca en el navegador y al
-  compartir"); nunca el ícono por defecto de la plantilla del framework (logos de Vite, Astro,
+- Salen de una marca que ya está en la interfaz (`docs/design/system.md` → "Marca en el navegador
+  y al compartir"); nunca el ícono por defecto de la plantilla del framework (logos de Vite, Astro,
   Next, Angular, React, Svelte…). Si el proyecto no tiene logo, un monograma provisional marcado
   como tal hasta que el usuario decida.
+- `favicon.svg` sin `<text>`, filtros ni imágenes: el texto va convertido a trazos (con `<text>`,
+  cada sistema lo dibuja con otra fuente). Legible a 16 px en pestaña clara y oscura (verificación
+  manual).
 - Solo si el sitio es una PWA: `manifest` con íconos de 192×192 y 512×512 (y versión `maskable`).
 - Fuera de alcance: íconos de tienda y pantallas de arranque de apps móviles.
 

@@ -36,12 +36,17 @@ Solo lo técnico y comprobable, siempre sobre el resultado y no sobre el código
   `theme-color`; nunca el de la plantilla del framework; aplica a toda interfaz web). En
   `system.md`, sección "Marca en el navegador y al compartir": íconos y el componente **Tarjeta para
   compartir** (1200×630 con tokens, zonas, de qué metadato sale cada texto, zona segura, variantes
-  general y por tipo de página). En `option.html`, sección "Al compartir" con la pestaña a 16 px,
-  los íconos, la tarjeta a escala, botón "Zona segura" y una vista previa de enlace genérica. Cada
-  opción diseña sus íconos y su tarjeta; sin logo, monograma provisional (el plugin no diseña
-  logos). En brownfield, lo que falta o es genérico es deuda `DS`. `/plan` (`design.md` §7) genera
-  la imagen de cada ruta en la build desde la tarjeta, con la herramienta que elija el plan (ADR) y
-  tests de existencia, tamaño, peso y datos de entrada.
+  general y por tipo de página). La tarjeta **repite la pieza firma del sitio** (p. ej. la tarjeta
+  del hero) para que el enlace y la web se reconozcan como la misma pieza, con composición **con
+  medidas** y los datos que dan identidad; el ícono sale de una marca que ya está en la interfaz,
+  con el texto convertido a trazos y revisado a 16 px en pestaña clara y oscura. En `option.html`,
+  sección "Al compartir" con las dos pestañas, los íconos, la tarjeta a escala, botón "Zona segura",
+  una vista previa de enlace genérica y la pregunta de revisión; la base `c-share` es andamiaje.
+  Sin logo, monograma provisional (el plugin no diseña logos). En brownfield, lo que falta o es
+  genérico es deuda `DS`. `/plan` (`design.md` §7) abre una ronda de 2–3 direcciones (tarjeta e
+  ícono) si el sistema no los define o son genéricos, y genera la imagen de cada ruta en la build
+  desde la tarjeta, con la herramienta que elija el plan (ADR) y tests de existencia, tamaño, peso,
+  datos de entrada y SVG sin `<text>`.
 - Pruebas: `marketing-site-en` y `marketing-site-en-broken` (sitio estático en inglés), escenario
   `scenario_seo`, casos negativos (`python-lib-en`, `ionic-app-es`) y comprobación de la sección
   "Al compartir" en `option.html` y `system.md`.

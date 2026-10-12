@@ -106,12 +106,17 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    CSS o SVG ligero, sin imágenes pesadas ni vídeo de fondo. El texto se mide sobre la **zona más
    difícil** del fondo: define `--surface-worst` con ese color para que la página calcule el par.
    Un color sólido es una elección válida si la idea lo pide; dilo.
-10. **Marca en el navegador y al compartir** (sección "Al compartir" de `option.html`): íconos
-   (pestaña a 16 px, 32 px y 180 px) desde el logo del proyecto o, si no hay, un **monograma
-   provisional** marcado como tal (el plugin no diseña logos: `nicho.md`). Si el sitio es
-   indexable, la **tarjeta para compartir** de 1200×630, general y de una página real, compuesta
-   desde la idea de la opción con solo tokens: texto tomado de los metadatos reales, marca y título
-   dentro de la zona segura, título en dos líneas como máximo.
+10. **Marca en el navegador y al compartir** (sección "Al compartir" de `option.html`):
+   - **Ícono:** sale de una marca que la opción ya muestra (las letras de la barra, el símbolo del
+     logo, el acento de color), no de un cuadrado genérico con iniciales. Sin logo, un **monograma
+     provisional** marcado como tal (el plugin no diseña logos: `nicho.md`). Dibujado en una
+     retícula de 64, trazo grueso, y revisado a 16 y 32 px en pestaña clara y oscura.
+   - **Tarjeta para compartir** (sitio indexable): **repite la pieza firma de la opción** (la
+     tarjeta del hero, el momento firma, la cabecera reconocible) con sus superficies, bordes y
+     luz, para que el enlace compartido y el sitio se reconozcan como la misma pieza. Datos reales
+     que dan identidad (título, sección, y lo que el contenido tenga: autor, fecha, categoría,
+     stack, precio), nunca inventados; marca y título dentro de la zona segura. Las reglas `c-share`
+     de la plantilla son andamiaje: una tarjeta que se les parece se rehace.
 
 Las opciones deben ser **distintas de verdad**: cambian **siempre la composición** de la pantalla
 principal (orden, jerarquía y forma de presentar el contenido principal) y además al menos uno de
@@ -122,6 +127,8 @@ los clichés de `anti-cliches.md` y, salvo que el brief lo pida, los rasgos por 
 interfaces generadas (§6).
 
 **Antes de enseñarlas:**
+- En "Al compartir", responde la revisión de la página: ¿se reconoce el sitio en la vista previa del
+  enlace?, ¿el ícono se distingue a 16 px en las dos pestañas? Si no, rehaz esa parte.
 - Repasa cada opción contra §6 y `anti-cliches.md`, rasgo por rasgo, haya o no plugin `design`;
   corrige lo que aparezca o, si el brief lo pide, dilo en su "Idea". Compara también las opciones
   entre sí con la regla de composición de arriba.
@@ -137,8 +144,9 @@ que elija una o combine elementos.
 1. `docs/design/system.md` con `source: chosen`, `status: draft`: los tokens de la opción elegida
    (y lo combinado; con modo oscuro, columnas "Claro" y "Oscuro" y el contraste como
    `13.0:1 · 15.2:1`), contraste de cada color de texto (el que calculó la página), componentes con
-   estados, "Marca en el navegador y al compartir" (íconos y, si el sitio es indexable, la tarjeta
-   para compartir con sus zonas, variantes y modo de generación), pantallas principales y la
+   estados, "Marca en el navegador y al compartir" (dibujo del ícono y, si el sitio es indexable, la
+   tarjeta con su pieza firma de origen, la composición **con medidas**, los datos y su origen,
+   variantes y modo de generación), pantallas principales y la
    elección en "Decisiones" (tipo `diseño`, fuente `usuario`).
    Con el plugin habilitado, redacta componentes y patrones con `design:design-system document`.
 2. `docs/design/system.html`: la opción elegida ajustada, con "sistema de diseño aprobado" en la
@@ -376,7 +384,9 @@ generada sin dirección:
 - movimiento genérico: todo entra con fundido y desplazamiento al hacer scroll, parallax, cursores
   personalizados, contadores que suben, texto que se escribe solo sin motivo.
 
-- tarjeta para compartir que es el logo centrado sobre un degradado, o una captura de la página
-  reducida hasta que nada se lee.
+- tarjeta para compartir que no se parece al sitio: el logo centrado sobre un degradado, marca +
+  título + descripción en columna sobre fondo liso (la base de la plantilla), o una captura de la
+  página reducida hasta que nada se lee; un ícono que es un cuadrado redondeado con iniciales en la
+  fuente del sistema.
 
 Gasta la audacia en un solo elemento reconocible y mantén el resto sobrio.

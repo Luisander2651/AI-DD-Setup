@@ -116,12 +116,23 @@ para compartir (`docs/design/system.md` → "Marca en el navegador y al comparti
   `../../../shared/agent-security.md` §2; si el proyecto aún no genera imágenes, prueba de concepto en
   el Paso 1b. Las fuentes de la tarjeta son los archivos que ya usa el sitio, nunca un servicio
   externo en la build.
-- **La plantilla de la imagen es el componente del sistema:** mismas zonas, tokens y límites. Si la
-  spec la cambia, va a "Cambios a incorporar al sistema".
+- **La plantilla de la imagen es el componente del sistema:** misma pieza firma, medidas, tokens y
+  límites. Si la spec la cambia, va a "Cambios a incorporar al sistema".
+- **Ronda de exploración si falta o es floja.** Si la spec introduce los íconos o la tarjeta y
+  `system.md` no los define (sistemas extraídos o anteriores a 1.13.0), o lo que define es genérico
+  (la base de la plantilla, un logo sobre un degradado, iniciales sobre un cuadrado), antes de
+  diseñar el resto: 2–3 direcciones en `docs/specs/NNN-<slug>/design/opcion-<a|b|c>.html` con solo
+  la sección "Al compartir" de `option.html`, **cada una con tarjeta e ícono**, cada una apoyada en
+  una pieza distinta del sitio (p. ej. la tarjeta del hero, el índice o la barra, un detalle de
+  código o de producto) y con los datos reales de dos rutas. El usuario elige o combina (tarjeta de
+  una, ícono de otra) y la elección va a "Decisiones" (tipo `diseño`) y a "Cambios a incorporar al
+  sistema", con la composición **con medidas** (`../../init/references/design.md` §2.4 paso 10).
 - **Tests:** cada ruta indexable de la spec tiene `og:image` que apunta a un archivo generado que
   existe, de 1200×630 y ≤ 300 kB; los datos que recibe el generador para esa ruta son su título y su
   sección o descripción (no se hace OCR de la imagen); los íconos existen con sus tamaños, se
   enlazan en el `<head>` y no son los de la plantilla del framework (compara con su huella).
+- **SVG del ícono:** sin `<text>`, filtros ni imágenes (el texto convertido a trazos); test que lo
+  comprueba junto con el `viewBox`.
 - **Verificación manual** en la tarea que construye el generador: dos rutas reales contra
-  `system.html#compartir` (zona segura, recorte del título, contraste). La vista previa real en las
-  redes va a T095.
+  `system.html#compartir` (pieza firma, zona segura, recorte del título, contraste) y el ícono en una
+  pestaña real clara y oscura. La vista previa real en las redes va a T095.
