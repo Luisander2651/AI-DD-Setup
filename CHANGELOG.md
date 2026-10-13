@@ -76,6 +76,9 @@ Solo lo técnico y comprobable, siempre sobre el resultado y no sobre el código
   tests de `theme-color` = `--color-bg` y de tokens fluidos, y aviso de regeneración de la imagen
   estática.
 - Pruebas: escenario `scenario_spec_design` (app móvil en inglés).
+- Ajustes tras la prueba con el sitio de ejemplo `sitio-demo-seo` (11 de 11 brechas esperadas, sin
+  falsos positivos): severidad media para una ruta indexable sin canónica (antes sin clasificar) y
+  regla explícita para explorar sin subagentes en proyectos pequeños (< ~20 archivos de código).
 
 ### Changed
 - `/init --upgrade --redo-design` y `--redo-options` pasan a ser atajos de `/design-spec system`;

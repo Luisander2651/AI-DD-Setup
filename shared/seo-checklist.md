@@ -170,7 +170,7 @@ privada: el ícono es la pestaña del navegador.
 | Severidad | Criterio |
 |---|---|
 | alta | Una ruta indexable no se puede rastrear, indexar o atribuir a su URL: `noindex` o `Disallow: /` en producción, canónica hacia otra URL o dominio, metadatos solo después de JavaScript, sitemap con un dominio que no es `seo.site_url`. |
-| media | Se indexa, pero mal: título o descripción ausentes o repetidos, sin sitemap o incompleto, 404 blando, una ruta privada o la página de no autorizado que responde `200` o es indexable, varios `h1`, imagen de contenido sin `alt`, JSON-LD que no se parsea, sin `lang`, Lighthouse SEO < 90, imagen para compartir con texto que no corresponde a la página o inventado. |
+| media | Se indexa, pero mal: título o descripción ausentes o repetidos, ruta indexable sin canónica, sin sitemap o incompleto, 404 blando, una ruta privada o la página de no autorizado que responde `200` o es indexable, varios `h1`, imagen de contenido sin `alt`, JSON-LD que no se parsea, sin `lang`, Lighthouse SEO < 90, imagen para compartir con texto que no corresponde a la página o inventado. |
 | baja | Mejora: sin página 404 o de no autorizado propias (se usa la genérica, con el código correcto), sin Open Graph o sin datos estructurados, imagen para compartir fuera de tamaño o de peso, títulos fuera del rango orientativo, `alt` ausente en imágenes que no son de contenido, favicon ausente o el de la plantilla del framework. |
 
 En `/review`, **alta es bloqueante**; media es importante; baja es menor. Las brechas `SE` de

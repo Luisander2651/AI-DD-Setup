@@ -124,8 +124,8 @@ exactos están en `references/explore-agents.md`:
 
 Cada subagente devuelve un informe estructurado con **evidencia** (rutas de archivo) y un nivel de
 confianza (`alta`/`media`/`baja`) por hallazgo. No generan documentos: solo informan.
-Si el entorno no permite subagentes, ejecuta las exploraciones tú mismo en secuencia con
-los mismos prompts.
+Si el entorno no permite subagentes, o el proyecto es pequeño (menos de ~20 archivos de código),
+ejecuta las exploraciones tú mismo en secuencia con los mismos prompts y dilo en el resumen.
 
 Después, **consolida**:
 - Unifica el inventario de features (subagente B) y deduplica.
