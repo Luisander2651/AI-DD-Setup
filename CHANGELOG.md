@@ -3,6 +3,46 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.14.0] - 2026-10-14
+Carriles ligeros para el trabajo que no es feature, y `/sync` para la deriva. Hasta ahora todo
+cambio pedía spec, plan, tareas, `/analyze` y `/review`: un bug de una línea costaba lo mismo que
+una feature, y el hook avisaba de "código sin spec activa" sin otra salida que aprobarlo sin dejar
+rastro. Plan y decisiones en `docs/plan-carriles.md`.
+
+### Added
+- Skills `/fix` (con `--hotfix` para incidentes en producción), `/refactor` y `/chore`, y el
+  procedimiento común `shared/lanes.md`: test que falla y causa raíz (fix), tests de
+  caracterización intactos (refactor), validación con SCA (chore); review ligera con un solo
+  subagente y contexto mínimo. `--retro` registra un arreglo ya hecho.
+- Fichas de cambio `docs/changes/AAAA-MM-DD-<carril>-<slug>.md` (plantilla `templates/change.md`):
+  `open` → `done` → `released`, o `escalated` con `escalated_to: NNN`.
+- `aidd.py lane-check`: decide si un cambio debe escalar al flujo completo (tamaño sobre
+  `workflow.lanes.max_files`, migraciones, contratos, rutas protegidas, nombres de seguridad,
+  dependencias nuevas, sistema de diseño), al empezar y sobre el diff real al cerrar.
+- `aidd.py drift` y la skill `/sync`: commits de código sin `(NNN)` ni `Ficha:`, specs `released`
+  tocadas después, huecos de `architecture.md`, specs `inferred` y fichas abiertas viejas;
+  informe en `docs/sync.md` y `sync.last` en `project.yaml`.
+- `validate` revisa las fichas (secciones por carril, `covers` en las specs de `relates`,
+  `escalated_to`); `status` las lista y sugiere `/sync` con commits fuera del flujo.
+- `deployment.md`: sección "Hotfix" (sin ella `/fix --hotfix` se detiene).
+- Claves `workflow.lanes` (`max_files: 5`, `contract_paths`), `sync.last` y `paths.changes`.
+
+### Changed
+- El hook acepta una ficha `open` como trabajo activo y su aviso sugiere `/fix`, `/refactor` o
+  `/chore`; las rutas protegidas y las dependencias siguen pidiendo aprobación.
+- `/release` incluye fichas `done` (`--changes` para liberar solo fichas, versión patch): `fix` en
+  *Fixed*, `chore` de seguridad en *Security*, el resto fuera del changelog de usuario; anota en el
+  Historial de las specs corregidas.
+- `/implement`: un bug ajeno a la spec se propone como ficha aparte, nunca se arregla sin rastro.
+- Commits trazables de los carriles: `<tipo>(<carril>-<slug>): …` con `Ficha:` en el cuerpo.
+- `/init` copia `change.md` y menciona los carriles en `AGENTS.md`; `--upgrade` paso 9d.
+- Hoja de ruta: lo que quedaba de 8.10 pasa a 1.14.1; escalabilidad a 1.15.0, SBOM y gobierno a
+  1.16.0, skill de diseño propia a 1.17.0.
+
+### Upgrade
+`/ai-dd:init --upgrade` reemplaza el validador, copia la plantilla de ficha, crea `docs/changes/`,
+añade las claves nuevas y **propone** la sección "Hotfix" y el párrafo de `AGENTS.md`.
+
 ## [1.13.0] - 2026-10-11
 SEO técnico para sitios públicos. Hasta ahora el flujo solo trataba el SEO si el usuario pedía una
 spec para ello, y sin una lista de qué debía cubrir; nada en `/init`, `/plan` ni `/review` lo

@@ -20,7 +20,9 @@ usuario** la lleva a producción. Sigue `docs/deployment.md` al pie de la letra.
 ## Uso
 
 ```
-/release <NNN> [<NNN> …]     # una o varias specs en la misma versión
+/release <NNN> [<NNN> …]     # una o varias specs en la misma versión (y las fichas done, si el usuario quiere)
+/release --changes [<ficha> …]
+                             # solo fichas de los carriles (/fix, /refactor, /chore); sin nombres, todas las done
 /release --rollback          # revertir la última versión en producción
 ```
 
@@ -62,6 +64,17 @@ Para el repositorio:
 
 8. `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) para cada spec incluida, sin errores.
 
+**Fichas de los carriles** (`docs/changes/`, contrato → "Carriles"):
+9. Con specs, si hay fichas `done` sin liberar, pregunta si entran en esta versión. Con
+   `--changes`, entran las nombradas o todas las `done`. Con `--changes`, los puntos 1–3 y 8
+   (de specs) no aplican.
+10. Cada ficha incluida: `status: done`, `python .ai/bin/aidd.py validate docs/changes/<ficha>.md`
+    sin errores y su "Verificación" con la review ligera hecha (salvo `chore`). Una ficha `open`
+    no se libera: indica `/<carril> --continue`.
+11. Una ficha `hotfix` sale desde su rama del tag de producción (`docs/deployment.md` → "Hotfix"),
+    no desde la rama principal; el árbol limpio y el CI en verde se comprueban sobre esa rama.
+    Las reglas de producción (Paso 5) son las mismas: no hay hotfix sin aprobación escrita.
+
 Si algo falla, detente e indica qué skill lo resuelve.
 
 ## Paso 1 — Versión
@@ -71,13 +84,15 @@ Propone la nueva versión SemVer a partir de la versión actual (último tag o m
 - **minor:** funcionalidad nueva compatible.
 - **patch:** solo correcciones.
 En `library`, usa el impacto en SemVer declarado en cada plan. Si varias specs van juntas, gana el
-nivel más alto. Confirma la versión con el usuario antes de escribirla.
+nivel más alto. Solo fichas: **patch**. Confirma la versión con el usuario antes de escribirla.
 
 ## Paso 2 — Changelog y versión en archivos
 
 1. En `CHANGELOG.md`, mueve lo de `[Unreleased]` y añade lo de estas specs bajo
    `## [X.Y.Z] - AAAA-MM-DD`, agrupado en *Added / Changed / Fixed / Removed / Security*. Cada
    entrada en lenguaje de usuario, con referencia a la spec (`(spec 004)`). Sin detalles internos.
+   Fichas: `fix` y `hotfix` en *Fixed* (`(fix 2026-10-14-<slug>)`); `chore` solo si corrige una
+   vulnerabilidad, en *Security*; `refactor` y el resto de `chore` no entran.
 2. Actualiza la versión en los manifiestos del proyecto (`package.json`, `pyproject.toml`, etc.).
 3. Commit `chore(release): vX.Y.Z` (o la convención del proyecto).
 
@@ -166,6 +181,12 @@ Para cada spec:
    - Los criterios que la spec liberada reemplaza llevan al final `→ reemplazado por NNN CA#`.
    - Si la spec extendida es `inferred`, recuérdale al usuario que conviene validarla con
    `/specify --edit` ahora que su comportamiento cambió.
+
+**Fichas:** cada ficha liberada pasa a `status: released` con `released: vX.Y.Z (AAAA-MM-DD)` en el
+frontmatter. En una `fix` con `covers`, añade al Historial de cada spec de `relates`:
+`| AAAA-MM-DD | Corregido por la ficha <nombre> en vX.Y.Z (<CA>) | /release |`, sin cambiar su
+`status`. Un `hotfix` liberado se integra en la rama principal según `docs/deployment.md` →
+"Hotfix" (con confirmación si hay que hacer merge).
 
 ## Paso 8 — Informe
 

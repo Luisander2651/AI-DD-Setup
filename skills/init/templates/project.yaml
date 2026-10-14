@@ -15,6 +15,11 @@ packages: []                   # solo monorepo: [{ path: apps/web, type: fronten
 constitution_version: 1.0.0
 workflow:
   enforcement: warn            # off | warn (pide aprobación) | block — lo aplica el hook del plugin
+  lanes:                       # carriles /fix, /refactor, /chore (shared/contract.md → "Carriles")
+    max_files: 5               # más archivos de código (sin tests ni docs) → flujo completo
+    contract_paths: []         # rutas que son contrato público además de openapi/proto/graphql
+sync:
+  last: null                   # commit hasta el que /sync concilió la deriva
 skills_version: {{skills_version}}   # versión del paquete de skills con que se inicializó
 deploy:
   strategy: {{strategy}}       # none | manual | ci-on-merge | ci-on-tag
@@ -69,6 +74,7 @@ paths:
   seo: docs/seo.md             # solo si seo.indexable es true
   changelog: CHANGELOG.md
   specs: docs/specs
+  changes: docs/changes        # fichas de los carriles
   adr: docs/adr
   templates: docs/templates
 template_hashes: {}            # huellas de docs/templates/ (aidd.py templates --yaml); las usa --upgrade

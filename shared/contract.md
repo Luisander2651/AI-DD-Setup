@@ -56,7 +56,28 @@ revisa todas las skills afectadas.
   como hecha, y un criterio cubierto solo por tareas obsoletas queda sin cubrir.
 - **Commits trazables.** Los commits de `/implement` y de las tareas de `/review` siguen
   `<tipo>(<NNN>): T0xx <qué>` y llevan en el cuerpo `Cubre: CA1, CA3` (o `Covers:`) y la ruta de
-  `tasks.md`, para que la historia de git se pueda cruzar con la spec.
+  `tasks.md`, para que la historia de git se pueda cruzar con la spec. Los de un carril siguen
+  `<tipo>(<carril>-<slug>): <qué>` con `Ficha: docs/changes/<ficha>.md` (o `Change:`) en el cuerpo.
+- **Carriles.** El trabajo que no añade comportamiento no pasa por spec, plan y tareas: `/fix`
+  (bug de algo ya especificado o defecto evidente; `--hotfix` para un incidente en producción),
+  `/refactor` (sin cambio de comportamiento) y `/chore` (dependencias existentes, configuración,
+  docs, CI). Cada uno deja una ficha `docs/changes/AAAA-MM-DD-<carril>-<slug>.md`
+  (`templates/change.md`; `open` → `done` → `released`, o `escalated`) y sigue
+  `shared/lanes.md`. Reglas fijas: `/fix` empieza por un test que falla y `/refactor` por tests de
+  caracterización en verde; `aidd.py lane-check` corre al empezar y al cerrar, y **escala al flujo
+  completo** (ficha `escalated` con `escalated_to: NNN`) si el cambio añade o cambia
+  comportamiento, toca contrato, datos, seguridad, rutas protegidas, el sistema de diseño, añade
+  una dependencia o pasa de `workflow.lanes.max_files` archivos de código; solo sigue en el carril
+  con aceptación explícita del usuario, registrada como `supuesto`. Review ligera con un subagente
+  y contexto mínimo (`/chore`: solo validación). Una ficha `open` cuenta como trabajo activo para
+  el hook. `/release` libera las fichas `done`; `/fix --hotfix` libera con todas las reglas de
+  `/release`, incluida la aprobación humana a producción, y exige la sección "Hotfix" de
+  `docs/deployment.md`.
+- **Deriva (`/sync`).** `aidd.py drift` detecta commits de código sin `(NNN)` ni `Ficha:`, specs
+  `released` tocadas después por esos commits, huecos de `architecture.md`, specs `inferred` sin
+  validar y fichas abiertas viejas. `/sync` escribe `docs/sync.md` y propone (ficha retroactiva,
+  spec nueva, cambios por sección); nunca edita documentos `approved` sin confirmación y solo
+  mueve `.ai/project.yaml → sync.last` cuando el usuario cierra la conciliación.
 - Una skill condicional (p. ej. `design`) empieza así:
   > Lee `.ai/project.yaml`. Si `<skill>` no está en `skills.enabled`, informa que no aplica a este
   > tipo de proyecto y detente, salvo que el usuario insista.

@@ -27,11 +27,16 @@
 6. `/review` → contra spec, plan y constitución → `review.md`
 7. `/release` → versión, changelog, staging y, con tu aprobación, producción
 
+Trabajo que no añade comportamiento (carriles ligeros, ficha en `docs/changes/`): `/fix` para un
+bug (`--hotfix` en producción), `/refactor` para deuda sin cambio de comportamiento, `/chore` para
+dependencias, configuración y docs. Si el cambio crece o toca contratos, datos o seguridad, pasa
+al flujo completo. `/sync` concilia lo que se hizo fuera del flujo.
+
 Usa `/clarify` para cerrar ambigüedades de una spec antes de aprobarla. Sistema de diseño:
 `/design-spec system`. Sitio público: `/seo audit` para re-auditar el SEO técnico. Estado de todas las specs:
 `python .ai/bin/aidd.py status`.
 
-No implementes sin spec aprobada. No hagas commit sin que pasen `{{test}}` y `{{lint}}`.
+No implementes sin spec aprobada o ficha abierta de un carril. No hagas commit sin que pasen `{{test}}` y `{{lint}}`.
 Nunca despliegues a producción sin aprobación explícita; sigue [docs/deployment.md](docs/deployment.md).
 Nunca escribas secretos en el código, los logs ni los docs.
 

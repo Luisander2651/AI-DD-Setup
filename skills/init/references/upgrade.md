@@ -83,6 +83,15 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
     propone crear su `design.md` con `exploration: none` y el motivo ("diseñada antes de 1.13.0 en
     el plan"). Las cerradas no se tocan. Los argumentos `--redo-design` y `--redo-options` de
     `/init` siguen funcionando como atajos de `/design-spec system`.
+9d. **Carriles y `/sync` (desde 1.14.0).** Copia `../templates/change.md` a `docs/templates/`
+    (como el resto, con su huella) y crea `docs/changes/` si no existe. Las claves
+    `workflow.lanes` y `sync.last` llegan con el paso 4; `sync.last` queda en `null` (el primer
+    `/sync` parte del commit del `/init`). **Propón**, sin aplicar sin confirmación: la sección
+    "Hotfix" de `docs/deployment.md` (pregunta rama, staging y vuelta a la principal; sin ella,
+    `/fix --hotfix` se detiene) y el párrafo de carriles en `AGENTS.md` → "Flujo de trabajo"
+    (archivo del agente: siempre se pregunta). Si hay commits de código fuera del flujo desde el
+    `/init` (`aidd.py drift`), menciónalo en el resumen y sugiere `/sync`; no los concilies aquí.
+    Si el usuario tiene un arreglo en curso hecho sin ficha, ofrece `/fix --retro`.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
     avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

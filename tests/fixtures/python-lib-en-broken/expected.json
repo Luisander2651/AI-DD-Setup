@@ -1,5 +1,5 @@
 {
-  "errors": 9,
+  "errors": 12,
   "contains": [
     "[NECESITA ACLARACIÓN] abiertos",
     "no evalúa ['P2']",
@@ -9,12 +9,16 @@
     "contradicción 'Constitution P2 vs. request",
     "T003 está marcada [-] sin 'obsoleta:",
     "T004 está hecha y conserva una línea de bloqueo",
-    "bloqueo de T005 sin el formato"
+    "bloqueo de T005 sin el formato",
+    "ficha done sin la sección 'Reproducción'",
+    "covers: AC9 no existe",
+    "ficha escalated sin `escalated_to"
   ],
   "warnings_contains": [
     "plan: cita ['RS1'], que la spec no cita",
     "implícita 'Error type' sin documento",
     "tipo desconocido 'hunch'",
-    "P1 cumple pero no dice cómo se verifica"
+    "P1 cumple pero no dice cómo se verifica",
+    "'Causa raíz' es de los carriles fix, hotfix, no de chore"
   ]
 }

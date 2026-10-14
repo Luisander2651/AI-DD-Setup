@@ -545,6 +545,77 @@ def scenario_design_inventory():
         check("captura existente → sin aviso", "'Login'" not in out, out)
 
 
+def scenario_lanes():
+    print("carriles (hook con ficha, lane-check, drift, status):")
+    with tempfile.TemporaryDirectory() as tmp:
+        w = lambda rel, txt: (os.makedirs(os.path.dirname(os.path.join(tmp, rel)) or tmp, exist_ok=True),
+                              open(os.path.join(tmp, rel), "w", encoding="utf-8").write(txt))
+        w(".ai/project.yaml", "type: backend\nworkflow:\n  enforcement: block\n  lanes:\n    max_files: 3\n"
+                              "security:\n  agent:\n    protected_paths: [infra/]\n")
+        w("go.mod", "module x\n\ngo 1.22\n\nrequire github.com/acme/yaml v1.4.0\n")
+        w("internal/a.go", "package a\n")
+        git(tmp, "init", "-q")
+        git(tmp, "add", "-A")
+        git(tmp, "commit", "-q", "-m", "init")
+
+        def hook(f):
+            ev = {"cwd": tmp, "tool_name": "Edit", "tool_input": {"file_path": os.path.join(tmp, f)}}
+            return run(["hook", "pre-tool"], tmp, json.dumps(ev).encode())[1]
+
+        out = hook("internal/a.go")
+        check("sin spec ni ficha: el hook bloquea y sugiere /fix", '"deny"' in out or "/fix" in out, out)
+        head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=tmp, capture_output=True,
+                              text=True).stdout.strip()
+        ficha = "docs/changes/2026-10-14-fix-x.md"
+        w(ficha, f"---\nlane: fix\nstatus: open\nbase: {head}\n---\n\n## Problem\nx\n")
+        out = hook("internal/a.go")
+        check("con una ficha abierta el hook deja editar código", out.strip() == "", out)
+        out = hook("infra/main.tf")
+        check("con ficha abierta las rutas protegidas siguen protegidas", "ruta protegida" in out, out)
+
+        w("internal/a.go", "package a\n// fix\n")
+        w("internal/a_test.go", "package a\n")
+        code, out = run(["lane-check", ficha], tmp)
+        check("lane-check: 1 archivo + test no escala", code == 0 and "Escalar: no" in out, out)
+        for i in range(4):
+            w(f"internal/b{i}.go", "package a\n")
+        code, out = run(["lane-check", ficha], tmp)
+        check("lane-check: más de max_files escala por tamaño", code == 1 and "tamaño" in out, out)
+        code, out = run(["lane-check", ficha, "--files", "db/migrations/0004_add.sql"], tmp)
+        check("lane-check: una migración escala por datos", code == 1 and "datos" in out, out)
+        code, out = run(["lane-check", ficha, "--files", "api/openapi.yaml"], tmp)
+        check("lane-check: el contrato de API escala", code == 1 and "contrato" in out, out)
+        code, out = run(["lane-check", ficha, "--files", "infra/main.tf"], tmp)
+        check("lane-check: ruta protegida escala por seguridad", "seguridad" in out, out)
+        code, out = run(["lane-check", ficha, "--files", "internal/auth/session.go"], tmp)
+        check("lane-check: auth en el nombre pide confirmar seguridad", "seguridad?" in out, out)
+        w("go.mod", "module x\n\ngo 1.22\n\nrequire github.com/acme/yaml v1.5.0\n")
+        code, out = run(["lane-check", ficha, "--files", "go.mod"], tmp)
+        check("lane-check: subir la versión de una dependencia no escala", code == 0, out)
+        w("go.mod", "module x\n\ngo 1.22\n\nrequire github.com/acme/yaml v1.5.0\nrequire github.com/acme/new v0.1.0\n")
+        code, out = run(["lane-check", ficha, "--files", "go.mod"], tmp)
+        check("lane-check: una dependencia nueva escala", code == 1 and "dependencia" in out, out)
+
+        for i in range(4):
+            os.remove(os.path.join(tmp, f"internal/b{i}.go"))
+        w("go.mod", "module x\n\ngo 1.22\n\nrequire github.com/acme/yaml v1.4.0\n")
+        git(tmp, "add", "-A")
+        git(tmp, "commit", "-q", "-m", "fix(fix-x): flush partial line", "-m", "Ficha: " + ficha)
+        w("internal/c.go", "package a\n")
+        git(tmp, "add", "-A")
+        git(tmp, "commit", "-q", "-m", "quick tweak")
+        w("internal/d.go", "package a\n")
+        git(tmp, "add", "-A")
+        git(tmp, "commit", "-q", "-m", "feat(004): T003 add d", "-m", "Cubre: CA1")
+        code, out = run(["drift", "--json"], tmp)
+        rep = json.loads(out) if code == 0 else {}
+        subj = [c["subject"] for c in rep.get("outside", [])]
+        check("drift: marca el commit sin spec ni ficha", subj == ["quick tweak"], out)
+        _, out = run(["status"], tmp)
+        check("status: lista la ficha abierta", "2026-10-14-fix-x" in out and "/fix" in out, out)
+        check("status: sugiere /sync con commits fuera del flujo", "/sync" in out, out)
+
+
 if __name__ == "__main__":
     fixtures()
     scenario_review_pack()
@@ -561,5 +632,6 @@ if __name__ == "__main__":
     scenario_spec_design()
     scenario_templates()
     scenario_design_inventory()
+    scenario_lanes()
     print(f"\n{'OK' if not FAILS else str(len(FAILS)) + ' FALLO(S)'}")
     sys.exit(1 if FAILS else 0)

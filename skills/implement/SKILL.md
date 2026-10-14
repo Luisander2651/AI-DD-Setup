@@ -153,7 +153,7 @@ queda detenida, **déjalo escrito bajo la tarea** para que otra sesión sepa dó
 | Hay que tocar archivos fuera de la tarea (más allá de imports triviales) | Proponer una tarea nueva |
 | Hace falta una dependencia que no está en el plan | Verificarla (`agent-security.md` §2) + ADR + actualizar plan |
 | Un cambio violaría un principio de la constitución | Detenerse; nunca seguir |
-| Se descubre un bug o deuda ajena a la spec | Anotarlo en `docs/roadmap.md` → Pendientes, sin arreglarlo |
+| Se descubre un bug o deuda ajena a la spec | Proponer una ficha aparte (`/fix`, `/refactor`) al terminar la tarea, o anotarlo en `docs/roadmap.md` → Pendientes; nunca arreglarlo sin rastro dentro de la tarea |
 | Se ve un defecto **de esta spec** fuera de la tarea actual (texto que ya no corresponde, control que quedó a medias, caso que nadie cubre) | Preguntar **en ese momento**: tarea nueva ahora o aceptarlo con motivo |
 
 **Hallazgos colaterales:** no los dejes "anotados para `/review`". Lo que se ve mientras se

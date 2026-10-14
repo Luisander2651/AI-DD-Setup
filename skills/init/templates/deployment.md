@@ -41,6 +41,12 @@ flowchart LR
 - Tiempo estimado: {{…}}
 - Si hubo migración: {{cómo se revierte o por qué no hace falta}}
 
+## Hotfix
+<!-- Lo usa /fix --hotfix. Sin esta sección, /fix --hotfix se detiene y pide completarla. -->
+- Rama: {{p. ej. hotfix/<slug> desde el tag de producción vX.Y.Z}}
+- Staging: {{sí, smoke mínimo en staging | no, directo con la misma aprobación humana}}
+- Vuelta a la rama principal: {{merge o cherry-pick de la rama hotfix tras producción}}
+
 ## Variables de entorno
 | Nombre | dev | staging | prod | Dónde se configura |
 |---|---|---|---|---|

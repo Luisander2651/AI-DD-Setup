@@ -8,6 +8,9 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 /init → /specify → /plan → /tasks → /analyze → /implement → /review → /release
 ```
 
+Para lo que no añade comportamiento hay **carriles ligeros** (`/fix`, `/refactor`, `/chore`) con
+una ficha en `docs/changes/` en lugar de spec, plan y tareas (ver "Carriles").
+
 ## Skills
 
 | Skill | Qué hace | Produce |
@@ -22,13 +25,36 @@ del proyecto, tareas verificables, revisión independiente y un release con apro
 | `analyze` | Verificación independiente de consistencia entre spec, plan, tareas y constitución; puerta antes de implementar. | `analysis.md` (pass/fail) |
 | `implement` | Ejecuta las tareas una a una, con tests primero y escaneo de seguridad. | código, `tasks.md` marcado |
 | `review` | Revisión independiente con subagentes: spec, plan, constitución, seguridad OWASP, calidad y, si aplica, accesibilidad y SEO técnico. | `review.md` con veredicto |
-| `release` | Versión, changelog, staging y producción **solo con aprobación explícita**; rollback guiado. | tag/PR, `CHANGELOG.md` |
+| `release` | Versión, changelog, staging y producción **solo con aprobación explícita**; rollback guiado. Incluye las fichas `done` de los carriles (`--changes` para liberar solo fichas). | tag/PR, `CHANGELOG.md` |
+| `fix` | Carril para un bug de algo ya especificado o un defecto evidente: test que falla, causa raíz, arreglo mínimo y review ligera. `--hotfix`: incidente en producción, con release inmediato y la misma aprobación humana. | ficha `docs/changes/…-fix-….md` |
+| `refactor` | Carril para deuda técnica sin cambio de comportamiento: tests de caracterización en verde antes y después, sin tocarlos. | ficha `…-refactor-….md` |
+| `chore` | Carril para dependencias que ya existen, configuración, docs y CI, con validación (tests, lint, SCA). | ficha `…-chore-….md` |
+| `sync` | Detecta lo hecho fuera del flujo (commits sin spec ni ficha, specs liberadas tocadas después, `architecture.md` desactualizado, specs inferidas, fichas olvidadas) y propone conciliarlo. | `docs/sync.md` |
 
 Orden: `init` → `specify` → `design-spec NNN` (solo si la spec tiene pantallas) → `plan` → `tasks` →
 `analyze` → `implement` → `review` → `release`.
 
 Dentro de un plugin las skills se invocan con el prefijo del plugin (por ejemplo `/ai-dd:init`),
 así que no chocan con comandos integrados como `/init`.
+
+## Carriles
+
+Spec, plan, tareas, análisis y review son proporcionales a una feature, no a un bug de una línea.
+Para el trabajo que **no añade comportamiento** hay carriles con un proceso a su medida:
+
+| Carril | Cuándo | Proceso | Release |
+|---|---|---|---|
+| `/fix` | Bug: lo correcto ya está en una spec, o es un defecto evidente | test que falla → causa raíz → arreglo → review ligera | con la siguiente `/release` (patch) |
+| `/fix --hotfix` | Incidente en producción | igual, desde el tag de producción | inmediato, **misma aprobación humana** |
+| `/refactor` | Deuda técnica | tests de caracterización en verde → cambio → los mismos tests en verde | sin entrada en el changelog |
+| `/chore` | Dependencias existentes, configuración, docs, CI | cambio → validación (tests, lint, SCA) | solo si corrige una vulnerabilidad |
+
+Cada carril deja una **ficha** `docs/changes/AAAA-MM-DD-<carril>-<slug>.md` (problema,
+reproducción, causa, cambio, escalado, verificación). Con una ficha abierta el hook deja editar
+código. `aidd.py lane-check` revisa el diff al empezar y al cerrar: si el cambio toca contrato,
+datos, seguridad, el sistema de diseño, añade una dependencia o pasa de `workflow.lanes.max_files`
+archivos de código (5 por defecto), **escala** a `/specify` salvo que lo aceptes explícitamente.
+`/sync` (con `aidd.py drift`) encuentra lo que se hizo sin spec ni ficha.
 
 ## Principios del flujo
 

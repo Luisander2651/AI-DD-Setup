@@ -32,6 +32,12 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | Brechas por confirmar | Gaps to confirm | `docs/seo.md`, `docs/observability.md` |
 | Aceptados | Accepted | analysis |
 | Aceptados sin tarea | Accepted without task | review |
+| Reproducción | Reproduction | ficha `fix` / `hotfix` |
+| Causa raíz | Root cause | ficha `fix` / `hotfix` |
+| Tests de caracterización | Characterization tests | ficha `refactor` |
+| Cambio | Change | ficha de cambio |
+| Escalado | Escalation | ficha de cambio |
+| Verificación | Verification | ficha de cambio |
 
 ## IDs y marcadores
 
@@ -68,6 +74,8 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `- [-] … — obsoleta: <motivo>` | `- [-] … — obsolete: <reason>` | tarea que ya no aplica (no se borra) |
 | `Cómo se verifica` (`test:` · `lint:` · `manual:`) | `How it is verified` | columna del Constitution Check del plan |
 | `Cubre:` | `Covers:` | cuerpo de un commit de tarea |
+| `Ficha:` | `Change:` | cuerpo de un commit de un carril (`Ficha: docs/changes/<ficha>.md`) |
+| `lane: fix` · `hotfix` · `refactor` · `chore` y `status: open` · `done` · `escalated` · `released` | (iguales) | frontmatter de una ficha de cambio |
 
 Los IDs de tarea (`T001`), riesgo (`RS1.a`, `OB2`, `RD3`, `SE4`), deuda de diseño (`DS1`), amenaza (`TM1`), principio (`P1`),
 hallazgo (`A1`, `R1`) y las claves del frontmatter (`status`, `round`, `verdict`…) no se traducen.

@@ -16,7 +16,7 @@ Diseño y SEO tienen skills propias: `/init` llama a `/design-spec system` y a `
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.13.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.14.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -225,7 +225,7 @@ contenido se queda).
     `.ai/project.yaml` en ambos casos (`declined` si el usuario no lo quiso).
 9b. `docs/specs/README.md` con la tabla de specs (vacía en greenfield): `AGENTS.md` la enlaza.
 10. `docs/templates/` ← copia `templates/spec.md`, `templates/plan.md`, `templates/tasks.md`,
-    `templates/review.md` y `templates/adr.md` para que los usen las demás skills. Después del
+    `templates/review.md`, `templates/adr.md` y `templates/change.md` (fichas de los carriles) para que los usen las demás skills. Después del
     paso 11, guarda sus huellas en `project.yaml` con `python .ai/bin/aidd.py templates --yaml`
     (`--upgrade` las usa para saber si el usuario las personalizó).
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
