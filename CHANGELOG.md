@@ -3,6 +3,31 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.15.0] - 2026-10-18
+Modelo por subagente. Hasta ahora todos los subagentes corrían con el modelo de la sesión: en la
+spec 016 de un proyecto real, la primera review leyó ≈ 330k tokens con cuatro revisores, todos en
+el modelo más caro, aunque la mitad del trabajo era localizar y comprobar.
+
+### Added
+- Perfiles de subagente en `shared/contract.md` → "Modelo de cada subagente": `critical` (`opus`),
+  `standard` (`sonnet`), `mechanical` (`haiku`) e `implementation` (`inherit`). Un subagente con
+  varios encargos usa el perfil más alto; si el entorno no acepta el modelo, se lanza sin él y se
+  dice en el informe.
+- Bloque `models` en `.ai/project.yaml` para cambiar el modelo de cada perfil por proyecto
+  (`opus`, `sonnet`, `haiku`, `fable`, `inherit` o un ID `claude-…`).
+- `validate`: error con un modelo inválido en `models`, aviso con un perfil desconocido.
+
+### Changed
+- `/review`: A (spec) y S (seguridad) en `critical`; C+D, accesibilidad y SEO en `standard`; los
+  revisores por módulo y el único de `--rerun` en `critical`.
+- `/analyze` completo en `critical` y delta en `standard`; exploración de `/plan` en `mechanical`;
+  exploración de `/init`, `/seo` y `/design-spec` y review ligera de los carriles en `standard`;
+  `/implement --parallel` en `implementation`.
+
+### Upgrade
+`/ai-dd:init --upgrade` reemplaza el validador y añade el bloque `models` con los valores por
+defecto. Sin el bloque, las skills usan esos mismos valores.
+
 ## [1.14.0] - 2026-10-14
 Carriles ligeros para el trabajo que no es feature, y `/sync` para la deriva. Hasta ahora todo
 cambio pedía spec, plan, tareas, `/analyze` y `/review`: un bug de una línea costaba lo mismo que

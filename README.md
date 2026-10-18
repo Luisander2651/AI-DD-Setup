@@ -82,6 +82,10 @@ archivos de código (5 por defecto), **escala** a `/specify` salvo que lo acepte
 - **Probar antes de planear.** Lo que el plan da por hecho de una herramienta o framework nuevo se
   comprueba con una prueba de concepto; los valores por defecto de una plantilla se auditan contra
   la constitución.
+- **El modelo según el riesgo.** Cada subagente tiene un perfil (`critical`, `standard`,
+  `mechanical`, `implementation`) y `.ai/project.yaml → models` le asigna el modelo: Opus donde un
+  error llega a producción (seguridad, cobertura de la spec, análisis completo), Sonnet para el
+  juicio acotado y Haiku para localizar y comprobar. La sesión principal conserva su modelo.
 
 ## Diseño
 

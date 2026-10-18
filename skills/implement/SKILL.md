@@ -168,7 +168,8 @@ que el cambio, ≤ 3 archivos, criterio de hecho, revisión de accesibilidad si 
 ## Paso 4 — Paralelo (`--parallel`)
 
 Solo para tareas `[P]` consecutivas sin dependencias pendientes:
-- Lanza un subagente por tarea, cada uno en su propio worktree o rama si el entorno lo permite,
+- Lanza un subagente por tarea (perfil `implementation`; contrato → "Modelo de cada subagente"),
+  cada uno en su propio worktree o rama si el entorno lo permite,
   con: la tarea exacta, los archivos permitidos, el criterio de hecho, los comandos de
   verificación y las reglas de esta skill.
 - Al terminar, integra los resultados uno por uno y corre la suite completa.

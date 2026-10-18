@@ -2,7 +2,9 @@
 
 Sustituye `{{root}}` por la raíz del repo y `{{type_hint}}` por el tipo detectado en la Fase 0.
 Todos son de **solo lectura**: no crean ni modifican archivos y solo ejecutan comandos de
-consulta (`ls`, `grep`, `git log`); nunca instalan, compilan ni corren tests.
+consulta (`ls`, `grep`, `git log`); nunca instalan, compilan ni corren tests. Se lanzan con el
+perfil `standard` (`shared/contract.md` → "Modelo de cada subagente"), también cuando los usan
+`/seo` (H) o `/design-spec` (G).
 
 Formato de salida común (inclúyelo literalmente en cada prompt):
 

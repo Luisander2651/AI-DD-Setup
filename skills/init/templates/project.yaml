@@ -18,6 +18,11 @@ workflow:
   lanes:                       # carriles /fix, /refactor, /chore (shared/contract.md → "Carriles")
     max_files: 5               # más archivos de código (sin tests ni docs) → flujo completo
     contract_paths: []         # rutas que son contrato público además de openapi/proto/graphql
+models:                        # modelo de cada perfil de subagente (shared/contract.md → "Modelo de cada subagente")
+  critical: opus               # /analyze completo; /review A (spec) y S (seguridad)
+  standard: sonnet             # /analyze delta; /review C+D, accesibilidad, SEO; carriles; exploración
+  mechanical: haiku            # exploración de /plan; comprobar que un hallazgo existe
+  implementation: inherit      # /implement --parallel (inherit = el modelo de la sesión)
 sync:
   last: null                   # commit hasta el que /sync concilió la deriva
 skills_version: {{skills_version}}   # versión del paquete de skills con que se inicializó

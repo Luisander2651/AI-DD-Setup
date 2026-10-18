@@ -4,3 +4,7 @@ language: es
 stack:
   languages: [typescript]
   frameworks: [ionic, angular, capacitor]
+models:
+  critical: gpt-4
+  standard: sonnet
+  rapido: haiku

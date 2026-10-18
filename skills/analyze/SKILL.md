@@ -65,7 +65,7 @@ corregir todavía es barato. **No modifica** spec, plan ni tareas: informa y blo
 
 ## Paso 1b — Análisis delta
 
-Lanza un subagente de solo lectura con: el diff de `aidd.py changes`, los hallazgos **abiertos**
+Lanza un subagente de solo lectura (perfil `standard`; contrato → "Modelo de cada subagente") con: el diff de `aidd.py changes`, los hallazgos **abiertos**
 de `analysis.md` (no los aceptados), solo las secciones de spec, plan y tareas que el diff toca o
 que citan los IDs que aparecen en el diff (`CA`, `TM`, `T`, `RS`…), y este encargo:
 
@@ -86,7 +86,7 @@ cero las secciones afectadas y no desde la memoria de la sesión. Dilo en el inf
 
 ## Paso 1 — Análisis independiente (modo completo)
 
-Lanza un subagente de solo lectura con las rutas de `spec.md`, `plan.md`, `tasks.md`,
+Lanza un subagente de solo lectura (perfil `critical`) con las rutas de `spec.md`, `plan.md`, `tasks.md`,
 `docs/constitution.md`, `docs/security.md`, `docs/architecture.md`, los planes de las demás specs
 en estado `approved` y este encargo:
 

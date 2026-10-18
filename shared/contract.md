@@ -199,6 +199,23 @@ revisa todas las skills afectadas.
   artefactos) y devuelven solo hallazgos. `/review` revisa desde `impl_base` (lo registra
   `/implement` en `tasks.md`) con el paquete de `aidd.py review-pack`, no desde el merge con la
   rama principal.
+- **Modelo de cada subagente:** cada subagente se lanza con un **perfil**, y el perfil decide el
+  modelo (parámetro `model` del lanzamiento). El modelo de la sesión principal no cambia.
+
+  | Perfil | Por defecto | Para qué |
+  |---|---|---|
+  | `critical` | `opus` | Lo que, si falla, llega a producción: `/analyze` completo; en `/review`, A (spec), S (seguridad) y los revisores por módulo o únicos que los incluyen |
+  | `standard` | `sonnet` | Juicio sobre lo ya acotado: `/analyze` delta; en `/review`, C+D (constitución y calidad), accesibilidad y SEO; review ligera de los carriles; exploración de `/init`, `/seo` y `/design-spec` |
+  | `mechanical` | `haiku` | Localizar y comprobar, sin decidir: exploración de código en `/plan`; verificar que un hallazgo existe en `archivo:línea` |
+  | `implementation` | `inherit` | Subagentes que escriben código (`/implement --parallel`) |
+
+  El modelo de cada perfil se toma de `.ai/project.yaml → models.<perfil>` y, si falta, de la
+  columna "Por defecto". Valores: `opus`, `sonnet`, `haiku`, `fable`, `inherit` (el de la sesión) o
+  un ID completo (`claude-…`). Un subagente con varios encargos usa el perfil más alto de ellos
+  (`critical` > `standard` > `mechanical`). Si el entorno no acepta el parámetro o el modelo no
+  está disponible, lanza el subagente sin él y dilo en el informe de la skill; nunca cambies a
+  otro perfil por tu cuenta. Lo que la skill hace sin subagente (p. ej. un `--rerun` pequeño) usa
+  el modelo de la sesión.
 - **Proyecto nuevo (greenfield):** `/init` deja creado el proyecto base con comandos reales y
   verificados, o la spec `001-proyecto-base` lo hace (`skills/init/references/greenfield.md`). En
   ambos casos se auditan los valores por defecto de la plantilla contra la constitución (versiones

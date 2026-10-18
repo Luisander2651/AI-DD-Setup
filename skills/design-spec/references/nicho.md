@@ -21,7 +21,8 @@ Pregunta la profundidad solo si el caso no es obvio.
 Con búsqueda web si la sesión la ofrece; si no, con lo que cuente el usuario y lo que se sepa del
 sector, y dilo en `nicho.md` (`fuentes: sin búsqueda web`). Límite: **6–10 búsquedas** y una
 síntesis que quepa en una página. Si la sesión permite subagentes, lánzalo como subagente con
-contexto limpio y solo herramientas de lectura y búsqueda; si no, hazlo tú.
+contexto limpio, perfil `standard` (contrato → "Modelo de cada subagente") y solo herramientas de
+lectura y búsqueda; si no, hazlo tú.
 
 1. **Convenciones del sector:** qué señales transmiten confianza o calidad a este público (sellos,
    certificaciones, datos técnicos, fotos de producto, precios visibles, tono formal o cercano). Qué

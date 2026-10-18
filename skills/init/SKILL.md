@@ -16,7 +16,7 @@ Diseño y SEO tienen skills propias: `/init` llama a `/design-spec system` y a `
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.14.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.15.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -108,7 +108,8 @@ Informa en una línea qué detectaste antes de continuar.
 
 Omitir con `--no-explore` o en greenfield.
 
-Lanza **en paralelo** los subagentes de solo lectura (tipo `Explore` si existe). Los prompts
+Lanza **en paralelo** los subagentes de solo lectura (tipo `Explore` si existe; perfil
+`standard`, contrato → "Modelo de cada subagente"). Los prompts
 exactos están en `references/explore-agents.md`:
 
 | Subagente | Produce |

@@ -59,7 +59,7 @@ specs cerradas) y el test que falla, si ya existe, se conserva para su `tasks.md
 
 1. `lane-check <ficha>` otra vez, ahora sobre el diff real desde `base`. Un motivo nuevo se trata
    como en §3 antes de cerrar.
-2. **Review ligera** (no en `/chore`): un solo subagente con **solo** el diff desde `base`
+2. **Review ligera** (no en `/chore`): un solo subagente (perfil `standard`) con **solo** el diff desde `base`
    (`git diff <base>`), la ficha y el texto de los criterios de `covers`. Encargo según el carril
    (lo dice cada skill). Devuelve hallazgos con ubicación, impacto y corrección. Los bloqueantes se
    corrigen; los menores se corrigen o se aceptan con motivo en "Decisiones". El resultado va en

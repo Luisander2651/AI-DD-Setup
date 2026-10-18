@@ -7,6 +7,7 @@
     "001/Rn: ['R2', 'R3']"
   ],
   "warnings_not_contains": [
-    "no tiene sección 'Auditoría'"
+    "no tiene sección 'Auditoría'",
+    "models"
   ]
 }

@@ -82,17 +82,18 @@ nunca se da el tema por cubierto. Descarta falsos positivos solo con justificaci
 
 ## Paso 2 — Revisiones en paralelo
 
-Lanza estos subagentes de solo lectura en paralelo. **Cada uno recibe solo lo que necesita**, no
+Lanza estos subagentes de solo lectura en paralelo, cada uno con el modelo de su **perfil**
+(contrato → "Modelo de cada subagente"). **Cada uno recibe solo lo que necesita**, no
 todos los artefactos: el costo de una review lo decide lo que cada revisor lee, multiplicado por
 el número de revisores.
 
-| Subagente | Recibe |
-|---|---|
-| A. Spec | `context.md` (criterios), `code.diff`; abre los tests que cite |
-| C. Constitución + D. Calidad (un solo agente) | `docs/constitution.md`, `AGENTS.md` (convenciones), `code.diff` |
-| S. Seguridad | `context.md` (modelo de amenazas, observabilidad), `code.diff`, `deps.stat`, los temas de `shared/security-checklist.md` que apliquen al diff, resultados de las herramientas |
-| Accesibilidad (si aplica) | solo las vistas y el JS del diff |
-| SEO (si aplica) | el HTML generado de las rutas del diff, `sitemap.xml`, `robots.txt`, "Descubribilidad" del plan y los temas aplicables de `shared/seo-checklist.md` |
+| Subagente | Perfil | Recibe |
+|---|---|---|
+| A. Spec | `critical` | `context.md` (criterios), `code.diff`; abre los tests que cite |
+| C. Constitución + D. Calidad (un solo agente) | `standard` | `docs/constitution.md`, `AGENTS.md` (convenciones), `code.diff` |
+| S. Seguridad | `critical` | `context.md` (modelo de amenazas, observabilidad), `code.diff`, `deps.stat`, los temas de `shared/security-checklist.md` que apliquen al diff, resultados de las herramientas |
+| Accesibilidad (si aplica) | `standard` | solo las vistas y el JS del diff |
+| SEO (si aplica) | `standard` | el HTML generado de las rutas del diff, `sitemap.xml`, `robots.txt`, "Descubribilidad" del plan y los temas aplicables de `shared/seo-checklist.md` |
 
 El estado de los riesgos (`RS`, `OB`, `RD`, `SE`) en `docs/` lo actualiza `/release`; que siga
 "pendiente" antes de liberar no es un hallazgo. Ninguno lee `tasks.md` completo, las rondas de
@@ -105,7 +106,7 @@ tarea → alcance extra si no tienen nota que lo justifique; tareas sin diff →
 la sección "Cambios por módulo" del plan.
 
 **Diff grande** (`code.diff` > ~150 KB): en lugar de dar el diff completo a cada revisor, repártelo
-por módulo (un subagente por módulo con los mismos encargos A, C+D y S) o pide a cada revisor que
+por módulo (un subagente por módulo con los mismos encargos A, C+D y S, perfil `critical`) o pide a cada revisor que
 empiece por los archivos de su encargo según `scope.md`.
 
 Encargos:
@@ -221,4 +222,4 @@ el código nuevo los empeore.
 
 `--rerun` es barato por diseño: `review-pack --base <head anterior>`, y si `code.diff` es pequeño
 (< ~30 KB) haz la revisión tú mismo, sin subagentes, releyendo los archivos desde cero; con uno
-mayor, un único subagente con los encargos A, C+D y S juntos.
+mayor, un único subagente con los encargos A, C+D y S juntos (perfil `critical`).

@@ -78,7 +78,8 @@ llévalas al Paso 2b (actualizar dentro de esta spec, o excepción con motivo, a
 vencimiento, con su riesgo `RS`). Descubrirlas en `/review` cuesta una ronda más.
 
 **Código existente:** identifica los módulos que la feature probablemente toca y léelos. Si son
-muchos o no está claro dónde encaja, lanza **un** subagente de solo lectura con este encargo:
+muchos o no está claro dónde encaja, lanza **un** subagente de solo lectura (perfil `mechanical`;
+contrato → "Modelo de cada subagente") con este encargo:
 
 > Para implementar "<resumen de la spec>" en `<root>`, identifica: módulos y archivos que habría
 > que modificar, patrones existentes que deben seguirse (con un ejemplo por patrón), código

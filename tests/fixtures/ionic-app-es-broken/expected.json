@@ -1,11 +1,13 @@
 {
-  "errors": 3,
+  "errors": 4,
   "contains": [
-"correcciones sin declarar dentro o fuera: ['RS1.b']",
-"declara RS1 mitigado",
-"T002 está hecha sin la nota del aceptado A2"
+    "correcciones sin declarar dentro o fuera: ['RS1.b']",
+    "declara RS1 mitigado",
+    "T002 está hecha sin la nota del aceptado A2",
+    "models.critical inválido ('gpt-4'"
   ],
   "warnings_contains": [
-"sueltas ['analysis.r1.md']"
+    "sueltas ['analysis.r1.md']",
+    "models: perfil desconocido 'rapido'"
   ]
 }

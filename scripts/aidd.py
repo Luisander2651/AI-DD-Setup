@@ -47,7 +47,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.14.0"
+VERSION = "1.15.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -101,6 +101,9 @@ SEO_STATES = {"none", "declined", "proposed", "inferred", "approved"}
 SPEC_DESIGN_STATES = {"draft", "approved"}
 SPEC_DESIGN_EXPLORATION = {"options", "none"}
 SEO_RENDERING = {"static", "ssr", "spa", "hybrid"}
+# Modelo de cada perfil de subagente (shared/contract.md → "Modelo de cada subagente").
+MODEL_PROFILES = ("critical", "standard", "mechanical", "implementation")
+MODEL_ALIASES = {"opus", "sonnet", "haiku", "fable", "inherit"}
 # Tipos de "Decisiones" (shared/contract.md → "Decisiones").
 DECISION_TYPES = {
     "brecha": "gap", "gap": "gap",
@@ -973,6 +976,25 @@ def validate_design(root):
     return len(rep.errors)
 
 
+def validate_models(root):
+    """Bloque `models` de project.yaml: perfiles conocidos y modelos válidos (falta = por defecto)."""
+    p = os.path.join(root, ".ai", "project.yaml")
+    block = yaml_block(read(p), "models") if os.path.isfile(p) else None
+    if block is None:
+        return 0
+    rep = Report(".ai/project.yaml")
+    for m in re.finditer(r"^[ \t]+([A-Za-z_][\w-]*):[ \t]*([^#\n]*)", block, re.M):
+        key, val = m.group(1), m.group(2).strip().strip('"').strip("'")
+        if key not in MODEL_PROFILES:
+            rep.warn(f"models: perfil desconocido {key!r} (se ignora; {', '.join(MODEL_PROFILES)})")
+        elif val and val.lower() not in {"null", "~"} and val.lower() not in MODEL_ALIASES \
+                and not re.match(r"^claude-[a-z0-9.-]+$", val):
+            rep.err(f"models.{key} inválido ({val!r}; opus, sonnet, haiku, fable, inherit o un ID claude-…)")
+    if rep.errors or rep.warnings:
+        rep.print()
+    return len(rep.errors)
+
+
 def validate_seo(root):
     """Bloque `seo` de project.yaml y docs/seo.md (shared/contract.md → "SEO técnico")."""
     cfg = seo_config(root)
@@ -1106,7 +1128,7 @@ def cmd_validate(args):
             continue  # ficha de cambio: se valida abajo
         a = os.path.abspath(a)
         targets.append(os.path.dirname(a) if os.path.isfile(a) else a)
-    design_errors = (validate_design(root) + validate_seo(root)) if not args else 0
+    design_errors = (validate_design(root) + validate_seo(root) + validate_models(root)) if not args else 0
     if not targets and not args:
         targets = spec_dirs(root)
         if not targets and not change_files(root):

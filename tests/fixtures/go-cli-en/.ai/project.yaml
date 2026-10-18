@@ -4,3 +4,8 @@ language: en
 observability:
   audit:
     required: false
+models:
+  critical: opus
+  standard: claude-sonnet-5-5
+  mechanical: haiku
+  implementation: inherit
