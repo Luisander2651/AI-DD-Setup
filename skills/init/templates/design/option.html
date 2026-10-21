@@ -35,6 +35,12 @@
        convertido a trazos; aquí se ve con la fuente incrustada.
      En un sistema EXTRAÍDO, los íconos y la imagen son los del repo incrustados (o el hueco "no
      existe", que es deuda DS). Sin sitio indexable, borra las tarjetas y deja los íconos.
+  7. Sección "idea": modo, registro, inventario del sujeto, la frase de la idea con la prueba del
+     competidor, jugadas repartidas (aidd.py deal y su semilla), cosa viva, estrategia de color,
+     origen de las imágenes y las pruebas antes de enseñar (design-spec/references/creatividad.md).
+  8. Persuadir o Experiencia: la pantalla principal también como página real en
+     opcion-x-pagina.html (plantilla pagina.html), con escenas, entradas y cosa viva funcionando;
+     enlázala en "Movimiento" y pásala por el inspector (references/inspeccion.md).
   El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano. Un par
   con data-optional se oculta si la opción no define alguno de sus tokens; uno sin él sale como
   "falta el token".
@@ -133,6 +139,10 @@
   .v-link-text p { margin: 0; } .v-link-domain { font-size: 12px; color: var(--ui-muted); }
   .v-link-title { font-weight: 600; } .v-link-desc { font-size: 13px; color: var(--ui-muted); }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.v-idea { display: grid; grid-template-columns: minmax(9em, 14em) 1fr; gap: .5em 1.5em; margin: 0; }
+.v-idea dt { font-weight: 600; }
+.v-idea dd { margin: 0; }
+@media (max-width: 640px) { .v-idea { grid-template-columns: 1fr; } .v-idea dd { margin-bottom: .6em; } }
 </style>
 
 <style id="fonts">
@@ -287,6 +297,7 @@
 <nav class="v-toc" aria-label="Secciones">
   <div class="v-wrap">
     <ul>
+      <li><a href="#idea">Idea</a></li>
       <li><a href="#color">Color</a></li>
       <li><a href="#tipografia">Tipografía</a></li>
       <li><a href="#espaciado">Espaciado y forma</a></li>
@@ -300,6 +311,20 @@
 </nav>
 
 <main class="v-wrap">
+  <section class="v-section" id="idea">
+    <h2>Idea</h2>
+    <dl class="v-idea">
+      <dt>Modo · registro</dt><dd>{{persuadir · experiencia · operar · leer}} · {{sobrio · firme · audaz}}</dd>
+      <dt>La idea</dt><dd>En esta pantalla, <strong>{{algo que es del sujeto}}</strong> se convierte en <strong>{{el recurso que organiza la composición}}</strong>.</dd>
+      <dt>Prueba del competidor</dt><dd>Con {{competidor más cercano}} la frase {{ya no funciona porque …}}.</dd>
+      <dt>Inventario del sujeto</dt><dd>{{8–12 cosas que son de este proyecto y de ningún competidor, de al menos tres familias}}</dd>
+      <dt>Jugadas</dt><dd>{{IDs elegidos del reparto}} (semilla {{n}}): {{qué contenido real llena cada una}}</dd>
+      <dt>Cosa viva</dt><dd>{{qué hace la persona, con qué datos; versión sin JavaScript · "no aplica: operar"}}</dd>
+      <dt>Color e imágenes</dt><dd>Estrategia {{contenida · comprometida · paleta completa · empapada}}; imágenes {{propias · generadas · colección abierta (crédito) · dibujadas desde el sujeto}}.</dd>
+      <dt>Pruebas</dt><dd>Esqueleto: {{…}} · Retirada: {{…}} · Cinco segundos: {{…}} · Inspector: {{0 FAIL · n WARN}} · Crítica: {{critica-x.md}}</dd>
+    </dl>
+  </section>
+
   <section class="v-section" id="color">
     <h2>Color</h2>
     <p class="v-note">Cada par muestra su contraste calculado. Mínimo: 4.5:1 en texto y 3:1 en bordes de
@@ -508,6 +533,8 @@
       <li><strong>{{Momento firma}}</strong>: {{disparador, propiedades, duración y curva con tokens}}. Sin movimiento: {{versión estática}}.</li>
       <li><strong>{{Microinteracción}}</strong>: {{…}}. Sin movimiento: {{…}}.</li>
     </ul>
+    <p class="v-note">{{Persuadir/Experiencia: escenas, entradas y cosa viva en vivo en
+      <a href="opcion-x-pagina.html">la página de prueba</a> · Operar/Leer: borra esta línea.}}</p>
     <button type="button" class="v-toggle" id="replay">Reproducir</button>
     <div class="v-stage"><div class="opt" id="motion-demo" data-play>
       {{las piezas que se animan: el momento firma y los controles con sus microinteracciones}}

@@ -2,7 +2,8 @@
 
 Aplica a specs que crean o rehacen pantallas cuando `.ai/project.yaml → design.status` es `draft`
 o `approved`. Formato del sistema y de los HTML: `system-mode.md` (§2.4 y §5) y
-`../../init/templates/design/`. Produce `docs/specs/NNN-<slug>/design.md` (plantilla
+`../../init/templates/design/`. Motor creativo: `creatividad.md`; movimiento: `movimiento.md`;
+inspección: `inspeccion.md`. Produce `docs/specs/NNN-<slug>/design.md` (plantilla
 `../../init/templates/design/spec-design.md`), que `/plan` exige aprobado.
 
 ## 1. Cuándo aplica y cuándo se omite
@@ -18,43 +19,67 @@ o `approved`. Formato del sistema y de los HTML: `system-mode.md` (§2.4 y §5) 
 
 Antes de diseñar, lee el sistema (`system.md`, `system.html`), `creative-direction.md`,
 `anti-cliches.md`, `nicho.md` si existe, y los `design.md` de las specs ya diseñadas: qué
-composiciones y componentes firma usa cada pantalla vecina. Pregunta (máximo 4 por ronda) solo lo
-que falte: contenido real, estados, qué merece movimiento.
+composiciones, jugadas firma y escenas usa cada pantalla vecina. Pregunta (máximo 4 por ronda) solo
+lo que falte: contenido real, imágenes que existen de verdad (fotos o vídeo propios, interfaz real,
+herramienta de imagen), estados, qué merece movimiento.
+
+Luego, en este orden (`creatividad.md`):
+1. **Modo** de cada pantalla (§1): persuadir, experiencia, operar o leer.
+2. **Inventario del sujeto** (§2) y **frase de la idea** con la prueba del competidor (§3).
+3. **Reparto:** `python .ai/bin/aidd.py deal --mode <persuadir|operar> --n <composiciones>`
+   (§4); anota la semilla.
 
 Genera **2–3 composiciones** sobre el sistema aprobado en
 `docs/specs/NNN-<slug>/design/opcion-<a|b|c>.html` desde `option.html` (solo las secciones que
-apliquen: pantallas, movimiento, al compartir), cada una con:
-1. **Nombre corto y metáfora** sacada del contenido real de la spec, no de una moda: qué cuenta la
-   composición y con qué dato (p. ej. "la ficha del paciente como expediente con pestañas",
-   "el catálogo como estante con lomos", "la agenda como tablero de turnos"). Una composición que no
-   cambia la estructura es solo un nombre: rehazla.
+apliquen: idea, pantallas, movimiento, al compartir), y en Persuadir/Experiencia también
+`opcion-<x>-pagina.html` (`inspeccion.md` §1), cada una con:
+1. **Nombre corto, registro e idea.** Registro `sobrio`, `firme` o `audaz`, distinto en cada
+   composición y al menos una `audaz` (`creatividad.md` §4). La frase de la idea desde el
+   inventario, con la prueba del competidor respondida (p. ej. "las siete puertas de la calle que da
+   nombre a la panadería se convierten en el índice del menú"; no "el catálogo como estante", que
+   vale para cualquier tienda). Una composición que no cambia la estructura es solo un nombre:
+   rehazla.
 2. **Vecino más parecido** del mismo producto (otra pantalla o sección ya diseñada) y en qué se
    diferencia: estructura, ritmo, densidad o componente firma. Dos pantallas con el mismo esqueleto
    son un cliché aunque cada una por separado esté bien.
 3. **Jerarquía declarada:** con varios elementos del mismo tipo, la proporción o la variación de
    tamaño (p. ej. destacado 7:5 delante del resto, mosaico 5:7, alturas igualadas con el pie
    alineado). Una rejilla de iguales necesita motivo ("solo hay dos y son simétricos").
-4. **Riesgo asumido** y cómo se compensa. Una composición puede llevar a propósito un elemento de
+4. **Jugada firma y escenas** del reparto que el sujeto puede llenar, con qué contenido real
+   (`movimiento.md` §4–§5); en Operar, la jugada de sensación. **Cosa viva** en Persuadir y
+   Experiencia (`creatividad.md` §5): qué hace la persona, con qué datos, versión sin JavaScript.
+5. **Plenitud** (`creatividad.md` §6): estrategia de color, escala del titular, de dónde salen las
+   imágenes (y su crédito si son de una colección abierta), contenido completo de cada sección.
+6. **Riesgo asumido** y cómo se compensa. Una composición puede llevar a propósito un elemento de
    riesgo (p. ej. un medidor que roza el cliché de "barra de nivel"), **marcado como tal**: el
    usuario decide si lo quita.
-5. **Contenido real** de la spec y adornos generados desde datos (índices desde el orden, rutas
+7. **Contenido real** de la spec y adornos generados desde datos (índices desde el orden, rutas
    desde el ancla, código o fichas desde el registro real), nunca texto de relleno; los adornos van
-   ocultos a lectores de pantalla y la página funciona sin ellos.
-6. **Anchos:** los de `design.widths` **y uno intermedio** (≈ 900 px) cuando haya composiciones en
+   ocultos a lectores de pantalla y la página funciona sin ellos. Contenido de muestra donde la spec
+   deja huecos (nombres de platos, títulos de proyecto) se lista para que el usuario lo confirme;
+   prueba social y cifras de negocio nunca se inventan.
+8. **Anchos:** los de `design.widths` **y uno intermedio** (≈ 900 px) cuando haya composiciones en
    fila: lo que a 1440 px es una fila de tres puede quedar en columnas de 200 px. Si se rompe,
-   declara un punto de corte propio de la composición (sin crear un modo nuevo de tokens).
-7. **Estados** que la spec pide (vacío, carga, error, foco, hover y su equivalente táctil).
+   declara un punto de corte propio de la composición (sin crear un modo nuevo de tokens). El ancho
+   menor es su propia composición, no la de escritorio apretada.
+9. **Estados** que la spec pide (vacío, carga, error, foco, hover y su equivalente táctil), con el
+   deleite de `movimiento.md` §2 donde toque.
 
-Las composiciones son **distintas de verdad** (`system-mode.md` §2.4) y se revisan contra
-`anti-cliches.md` y `system-mode.md` §6 antes de enseñarlas. Presenta una tabla (composición,
-metáfora, vecino y diferencia, riesgo, ruta del HTML). El usuario elige, combina, afina un eje
-(`system-mode.md` §2.8) o pide rehacerlas (§2.7, archivando en
-`docs/specs/NNN-<slug>/design/history/ronda-<N>/`). Las descartadas se conservan.
+Las composiciones son **distintas de verdad** (`system-mode.md` §2.4) y, antes de enseñarlas,
+pasan las pruebas de `creatividad.md` §7, se revisan contra `anti-cliches.md` y
+`system-mode.md` §6, y pasan **la inspección** (`inspeccion.md`: inspector sin FAIL y crítica
+escrita, tres rondas como máximo). Presenta una tabla (composición, registro, idea, jugada y
+escenas, cosa viva, vecino y diferencia, riesgo, notas de la crítica, ruta del HTML) y, en una línea
+aparte, la **salida estándar** del sector sin recomendarla. El usuario elige, combina, afina un eje
+(`system-mode.md` §2.8), pide otra ronda **más audaz** o **más segura** (`creatividad.md` §4) o
+pide rehacerlas (§2.7, archivando en `docs/specs/NNN-<slug>/design/history/ronda-<N>/`). Las
+descartadas se conservan.
 
 ## 3. Documento de diseño y cambios al sistema
 
 Con la elección, `design.md` (`status: draft` hasta que el usuario lo aprueba):
-- **Dirección elegida**, motivo y riesgo; lo combinado de otras composiciones.
+- **Dirección elegida**, motivo y riesgo; lo combinado de otras composiciones; modo, registro,
+  frase de la idea, semilla del reparto y **cosa viva**.
 - **Composición y jerarquía:** orden de lectura, proporciones, puntos de corte, todo con tokens.
 - **Componentes:** los del sistema que usa (con estados) y los **exclusivos** de esta pantalla
   (un componente firma no se reutiliza en otra sección; si debe compartirse, pasa al sistema).
@@ -63,6 +88,9 @@ Con la elección, `design.md` (`status: draft` hasta que el usuario lo aprueba):
   **primera tarea** de `/tasks` los aplica a `system.md` y `system.html` (con su entrada en
   "Decisiones") en el mismo commit que el código que los necesita, para que el test de tokens no
   quede en rojo.
+- **Imágenes:** origen de cada una (propia, generada, colección abierta con licencia y crédito,
+  dibujada) y dónde va el crédito; lo que el usuario debe sustituir antes de publicar.
+- **Inspección:** rondas, último resultado del inspector y la crítica (`inspeccion.md`).
 - **Movimiento** (§4), **accesibilidad** (contraste calculado de cada par, encabezados, decorativos
   ocultos, teclado, contenido sin animación) y **anti-clichés** de esta pantalla: cada uno con la
   alternativa que se usó.
@@ -81,30 +109,11 @@ la decisión `refinado`; `/plan NNN --fix` añade la tarea.
 
 ## 4. Movimiento
 
-Cada animación de la pantalla es una ficha `M-<n>`:
-- disparador (carga, entrada en pantalla, puntero fino, foco, toque) y si ocurre **una sola vez** o
-  se repite;
-- elementos y propiedades (solo `transform`, `opacity` o `filter` salvo justificación);
-- duración y curva con tokens; estado inicial → final; secuencia o escalonado;
-- técnica, en orden de preferencia: CSS → transiciones entre vistas del framework → Web Animations
-  API → librería (solo si el diseño justifica que lo anterior no basta, y con ADR);
-- versión **reducida** (`prefers-reduced-motion`), **sin JavaScript** (contenido completo y visible)
-  y **táctil** (`hover: none`: qué se ve, o nada si el elemento no es interactivo);
-- **coste** en JavaScript, contra el presupuesto de la constitución, y qué propiedades comparte con
-  otras animaciones del mismo elemento (dos animaciones no animan la misma propiedad);
-- fotogramas en el HTML de la composición.
-
-Reglas de rendimiento, salvo prueba en contra registrada:
-- sin `filter` animado sobre superficies grandes (paneles, cards a todo el ancho) ni
-  `backdrop-filter` en elementos fijos;
-- revelados disparados al entrar en pantalla (por tiempo) antes que ligados al scroll: los ligados
-  al scroll traban el desplazamiento con trackpad cuando se acumulan;
-- ningún trabajo por fotograma de scroll; un solo script común por patrón (revelado, luz que sigue
-  al puntero), no uno por sección.
-
-**Racionar el efecto firma:** respeta las "Reglas de uso" de `system.md` (cuántos momentos
-protagonistas por página, dónde se permite el efecto firma, cuántos por pantalla en reposo). Una
-composición que las rompe lo dice como riesgo y la regla se cambia en el sistema, no en silencio.
+Sigue `movimiento.md`: el filtro de cada animación (§1), la capa según el modo de la pantalla (§2),
+los tokens de curva y duración (§3), las escenas de scroll (§4), el catálogo de jugadas (§5), la
+ambición técnica con mejora progresiva (§6), lo que no se usa (§7) y la ficha `M-<n>` de cada
+animación (§8), con sus reglas de rendimiento y el racionamiento del efecto firma (§9). Las fichas
+van en `design.md` → "Movimiento"; las escenas y entradas, vivas en `opcion-<x>-pagina.html`.
 
 ## 5. Spec de rediseño o con pantallas que el sistema no cubre
 

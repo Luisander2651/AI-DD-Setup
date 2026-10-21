@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+  Plantilla de ai-dd para la PÁGINA DE PRUEBA de una opción o composición
+  (docs/design/opciones/opcion-x-pagina.html · docs/specs/NNN-slug/design/opcion-x-pagina.html).
+  Obligatoria en pantallas de Persuadir o Experiencia (design-spec/references/inspeccion.md §1).
+  Es la pantalla principal como página real a ancho de ventana, donde viven las escenas de scroll,
+  las entradas y la cosa viva. Autocontenida: sin CDN, fuentes ni imágenes externas (las imágenes,
+  en la carpeta de la opción o en base64).
+
+  Cómo rellenarla:
+  1. Copia los bloques "fonts", "tokens" y "components" de opcion-x.html (los mismos valores).
+  2. Sustituye el contenido de <main> por la pantalla completa con contenido real: cada sección del
+     argumento, con su encabezado, y la idea llevada hasta el pie.
+  3. Escenas: una <section data-scene="<id del catálogo>" data-hold="N"> con un .scene-stage
+     dentro. Escribe PRIMERO la composición terminada (lo que ven el movimiento reducido, un script
+     que falla y algunos teléfonos) y la versión viva bajo .is-live, guiada por la variable --p
+     (progreso 0→1) que pone el script común. Una sección tranquila entre dos escenas.
+  4. Entradas: data-reveal en las partes de cada sección (titular, texto, imagen, detalles); el
+     escalonado sale del orden. Varía la manera con data-reveal="line|mask|rise|scale".
+  5. Cosa viva: un elemento con data-live; funciona sin JavaScript (formulario o tabla legible) y
+     el script solo lo mejora.
+  6. Pásala por el inspector: node <skill>/scripts/inspect.mjs opcion-x-pagina.html --mode persuadir
+-->
+<html lang="{{es}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{Proyecto}} — {{Opción A · página de prueba}}</title>
+<script>document.documentElement.classList.add('js')</script>
+<style id="fonts">
+/* @font-face incrustadas, iguales a las de opcion-x.html */
+</style>
+<style id="tokens">
+:root {
+  /* Copia aquí los tokens de opcion-x.html. Los de movimiento (movimiento.md §3): */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --duration-reveal: 800ms;
+  --stagger: 80ms;
+}
+</style>
+<style id="stage">
+/* Escenario común de escenas y entradas (no lo cambies; ajusta en "components"). */
+[data-scene] { position: relative; }
+.scene-stage { position: relative; }
+.js [data-scene].is-live { height: calc((var(--hold, 2) + 1) * 100svh); }
+.js [data-scene].is-live > .scene-stage { position: sticky; top: 0; height: 100svh; overflow: clip; }
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] { opacity: 0; transform: translateY(24px);
+    transition: opacity var(--duration-reveal) var(--ease-expo), transform var(--duration-reveal) var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * var(--stagger)); }
+  .js [data-reveal="scale"] { transform: scale(1.06); }
+  .js [data-reveal="mask"] { transform: none; clip-path: inset(0 0 100% 0);
+    transition-property: opacity, clip-path; }
+  .js [data-reveal].is-in { opacity: 1; transform: none; clip-path: inset(0); }
+}
+</style>
+<style id="components">
+/* La página con solo tokens. Ejemplo de escena "ventana": composición terminada primero… */
+/* [data-scene="ventana"] .scene-stage img { width: 100%; aspect-ratio: 16/9; object-fit: cover; } */
+/* …y la versión viva guiada por --p: */
+/* [data-scene="ventana"].is-live img { height: 100%; aspect-ratio: auto;
+     clip-path: inset(calc((1 - var(--p)) * 30%) calc((1 - var(--p)) * 30%)); } */
+</style>
+</head>
+<body>
+<main>
+  {{secciones de la pantalla con contenido real; escenas con data-scene; entradas con data-reveal; la cosa viva con data-live}}
+</main>
+<script>
+// Script común: un solo bucle para todas las escenas y un solo observador para las entradas.
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Entradas: una vez, cuando la parte superior llega al ~88 % de la ventana.
+  const groups = new Map();
+  document.querySelectorAll('[data-reveal]').forEach(el => {
+    const sec = el.closest('section') || document.body;
+    const n = groups.get(sec) || 0; groups.set(sec, n + 1);
+    el.style.setProperty('--i', Math.min(n, 3));
+  });
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-in'));
+  }
+  // Escenas: progreso 0→1 en --p, sin capturar la rueda; se pausan fuera de pantalla.
+  if (reduce) return;
+  const scenes = [...document.querySelectorAll('[data-scene]')];
+  scenes.forEach(s => { s.style.setProperty('--hold', s.dataset.hold || 2); s.classList.add('is-live'); });
+  const visible = new Set();
+  const vo = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+  scenes.forEach(s => vo.observe(s));
+  let last = -1;
+  const tick = () => {
+    const y = scrollY;
+    if (y !== last) {
+      last = y;
+      for (const s of visible) {
+        const r = s.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+        s.style.setProperty('--p', p.toFixed(4));
+      }
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

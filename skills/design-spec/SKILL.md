@@ -1,6 +1,6 @@
 ---
 name: "design-spec"
-description: "Diseña la interfaz: el sistema de diseño del proyecto (opciones en HTML o el diseño existente documentado) y, en cada spec con pantallas, 2–3 composiciones sobre el sistema antes de planear. Úsala con /design-spec system, /design-spec NNN o cuando el usuario pida diseñar, rediseñar o documentar pantallas."
+description: "Diseña la interfaz: el sistema de diseño del proyecto (opciones en HTML o el diseño existente documentado) y, en cada spec con pantallas, 2–3 composiciones sobre el sistema antes de planear, con idea propia, escenas de scroll, cosa viva e inspección en navegador. Úsala con /design-spec system, /design-spec NNN o cuando el usuario pida diseñar, rediseñar, hacer más audaz o documentar pantallas."
 ---
 
 # /design-spec — Diseño de interfaz
@@ -19,6 +19,11 @@ Decide **cómo se ve y se mueve** el producto. El sistema de diseño fija el len
 producto; el diseño de cada spec elige entre composiciones distintas sobre ese lenguaje, para que
 ninguna pantalla sea la plantilla de otra.
 
+Los anti-clichés dicen qué no hacer; `references/creatividad.md` dice **con qué ser audaz**: una idea
+sacada del sujeto (no de la categoría), registros distintos entre opciones, una cosa viva que la
+persona puede usar, plenitud en lugar de vacío, y movimiento coreografiado con escenas de scroll
+(`references/movimiento.md`). Nada se enseña sin pasar por el navegador (`references/inspeccion.md`).
+
 ## Uso
 
 ```
@@ -27,6 +32,8 @@ ninguna pantalla sea la plantilla de otra.
 /design-spec system --redo-options [--only <eje> --base <a|b|c>]   # rehacer opciones o afinar un eje
 /design-spec <NNN|slug>                   # composiciones de una spec con pantallas
 /design-spec <NNN> --fix <qué>            # refinar tras la revisión manual (decisión `refinado`)
+/design-spec <NNN> --bolder <sección>     # subir una sección plana con el vocabulario del sistema
+/design-spec <NNN> --quieter <sección>    # bajar una sección que compite con la jugada principal
 ```
 
 ## Reglas
@@ -43,7 +50,12 @@ ninguna pantalla sea la plantilla de otra.
 - **Aprobación humana.** `system.md` y cada `design.md` nacen en `draft`; solo el usuario los aprueba.
   Las opciones descartadas no se borran.
 - **Antes de enseñar** cualquier opción: contraste sin ningún "no cumple", repaso contra
-  `docs/design/anti-cliches.md` y `references/system-mode.md` §6, y la revisión de "Al compartir".
+  `docs/design/anti-cliches.md` y `references/system-mode.md` §6, la revisión de "Al compartir", las
+  pruebas de `references/creatividad.md` §7 y la inspección (`references/inspeccion.md`: inspector
+  sin FAIL, tira del scroll mirada, crítica escrita; tres rondas como máximo).
+- **Contra el sesgo:** registros distintos entre opciones y al menos una `audaz`; jugadas repartidas
+  con `python .ai/bin/aidd.py deal` y la semilla registrada; la salida estándar del sector se
+  ofrece en una línea, nunca se recomienda.
 - Escribe en el idioma del proyecto.
 
 ---
@@ -74,15 +86,20 @@ Sigue `references/spec-mode.md` §1. Si no hay pantalla nueva ni recomposición 
 pide), escribe `design.md` con `exploration: none` y el motivo, y salta al Paso 4.
 
 ### Paso 2 — Composiciones
-`references/spec-mode.md` §2: contexto y pantallas vecinas, preguntas que falten, **2–3
-composiciones** con nombre y metáfora del contenido real, vecino más parecido y diferencia,
-jerarquía declarada, riesgo marcado, anchos de `design.widths` más uno intermedio si hay filas, y
-estados. Si es un rediseño o hay pantallas que el sistema no cubre, añade §5. Íconos o tarjeta para
-compartir: §7.
+`references/spec-mode.md` §2: contexto y pantallas vecinas y preguntas que falten (incluidas las
+imágenes que existen de verdad); **modo** de cada pantalla, **inventario del sujeto**, **frase de la
+idea** con la prueba del competidor y **reparto** (`references/creatividad.md` §1–§4); **2–3
+composiciones** con registro distinto, vecino más parecido y diferencia, jerarquía declarada,
+jugada firma y escenas, **cosa viva** (Persuadir), plenitud (color, escala, imágenes), riesgo
+marcado, anchos de `design.widths` más uno intermedio si hay filas, y estados. En Persuadir, cada
+composición tiene además su página de prueba (`../init/templates/design/pagina.html`). Movimiento:
+`references/movimiento.md`. Inspección antes de enseñar: `references/inspeccion.md`. Si es un
+rediseño o hay pantallas que el sistema no cubre, añade §5. Íconos o tarjeta para compartir: §7.
 
 ### Paso 3 — Elección
-El usuario elige, combina, afina un eje o pide rehacer (`references/spec-mode.md` §2). Registra la
-elección.
+El usuario elige, combina, afina un eje, pide otra ronda **más audaz** o **más segura**, toma la
+salida estándar o pide rehacer (`references/spec-mode.md` §2, `references/creatividad.md` §4).
+Registra la elección.
 
 ### Paso 4 — Documento
 `docs/specs/NNN-<slug>/design.md` desde `../init/templates/design/spec-design.md`
@@ -93,16 +110,29 @@ anti-clichés con su alternativa y decisiones. Enlázalo desde la sección "Dise
 fila en "Decisiones" (tipo `diseño`).
 
 ### Paso 5 — Autoverificación y aprobación
-- [ ] Cada composición tiene metáfora, vecino y diferencia, y riesgo; ninguna repite el esqueleto
-      de otra pantalla del producto.
+- [ ] Cada composición tiene modo, registro, frase de la idea con la prueba del competidor, vecino y
+      diferencia, y riesgo; ninguna repite el esqueleto de otra pantalla del producto; la idea
+      llega a todas las secciones.
+- [ ] Persuadir: cosa viva con versión sin JavaScript, escenas según el registro con sección
+      tranquila entre ellas, página de prueba que funciona; ninguna sección delgada ni tramo vacío.
+- [ ] Inspector sin FAIL en la composición elegida y crítica escrita (`references/inspeccion.md`).
 - [ ] Ningún valor visual fuera de los tokens o de "Cambios a incorporar al sistema".
-- [ ] Toda animación con versión reducida, sin JavaScript y táctil, y su coste; reglas de
-      rendimiento y de "Reglas de uso" respetadas (`references/spec-mode.md` §4).
+- [ ] Toda animación con ficha `M-n` (tipo, filtro, versión reducida, sin JavaScript, táctil y, en
+      escenas, plan de teléfono) y su coste; nada de `references/movimiento.md` §7; reglas de
+      rendimiento y de "Reglas de uso" respetadas.
+- [ ] Imágenes con su origen, licencia y crédito; ninguna encontrada presentada como del cliente.
 - [ ] Contraste calculado de cada par; adornos ocultos a lectores de pantalla.
 - [ ] `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` sin errores.
 
 Presenta el resumen (composición elegida, cambios al sistema, animaciones, riesgos) y pide
 aprobación: `design.md` pasa a `approved`. Siguiente paso: `/plan NNN`.
+
+## Modos `--bolder` y `--quieter`
+
+Sobre un `design.md` ya escrito, cuando una sección elegida se lee plana o grita:
+`references/creatividad.md` §8. Solo la sección nombrada, con el vocabulario del sistema; decisión
+`refinado` en `design.md` y nueva inspección de la sección. Si el diseño ya está aprobado, vuelve a
+`draft` hasta que el usuario lo apruebe y, si ya hay plan, después `/plan NNN --fix`.
 
 ## Modo `--fix`
 

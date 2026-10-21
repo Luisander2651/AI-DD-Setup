@@ -114,12 +114,20 @@ margen lateral --space-gutter, altura ≥ --touch-min}}
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--duration-fast` | {{150ms}} | Microinteracciones |
-| `--duration-base` | {{250ms}} | Entradas y transiciones |
-| `--ease-out` | `{{cubic-bezier(0.2, 0, 0, 1)}}` | Entradas |
+| `--duration-press` | {{140ms}} | Pulsar |
+| `--duration-fast` | {{180ms}} | Hover y microinteracciones |
+| `--duration-base` | {{240ms}} | Menús, transiciones |
+| `--duration-reveal` | {{800ms}} | Revelados de sección y de hero |
+| `--duration-open` | {{1200ms}} | Aperturas de imagen y barridos |
+| `--stagger` | {{80ms}} | Escalonado entre líneas o partes |
+| `--ease-out` | `{{cubic-bezier(0.23, 1, 0.32, 1)}}` | Entradas y salidas < 600 ms |
+| `--ease-expo` | `{{cubic-bezier(0.16, 1, 0.3, 1)}}` | Revelados ≥ 800 ms |
+| `--ease-in-out` | `{{cubic-bezier(0.77, 0, 0.175, 1)}}` | Barridos y cosas que viajan |
+| `--ease-exit` | `{{cubic-bezier(0.4, 0, 1, 1)}}` | Lo que se va para siempre |
 
-Cada animación declara su versión con `prefers-reduced-motion: reduce` (estática equivalente) y
-anima solo `transform` y `opacity` salvo justificación.
+Cada animación declara su versión con `prefers-reduced-motion: reduce` (menos y más suave: se quitan
+desplazamiento, escala y reproducción automática), anima `transform`, `opacity` y `clip-path` salvo
+justificación y sigue `design-spec/references/movimiento.md` (filtro, escenas, lo que no se usa).
 
 ## Marca en el navegador y al compartir
 
@@ -199,7 +207,10 @@ que las capturas citadas existan.
 ## Reglas de uso
 
 Reglas **contables** que `/design-spec` respeta y `/review` comprueba:
-- Momento protagonista: {{uno por página}} ({{cuál en cada página}}).
+- Jugada firma: {{una por página}} ({{cuál en cada página}}); escenas de scroll en Persuadir:
+  {{0–3 por página, con una sección tranquila entre dos}}; en Operar: {{ninguna}}.
+- Entradas: coreografiadas según el contenido, nunca el mismo fundido en cada bloque; lo de alta
+  frecuencia (atajos, navegación principal de una app) no se anima.
 - Efecto firma ({{luz, borde luminoso, textura…}}): solo en {{elementos interactivos y el componente
   firma}}; como máximo {{uno}} visible en reposo por pantalla.
 - Color de acento o de luz: {{nunca en párrafos; solo foco, acción principal, estados}}.

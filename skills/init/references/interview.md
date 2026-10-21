@@ -62,8 +62,13 @@ el nicho (`../../design-spec/references/nicho.md`): las preguntas 1, 4 y 5 parte
    trae un concepto firma, se usa ese (sí → las opciones componen esa idea · ninguno elegido →
    cada opción desarrolla un territorio) · clichés del sector: propón los de "Lo que todos
    repiten" y pide que confirme, quite o añada.
-6. Movimiento y fondos: con ejemplos del territorio, ¿qué tanto movimiento (sobrio, moderado,
-   protagonista) y qué superficies (color sólido, textura, patrón, fotografía, ilustración)?
+6. Movimiento y fondos: con ejemplos del territorio, ¿hasta qué registro se puede llegar (sobrio,
+   firme, audaz: `../../design-spec/references/creatividad.md` §4), escenas de scroll sí o no, y
+   qué superficies (color sólido, textura, patrón, fotografía, ilustración)? · ¿Qué **imágenes
+   existen de verdad** (fotos o vídeo propios del producto, el lugar o el proceso; interfaz real;
+   herramienta para generarlas) y se pueden usar imágenes de colecciones abiertas con crédito? ·
+   ¿Qué podría **hacer** el visitante en la página (la cosa viva: configurar, calcular, probar,
+   ver algo que cambia cada visita)?
 
 **Ronda 4c — SEO** (solo si el sitio es indexable: `../../seo/references/audit.md` §1). En brownfield, confirma lo que
 detectó H.

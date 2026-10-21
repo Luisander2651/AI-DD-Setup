@@ -92,6 +92,16 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
     (archivo del agente: siempre se pregunta). Si hay commits de código fuera del flujo desde el
     `/init` (`aidd.py drift`), menciónalo en el resumen y sugiere `/sync`; no los concilies aquí.
     Si el usuario tiene un arreglo en curso hecho sin ficha, ofrece `/fix --retro`.
+9e. **Diseño creativo (desde 1.16.0).** Solo con diseño `chosen` (o en opciones). Nada se
+    rediseña: **propón**, sin aplicar sin confirmación, las filas nuevas de
+    `../templates/design/anti-cliches.md` (página quieta, idea de categoría, secciones delgadas,
+    primera pantalla seguida de plantilla, pantalla de carga y scroll secuestrado) en
+    `docs/design/anti-cliches.md`; las secciones "Modo y registro" e "Imágenes disponibles" en
+    `creative-direction.md` (pregunta el registro máximo y qué imágenes existen); y los tokens de
+    movimiento nuevos (`--ease-expo`, `--ease-in-out`, `--ease-exit`, `--duration-reveal`,
+    `--duration-open`, `--stagger`) como cambio menor de `system.md` con su entrada en
+    "Decisiones". Las specs ya diseñadas no se tocan; las siguientes usan el motor nuevo
+    (`../../design-spec/references/creatividad.md`). Añade `.ai/inspect/` a `.gitignore`.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
     avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

@@ -17,7 +17,7 @@ una ficha en `docs/changes/` en lugar de spec, plan y tareas (ver "Carriles").
 |---|---|---|
 | `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (uno más si documenta el diseño existente y otro si el sitio es público e indexable) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color, la forma, el fondo o el movimiento de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), `seo.md` (sitio indexable), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
-| `design-spec` | Diseño de interfaz. `system`: opciones en HTML y sistema de diseño (o el diseño existente documentado); lo llama `init`. `NNN`: en cada spec con pantallas, 2–3 composiciones sobre el sistema, cada una con metáfora del contenido real y distinta de las pantallas vecinas, antes de planear. `--fix`: refinado tras la revisión manual. | `docs/design/`, `docs/specs/NNN-slug/design.md` + composiciones en HTML |
+| `design-spec` | Diseño de interfaz. `system`: opciones en HTML y sistema de diseño (o el diseño existente documentado); lo llama `init`. `NNN`: en cada spec con pantallas, 2–3 composiciones sobre el sistema, con idea sacada del sujeto, registros distintos (al menos una audaz), cosa viva y escenas de scroll en pantallas que persuaden, inspeccionadas en navegador antes de enseñarlas. `--fix`: refinado tras la revisión manual; `--bolder`/`--quieter`: ajustar una sección. | `docs/design/`, `docs/specs/NNN-slug/design.md` + composiciones en HTML |
 | `seo` | SEO técnico de sitios públicos. `setup`: reglas del sitio; `audit`: auditoría sobre la build (y, con permiso, el sitio publicado) con brechas `SE` y propuestas para el roadmap; `verify`: comprobaciones en producción tras un despliegue. La llaman `init` y `release`. | `docs/seo.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -90,8 +90,9 @@ archivos de código (5 por defecto), **escala** a `/specify` salvo que lo acepte
 ## Diseño
 
 Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Lo hace la skill
-`design-spec`: el sistema en `skills/design-spec/references/system-mode.md` y el diseño de cada spec
-en `skills/design-spec/references/spec-mode.md`.
+`design-spec`: el sistema en `skills/design-spec/references/system-mode.md`, el diseño de cada spec
+en `skills/design-spec/references/spec-mode.md`, el motor creativo en `creatividad.md`, el
+movimiento en `movimiento.md` y la inspección en navegador en `inspeccion.md`.
 
 ### Cuándo se diseña
 | Situación | Qué pasa |
@@ -117,16 +118,36 @@ en `skills/design-spec/references/spec-mode.md`.
 - **Referencias con nombre** (productos, sitios o apps), no adjetivos.
 - **Distintas de verdad.** Entre opciones cambia siempre la composición de la pantalla principal y
   al menos otro eje. Mismo esqueleto con otra piel = rehacer.
-- **Idea anclada en el brief.** Cada opción declara su idea en una frase, ligada a un dato real
-  (público, contexto de uso, producto, lugar), y las 2–3 decisiones de estructura que la
-  materializan; un solo momento firma, dibujado en fotogramas.
+- **Idea sacada del sujeto, no de la categoría** (`creatividad.md`): un inventario de 8–12 cosas
+  que solo tiene ese proyecto (su nombre, su lugar, sus números, su restricción, sus objetos
+  impresos) y la frase "en esta pantalla, X del sujeto se convierte en Y". **Prueba del
+  competidor:** si la frase sigue funcionando con el competidor, la idea es de la categoría y se
+  rehace.
+- **Registros distintos y reparto contra el sesgo.** Cada opción es `sobria`, `firme` o `audaz`
+  (al menos una audaz); `aidd.py deal` reparte jugadas firma y escenas del catálogo con una semilla
+  para que el modelo no caiga siempre en lo mismo. La convención del sector se ofrece como salida,
+  sin recomendarla; se puede pedir otra ronda "más audaz" o "más segura".
+- **Cosa viva.** En pantallas que persuaden, algo que el visitante puede hacer con contenido real
+  (configurar, calcular, ver algo que cambia), usable con el pulgar y legible sin JavaScript.
+- **Plenitud.** Quitar adornos no basta: escala tipográfica grande, estrategia de color declarada
+  (contenida, comprometida, paleta completa, empapada), imágenes reales o dibujadas desde el sujeto
+  (con crédito si vienen de colecciones abiertas) y contenido completo en cada sección.
 - **Clichés del sector.** Además de la lista por tipo de proyecto, la entrevista añade los del
   dominio del producto, cada uno con su alternativa.
 - **Tipografía justificada.** Nada de fuentes del sistema como marca ni de fuentes de moda elegidas
   por estética: cada familia se justifica contra el brief y se incrusta en woff2.
-- **Movimiento con jerarquía.** Cada opción trae su paleta de movimiento (momento firma,
-  microinteracciones, entradas, transiciones) derivada del territorio, con versión sin movimiento
-  y demo en vivo en el HTML. Un protagonista; el resto sobrio.
+- **Movimiento coreografiado** (`movimiento.md`). Un filtro por animación (frecuencia, propósito,
+  velocidad, función) y la capa completa según el modo: en pantallas que persuaden, 1–3 **escenas
+  de scroll** (ventana que se abre, historia fijada, galería lateral…) con scroll nativo, la jugada
+  firma, entradas que cambian con el contenido, respuesta en cada control y una imagen en
+  movimiento; en pantallas de trabajo, continuidad espacial, respuesta inmediata y deleite solo en
+  momentos raros. Curvas y duraciones medidas, versión reducida y sin JavaScript, y una lista de lo
+  que no se usa (pantallas de carga, scroll secuestrado, cursores propios, el mismo fundido en todo).
+- **Inspección en navegador antes de enseñar** (`inspeccion.md`, `scripts/inspect.mjs`): capturas a
+  cada ancho en claro, oscuro, movimiento reducido y sin JavaScript, una tira del scroll, medidas
+  (desborde, contenido que no aparece, página quieta, tramos vacíos) y una crítica escrita con
+  rúbrica; tres rondas como máximo. Las pantallas que persuaden tienen su página de prueba
+  (`templates/design/pagina.html`) donde las escenas y la cosa viva funcionan de verdad.
 - **Superficies y fondos.** Más allá del color sólido: texturas, patrones, cambios entre secciones
   y tratamiento de imagen, salidos del territorio y en CSS o SVG ligero. El contraste se mide sobre
   la zona más difícil del fondo (`--surface-worst`).
@@ -139,8 +160,8 @@ en `skills/design-spec/references/spec-mode.md`.
 ### Cada pantalla, su propia composición
 
 Lo que evita que todas las pantallas parezcan la misma plantilla (`spec-mode.md` §1–§4):
-- **2–3 composiciones por spec** sobre el sistema aprobado, cada una con **nombre y metáfora**
-  sacada del contenido real ("la ficha del paciente como expediente con pestañas").
+- **2–3 composiciones por spec** sobre el sistema aprobado, cada una con **modo, registro e
+  idea** sacada del inventario del sujeto, con la prueba del competidor respondida.
 - **Vecino más parecido:** cada composición dice a qué otra pantalla del producto se parece más y
   en qué se diferencia; los componentes firma son **exclusivos** de su pantalla.
 - **Jerarquía declarada** con proporciones (destacado 7:5, mosaico 5:7) en lugar de rejillas de
@@ -148,13 +169,16 @@ Lo que evita que todas las pantallas parezcan la misma plantilla (`spec-mode.md`
 - **Riesgo marcado:** una composición puede llevar a propósito un elemento que roza el cliché, y
   el usuario decide si se queda.
 - **Adornos desde datos reales** (índices, rutas, código decorativo), ocultos a lectores de pantalla.
-- **Fichas de movimiento** con versión reducida, sin JavaScript y táctil, su coste en JS y reglas
-  de rendimiento (sin `filter` animado en superficies grandes ni `backdrop-filter` en elementos
-  fijos; revelados por disparo, no ligados al scroll).
+- **Fichas de movimiento** con tipo (escena, firma, entrada, respuesta, deleite…), filtro, versión
+  reducida, sin JavaScript, táctil y plan de teléfono, su coste en JS y reglas de rendimiento (sin
+  `filter` animado en superficies grandes; movimiento ligado al scroll solo en escenas, con un único
+  script común).
 - **Reglas de uso contables** del sistema (cuántos momentos protagonistas, dónde se permite el
   efecto firma) y **anti-clichés por pantalla** con la alternativa usada.
 - **Refinado registrado:** lo que cambia tras la revisión manual queda como decisión `refinado`
-  con su motivo (`/design-spec NNN --fix`).
+  con su motivo (`/design-spec NNN --fix`); una sección plana o que grita se ajusta con
+  `/design-spec NNN --bolder <sección>` o `--quieter <sección>`, solo esa sección y con el
+  vocabulario del sistema.
 
 ### Iterar antes de elegir
 | Si… | Usa | Qué hace |
@@ -219,7 +243,7 @@ de Microsoft Store en Windows no lo rompe. Sin ningún Python válido, el hook n
   plugin.json          # manifiesto (la versión aquí = skills_version de los proyectos)
   marketplace.json     # permite instalar el plugin desde este repo
 hooks/hooks.json       # guardia PreToolUse
-scripts/aidd.py        # validate · status · hash · templates · snapshot · changes · rotate · history · review-pack · hook (se copia a .ai/bin/ en cada proyecto)
+scripts/aidd.py        # validate · status · hash · templates · snapshot · changes · rotate · history · review-pack · lane-check · drift · deal · hook (se copia a .ai/bin/ en cada proyecto)
 shared/
   contract.md          # reglas comunes: estados, numeración, puertas de aprobación
   security-checklist.md  # seguridad del código (OWASP por temas)
@@ -228,7 +252,7 @@ shared/
   agent-security.md    # seguridad del proceso con agentes
 skills/
   init/                # SKILL.md + references/ + templates/
-  design-spec/         # SKILL.md + references/ (system-mode, spec-mode, nicho)
+  design-spec/         # SKILL.md + references/ (system-mode, spec-mode, nicho, creatividad, movimiento, inspeccion) + scripts/inspect.mjs
   seo/                 # SKILL.md + references/audit.md
   specify/ clarify/ plan/ tasks/ analyze/ implement/ review/ release/
 ```

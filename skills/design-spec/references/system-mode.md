@@ -89,22 +89,33 @@ Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`
    prueba realistas; nunca lorem ipsum ni cifras inventadas.
 6. Pantallas: 1–2 principales en cada ancho de `design.widths`. Lo que cambia con el ancho se
    escribe con `@container`, no con `@media` (el marco no es la ventana).
-7. **Idea** en una frase, anclada en un dato concreto de `brief.md` (público, contexto de uso,
-   producto, lugar) o en el concepto firma; debajo, las 2–3 decisiones de **estructura** que la
-   materializan, y el riesgo asumido. Ejemplos de forma (de sectores distintos): "La ficha del
+7. **Idea** con el motor de `creatividad.md`: modo de la pantalla principal (§1), inventario del
+   sujeto (§2) y la frase "X del sujeto se convierte en Y" con la prueba del competidor (§3),
+   anclada en el inventario, en un dato concreto de `brief.md` o en el concepto firma; **registro**
+   distinto por opción y al menos una `audaz`, con las jugadas del reparto
+   (`python .ai/bin/aidd.py deal`, §4); la **cosa viva** si la pantalla principal es de Persuadir
+   (§5). Debajo, las 2–3 decisiones de **estructura** que la materializan, y el riesgo asumido. Ejemplos de forma (de sectores distintos): "La ficha del
    paciente — la clínica se reconoce por su expediente: cabecera de datos fija, secciones en
    pestañas de archivo, cifras en monoespaciada"; "El lomo del libro — la librería se recorre como
    un estante: portadas de canto, títulos en vertical, color por sección". Una idea que no cambia la
    estructura es solo un nombre: rehaz la opción.
-8. **Paleta de movimiento**, derivada de la idea y del territorio: el **momento firma** (uno, el
-   protagonista), las microinteracciones (botones, filtros, tarjetas, campos), las entradas al
-   hacer scroll si las hay y las transiciones. Cada efecto con disparador, propiedades (solo
-   `transform`, `opacity` o `filter` salvo justificación), duración y curva con tokens y su
-   versión sin movimiento. El momento firma va en fotogramas y **en vivo** en la sección
-   "Movimiento" de `option.html`; el resto, sobrio.
-9. **Superficies y fondos**, derivados del territorio (no de una moda): fondo de página, cambios
-   entre secciones, texturas o patrones, tratamiento de imagen o ilustración y separadores. En
-   CSS o SVG ligero, sin imágenes pesadas ni vídeo de fondo. El texto se mide sobre la **zona más
+8. **Paleta de movimiento**, derivada de la idea y del territorio, con la capa completa del modo
+   (`movimiento.md` §2): en Persuadir, escenas según el registro, la **jugada firma**, entradas
+   coreografiadas por sección (variadas según el contenido), respuesta en cada control y una imagen
+   en movimiento; en Operar, respuesta, continuidad espacial y deleite en momentos raros. Tokens de
+   curva y duración de `movimiento.md` §3 (`--ease-out`, `--ease-expo`, `--ease-in-out`,
+   `--ease-exit`). Cada efecto con disparador, propiedades, duración y curva con tokens y su versión
+   sin movimiento. La jugada firma va en fotogramas y **en vivo** en la sección "Movimiento" de
+   `option.html`; las escenas y la cosa viva, en la página de prueba
+   `opcion-<x>-pagina.html` (`inspeccion.md` §1).
+9. **Superficies, color e imágenes**, derivados del territorio (no de una moda) y con la plenitud
+   de `creatividad.md` §6: **estrategia de color** declarada (contenida, comprometida, paleta
+   completa o empapada) y aplicada a escala de página; fondo de página, cambios entre secciones
+   (un campo de color por capítulo es válido), texturas o patrones, separadores; **imágenes** en el
+   orden de §6 (propias, generadas, colecciones abiertas acreditadas, dibujadas desde el sujeto),
+   grandes y de una familia, nunca presentadas como del cliente si no lo son. Escala tipográfica de
+   display (titular ≥ ~4× el cuerpo en Persuadir). Sin vídeo de fondo pesado en el visor; un clip
+   real en bucle va en la página de prueba con su póster. El texto se mide sobre la **zona más
    difícil** del fondo: define `--surface-worst` con ese color para que la página calcule el par.
    Un color sólido es una elección válida si la idea lo pide; dilo.
 10. **Marca en el navegador y al compartir** (sección "Al compartir" de `option.html`):
@@ -133,13 +144,17 @@ interfaces generadas (§6).
 - Repasa cada opción contra §6 y `anti-cliches.md`, rasgo por rasgo, haya o no plugin `design`;
   corrige lo que aparezca o, si el brief lo pide, dilo en su "Idea". Compara también las opciones
   entre sí con la regla de composición de arriba.
-- Abre cada HTML en un navegador si lo hay (o pídele al usuario que lo abra) en claro, oscuro y
-  "Sin movimiento". Ningún par de "Color" puede salir "no cumple": corrige los tokens, no el umbral.
+- Pasa cada opción (y su página de prueba) por **la inspección** (`inspeccion.md`): inspector sin
+  FAIL en claro, oscuro, "Sin movimiento" y sin JavaScript, la tira del scroll mirada y la crítica
+  escrita; tres rondas como máximo. Ningún par de "Color" puede salir "no cumple": corrige los
+  tokens, no el umbral. Responde las pruebas de `creatividad.md` §7.
 - Si el plugin `design` está habilitado: `design:design-critique` y `design:accessibility-review`
   sobre cada una; corrige lo grave antes de presentarla.
 
-**Presenta** una tabla (opción, idea, riesgo, ruta del HTML y enlace del canvas si lo hay) y pide
-que elija una o combine elementos.
+**Presenta** una tabla (opción, registro, idea, jugada firma y escenas, cosa viva, riesgo, notas
+de la crítica, ruta del HTML y enlace del canvas si lo hay), la **salida estándar** del sector en una
+línea sin recomendarla, y pide que elija una, combine elementos o pida otra ronda **más audaz** o
+**más segura** (`creatividad.md` §4).
 
 ### 2.5 Elección → sistema
 1. `docs/design/system.md` con `source: chosen`, `status: draft`: los tokens de la opción elegida
@@ -345,6 +360,10 @@ Concepto firma: <el de creative-direction.md, o "ninguno: cada opción propone e
 Clichés del sector: <los de anti-cliches.md, con su alternativa>
 Nicho: <convenciones, materiales y territorio elegido de docs/design/nicho.md>
 Movimiento y superficies: <los de creative-direction.md>
+Modo y registro: <persuadir · experiencia · operar · leer> · <sobrio · firme · audaz por opción>
+Inventario e idea: <8–12 cosas del sujeto; frase "X se convierte en Y" por opción>
+Jugadas repartidas: <IDs de aidd.py deal y semilla>; cosa viva: <qué hace la persona>
+Imágenes disponibles: <propias · generadas · colecciones abiertas · dibujadas · ninguna>
 Sistema de diseño: <tokens clave de system.md, o "a definir" en modo sistema>
 Contenido real: <textos y datos exactos; nunca lorem ipsum>
 Artboards:
@@ -353,7 +372,7 @@ Artboards:
   - Cada una a <design.widths>
   - Estados: vacío, carga, error, foco, deshabilitado
   - Movimiento como fotogramas anotados (inicio → medio → final), con versión sin movimiento;
-    paleta de movimiento (momento firma, microinteracciones, entradas, transiciones)
+    capa de movimiento del modo (escenas, jugada firma, entradas, respuesta, imagen en movimiento)
   - Superficies y fondos de cada opción, con el texto sobre la zona más difícil del fondo
 Restricciones: <constitución: WCAG, toque mínimo, plataforma>; sin clichés de anti-cliches.md;
   solo tokens del sistema (modo spec)
@@ -378,18 +397,25 @@ generada sin dirección:
 - etiquetas en mayúsculas espaciadas sobre cada título, metadatos unidos con puntos medios,
   monoespaciada para cualquier dato pequeño, flechas añadidas a todos los botones;
 - numeración decorativa (01, 02, 03) en contenido que no es una secuencia;
-- animaciones de entrada en cada sección en lugar de un único momento con sentido;
+- la misma animación de entrada, con el mismo tiempo, en cada sección (las entradas se
+  coreografían según el contenido: `movimiento.md` §2);
 - el mismo esqueleto de página en todas las opciones, con solo el color, el radio y la sombra
   cambiados.
 
 - fondos de moda sin relación con la idea: manchas de color difusas, degradados de malla, vidrio
   esmerilado, grano o ruido en toda la página, rejilla de puntos;
-- movimiento genérico: todo entra con fundido y desplazamiento al hacer scroll, parallax, cursores
-  personalizados, contadores que suben, texto que se escribe solo sin motivo.
+- movimiento genérico (`movimiento.md` §7): el mismo fundido en cada bloque, parallax o contadores
+  sin relación con la idea ni datos reales, cursores personalizados, pantalla de carga, scroll
+  secuestrado, texto que se escribe solo;
+- la página quieta: nada responde ni se mueve, o solo un fundido; en Persuadir es tan delator como
+  el exceso.
 
 - tarjeta para compartir que no se parece al sitio: el logo centrado sobre un degradado, marca +
   título + descripción en columna sobre fondo liso (la base de la plantilla), o una captura de la
   página reducida hasta que nada se lee; un ícono que es un cuadrado redondeado con iniciales en la
   fuente del sistema.
 
-Gasta la audacia en un solo elemento reconocible y mantén el resto sobrio.
+**Concentra la audacia, no la elimines:** una jugada firma reconocible y, en Persuadir, las
+escenas que pida el registro, con secciones tranquilas entre ellas. Quitar adornos sin poner nada
+en su lugar deja la página delgada: llena el espacio con escala, contenido completo, imágenes del
+sujeto o un campo de color (`creatividad.md` §6), nunca con otro adorno.

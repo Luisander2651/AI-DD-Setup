@@ -33,6 +33,10 @@ Uso:
                                    Deriva para /sync: commits de código sin spec ni ficha, specs
                                    released tocadas después, huecos de architecture.md, specs
                                    inferred y fichas abiertas viejas.
+  aidd.py deal [--mode persuadir|experiencia|operar|leer] [--n N] [--seed S] [--json]
+                                   Reparte jugadas firma y escenas del catálogo de diseño para N
+                                   composiciones (por defecto 3), distintas entre sí, con una
+                                   semilla reproducible (la usa /design-spec contra el sesgo).
   aidd.py hook pre-tool            Hook PreToolUse: lee el evento JSON por stdin.
 
 Solo usa la biblioteca estándar de Python 3.8+. Se copia a cada proyecto como .ai/bin/aidd.py
@@ -47,7 +51,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.15.0"
+VERSION = "1.16.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -2240,6 +2244,83 @@ def template_sha(path):
     return hashlib.sha256("\n".join(lines).strip().encode("utf-8")).hexdigest()[:12]
 
 
+# Catálogo de /design-spec (skills/design-spec/references/movimiento.md §5): id, nombre, cuándo.
+DEAL_SCENES = (
+    ("ventana", "Ventana que se abre a la imagen a sangre", "un producto o un lugar con una gran fotografía"),
+    ("historia-fijada", "Titular fijo mientras pasan sus elementos", "un proceso, un método, capítulos"),
+    ("galeria-lateral", "Fila de imágenes que avanza de lado", "pocas salas, platos o piezas"),
+    ("hoja-sobre-imagen", "Capítulo que sube como hoja sobre una foto fija", "capítulos con imagen propia"),
+    ("vuelo", "Cámara que atraviesa el propio trabajo", "un estudio, un archivo, mucha obra"),
+    ("reparto", "Tarjetas reales que se reparten y aterrizan", "una colección, un menú, un catálogo corto"),
+    ("palabra-empujada", "Una línea enorme empujada por el scroll", "una marca cuyo argumento es una palabra"),
+    ("cambio-de-estado", "El objeto pasa por sus estados", "un producto que transforma algo"),
+)
+DEAL_MOVES = (
+    ("titular-enmascarado", "Líneas del titular que suben desde su base", "un nombre o argumento corto"),
+    ("persiana", "Imagen del hero que se abre desde un borde", "un producto con su objeto"),
+    ("marca-que-escala", "Marca gigante que cambia de escala con el scroll", "un nombre corto y fuerte"),
+    ("indice-con-vista", "Filas de texto que muestran su imagen", "un portafolio o lista de obras"),
+    ("fundido-lento", "Hero que cruza 3–4 fotografías", "un restaurante, un hotel, un lugar"),
+    ("marquesina", "Línea de tipo grande que viaja despacio", "un evento, una agenda, un manifiesto"),
+    ("tinta", "Frase que se llena de tinta al subir", "un manifiesto, una declaración"),
+    ("cifras-que-ruedan", "Cifras reales que ruedan una vez", "un informe o una práctica con números"),
+    ("telon-final", "Pie que aparece desde debajo de la página", "un cierre con el nombre a todo el ancho"),
+    ("imagen-que-viaja", "La imagen pulsada viaja a la página siguiente", "un índice con fichas"),
+    ("color-por-capitulo", "Cada capítulo es su campo de color", "una historia con partes claras"),
+    ("fila-arrastrable", "Fila horizontal de imágenes con imán", "galerías, productos, habitaciones"),
+)
+DEAL_FEEL = (
+    ("nace-del-disparador", "Menú o panel que crece desde su botón", "menús, popovers, paneles"),
+    ("fila-a-detalle", "La fila pulsada se transforma en el detalle", "listas con vista de detalle"),
+    ("guardado-optimista", "El cambio se ve al instante y se revierte si falla", "edición frecuente"),
+    ("arrastre-con-resortes", "Arrastrar y soltar con física", "tableros, ordenar, descartar"),
+    ("lista-que-reordena", "Filas que se desplazan a su sitio", "listas que se filtran u ordenan"),
+    ("datos-que-transicionan", "Gráfico que pasa de un estado a otro", "paneles con periodos o filtros"),
+    ("mantener-para-confirmar", "Confirmar manteniendo pulsado", "acciones destructivas"),
+    ("vacio-que-orienta", "Vacío o primer uso con la siguiente acción", "primer uso"),
+    ("exito-proporcional", "Éxito en proporción al esfuerzo", "hitos y cierres de tarea"),
+)
+
+
+def cmd_deal(args):
+    """Reparte jugadas firma y escenas para las composiciones de /design-spec."""
+    import random
+    def opt(name, default):
+        return args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
+    mode = opt("--mode", "persuadir")
+    if mode not in ("persuadir", "experiencia", "operar", "leer"):
+        print(f"Modo desconocido: {mode} (persuadir · experiencia · operar · leer)")
+        return 2
+    try:
+        n = max(1, min(4, int(opt("--n", "3"))))
+        seed = int(opt("--seed", str(random.SystemRandom().randrange(1, 10**6))))
+    except ValueError:
+        print("--n y --seed son números enteros")
+        return 2
+    rng = random.Random(seed)
+    if mode in ("persuadir", "experiencia"):
+        scenes, moves = rng.sample(DEAL_SCENES, min(len(DEAL_SCENES), 2 * n)), rng.sample(DEAL_MOVES, 2 * n)
+        hand = [{"composicion": "abcd"[i], "escenas": [scenes[2 * i][0], scenes[2 * i + 1][0]],
+                 "jugadas": [moves[2 * i][0], moves[2 * i + 1][0]]} for i in range(n)]
+    else:
+        feel = rng.sample(DEAL_FEEL, min(len(DEAL_FEEL), 2 * n))
+        hand = [{"composicion": "abcd"[i], "escenas": [], "jugadas": [feel[2 * i][0], feel[2 * i + 1][0]]}
+                for i in range(n)]
+    if "--json" in args:
+        print(json.dumps({"mode": mode, "seed": seed, "hand": hand}, ensure_ascii=False, indent=2))
+        return 0
+    names = {k: (nm, wh) for k, nm, wh in DEAL_SCENES + DEAL_MOVES + DEAL_FEEL}
+    print(f"Reparto · modo {mode} · semilla {seed}\n")
+    print("| Composición | Tipo | ID | Qué pasa | Le conviene a |\n|---|---|---|---|---|")
+    for h in hand:
+        for kind, ids in (("escena", h["escenas"]), ("jugada", h["jugadas"])):
+            for k in ids:
+                print(f"| {h['composicion']} | {kind} | `{k}` | {names[k][0]} | {names[k][1]} |")
+    print("\nElige para cada composición lo que su inventario puede llenar (una escena y una jugada,")
+    print("o ninguna si no dice nada del sujeto). Otra mano solo con motivo: --seed <otra>, y")
+    print("regístralo en Decisiones. Catálogo completo: design-spec/references/movimiento.md §5.")
+    return 0
+
 def cmd_templates(args):
     """Huellas de docs/templates/ frente a las registradas en project.yaml → template_hashes."""
     root = find_root(os.getcwd())
@@ -2288,6 +2369,8 @@ def main(argv):
         return 0
     if cmd == "templates":
         return cmd_templates(args)
+    if cmd == "deal":
+        return cmd_deal(args)
     if cmd == "snapshot":
         return cmd_snapshot(args)
     if cmd == "changes":

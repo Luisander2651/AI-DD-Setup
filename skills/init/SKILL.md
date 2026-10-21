@@ -16,7 +16,7 @@ Diseño y SEO tienen skills propias: `/init` llama a `/design-spec system` y a `
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.15.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.16.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -230,7 +230,7 @@ contenido se queda).
     paso 11, guarda sus huellas en `project.yaml` con `python .ai/bin/aidd.py templates --yaml`
     (`--upgrade` las usa para saber si el usuario las personalizó).
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
-    plugin). Propón añadir `.ai/cache/` al `.gitignore` (copias locales para `/analyze` delta).
+    plugin). Propón añadir `.ai/cache/` y `.ai/inspect/` al `.gitignore` (copias locales para `/analyze` delta y capturas del inspector de diseño).
 12. **CI (opcional, pregunta):** si el proyecto usa GitHub, propone
     `.github/workflows/ai-dd.yml` ← `templates/ci/github-actions-aidd.yml`, rellenado con los
     comandos de `AGENTS.md` y `security.tools`; quita los pasos con `command: null` o

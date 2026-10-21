@@ -16,11 +16,19 @@ Hecho con `/design-spec {{NNN}}` sobre el sistema `docs/design/system.md`. Compo
 
 **{{Composición A · "Nombre"}}**, elegida entre {{A · …, B · …, C · …}}{{; combinada con … de B}}.
 
-{{Metáfora en una o dos frases: qué cuenta la composición y con qué dato real de la spec.}}
+En esta pantalla, **{{algo que es del sujeto}}** se convierte en **{{el recurso que organiza la composición}}**.
 
+- **Modo y registro:** {{persuadir · experiencia · operar · leer}} · {{sobrio · firme · audaz}}.
+- **Prueba del competidor:** con {{competidor}} la frase {{ya no funciona porque …}}.
+- **Reparto:** semilla {{n}} → {{IDs elegidos}}{{; repeticiones y motivo}}.
 - **Motivo:** {{por qué esta, ligado al brief o al contenido}}.
 - **Vecino más parecido:** {{pantalla o sección}} → se diferencia en {{estructura, ritmo, componente firma}}.
 - **Riesgo asumido:** {{qué se sacrifica}} → {{cómo se compensa}}.
+
+## Cosa viva
+
+{{Qué hace la persona, con qué datos reales, dónde vive y su versión sin JavaScript · "No aplica:
+operar/leer"}}.
 
 ## Pantallas
 
@@ -51,16 +59,31 @@ Hecho con `/design-spec {{NNN}}` sobre el sistema `docs/design/system.md`. Compo
 |---|---|---|---|---|
 | {{--token}} | {{fijo · fluido · corte N px}} | {{…}} | {{— si fijo}} | {{…}} |
 
+## Imágenes
+
+| Imagen | Origen | Licencia y crédito | Sustituir antes de publicar |
+|---|---|---|---|
+| {{hero}} | {{propia · generada · colección abierta · dibujada}} | {{— · CC0, autor, fuente; crédito en el pie}} | {{sí/no}} |
+
 ## Movimiento
 
+Capa del modo (`design-spec/references/movimiento.md` §2): {{escenas · jugada firma · entradas ·
+respuesta · imagen en movimiento}}. Vivo en `design/opcion-a-pagina.html`.
+
 ### M-1 — {{nombre}}
+- **Tipo y filtro:** {{escena · firma · entrada · respuesta · imagen en movimiento · deleite · sensación}}{{ (ID del catálogo)}}; frecuencia {{…}}, propósito {{…}}.
 - **Disparador:** {{carga · entrada en pantalla · puntero fino · foco · toque}}; {{una sola vez · se repite}}.
 - **Elementos y propiedades:** {{…}} (`transform`, `opacity`{{, `filter`: justificación}}).
 - **Duración y curva:** {{--duration-… / --ease-…}}; **inicial → final:** {{…}}; **secuencia:** {{…}}.
 - **Técnica:** {{CSS · transición entre vistas · Web Animations API · librería (ADR)}}.
-- **Reducido:** {{…}} · **Sin JavaScript:** {{contenido completo y visible}} · **Táctil:** {{… · sin efecto}}.
+- **Reducido:** {{…}} · **Sin JavaScript:** {{contenido completo y visible}} · **Táctil:** {{… · sin efecto}}{{ · **Teléfono** (escenas): misma · más simple · composición terminada}}.
 - **Coste:** {{bytes de JS}} de {{presupuesto de la constitución}}; comparte propiedades con: {{ninguna}}.
 - **Fotogramas:** `opcion-a.html#movimiento`.
+
+## Inspección
+
+- **Rondas:** {{n}} de 3 · **Inspector:** {{0 FAIL · n WARN (defendidos: …)}} · **Crítica:** `design/critica-a.md`.
+- **Tres problemas corregidos:** {{…}}.
 
 ## Accesibilidad
 

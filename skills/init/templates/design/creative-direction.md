@@ -19,15 +19,24 @@ opciones" si el usuario no dio ninguno}}
 ## Color y tipografía
 - {{papel del color de marca; familias y su uso}}
 
+## Modo y registro
+- Pantallas por modo: {{persuadir: landing, … · operar: panel, … · leer: …}}
+- Registro máximo permitido: {{sobrio · firme · audaz}} (las opciones cubren registros distintos
+  hasta este; `design-spec/references/creatividad.md` §4).
+
 ## Movimiento
-- Intensidad: {{sobria · moderada · protagonista controlada}}; un único momento protagonista por
-  pantalla como máximo.
+- Intensidad: {{sobria · moderada · protagonista}}; escenas de scroll por página en Persuadir:
+  {{0 · hasta 1 · hasta 3}}; una jugada firma por pantalla como máximo.
 - Carácter: {{preciso · físico · suave…, derivado del territorio}}
-- Paleta: momento firma {{…}}; microinteracciones {{…}}; entradas al hacer scroll {{sí/no y cuáles}};
-  transiciones {{…}}.
+- Paleta: jugada firma {{…}}; escenas {{IDs del catálogo o "las deciden las opciones"}};
+  entradas {{cómo cambian según el contenido}}; respuesta en controles {{…}}; transiciones {{…}}.
 
 ## Superficies y fondos
+- Estrategia de color: {{contenida · comprometida · paleta completa · empapada}}; escena física que
+  decide claro u oscuro: {{quién lo usa, dónde, con qué luz}}.
 - {{color sólido, textura, patrón, fotografía o ilustración; de dónde sale en el territorio}}
+- Imágenes disponibles: {{propias · generadas · colecciones abiertas con crédito · dibujadas desde
+  el sujeto · ninguna}}.
 - Cambios entre secciones y separadores: {{…}}
 - Tratamiento de imagen: {{…}}
 

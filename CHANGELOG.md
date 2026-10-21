@@ -3,6 +3,57 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.16.0] - 2026-10-21
+Diseño creativo. `/design-spec` decía sobre todo qué no hacer (anti-clichés, "un solo elemento
+audaz", "revelados por tiempo antes que ligados al scroll") y no daba con qué ser audaz: las
+páginas salían correctas, sobrias y quietas. Esta versión toma lo que funciona en skills de diseño
+públicas (Taste Skill, Impeccable, las de Emil Kowalski, Frontend Design) y lo adapta al flujo.
+
+### Added
+- `design-spec/references/creatividad.md`: modo de la pantalla (persuadir, experiencia, operar,
+  leer), inventario del sujeto (8–12 cosas, tres familias de material), frase de la idea con la
+  **prueba del competidor**, registros `sobrio` · `firme` · `audaz` (al menos una opción audaz),
+  salida estándar del sector sin recomendarla, rondas "más audaz" o "más segura", la **cosa
+  viva**, plenitud (escala, estrategia de color, orden de imágenes con crédito, contenido completo),
+  pruebas antes de enseñar y los ajustes `--bolder` / `--quieter`.
+- `design-spec/references/movimiento.md`: filtro por animación (frecuencia, propósito, velocidad,
+  función), capa completa por modo, tokens de curva y duración, **escenas de scroll** sobre
+  escenario `sticky` con scroll nativo, catálogo de jugadas firma, escenas y jugadas de sensación,
+  ambición técnica con mejora progresiva, lo que no se usa y la ficha `M-n` ampliada (tipo, filtro,
+  plan de teléfono).
+- `design-spec/references/inspeccion.md` y `design-spec/scripts/inspect.mjs`: inspector en Chromium
+  (usa Playwright si ya está; no instala nada) con capturas por ancho en claro, oscuro, movimiento
+  reducido y sin JavaScript, tira del scroll y medidas (desborde, contenido que no aparece, página
+  quieta, tramos vacíos, titulares largos); crítica escrita con rúbrica y tres rondas como máximo.
+- `aidd.py deal`: reparte jugadas y escenas del catálogo por composición con semilla reproducible.
+- Plantilla `templates/design/pagina.html`: página de prueba a ancho real con el escenario común de
+  escenas (progreso en `--p`), entradas con `data-reveal` y versión reducida y sin JavaScript.
+- `option.html`: sección "Idea" (modo, registro, idea, prueba del competidor, inventario, jugadas,
+  cosa viva, color e imágenes, pruebas) y enlace a la página de prueba.
+- `spec-design.md`: modo y registro, reparto, "Cosa viva", "Imágenes" e "Inspección".
+- `/design-spec NNN --bolder <sección>` y `--quieter <sección>`.
+
+### Changed
+- `spec-mode.md` §2 y `system-mode.md` §2.4: las composiciones salen del motor creativo y pasan la
+  inspección antes de enseñarse; la tabla de presentación incluye registro, idea, jugadas, cosa
+  viva y notas de la crítica.
+- Movimiento: el scroll ligado ya no se desaconseja en general; se permite dentro de escenas con un
+  único script común. Los anti-clichés prohíben el mismo fundido en todo, la página quieta, las
+  pantallas de carga, el scroll secuestrado y los cursores propios; "gasta la audacia en un solo
+  elemento" pasa a "concentra la audacia, no la elimines".
+- Plantillas: tokens de movimiento ampliados en `system.md` y "Reglas de uso" con escenas;
+  `creative-direction.md` con "Modo y registro", estrategia de color e imágenes disponibles;
+  `anti-cliches.md` con cinco filas nuevas.
+- Entrevista (Ronda 4b): registro máximo, imágenes que existen y qué puede hacer el visitante.
+  `/specify`: la sección "Diseño" recoge la semilla de la cosa viva y las imágenes disponibles.
+- `/implement` construye escenas y cosa viva como en la página de prueba y pasa el inspector antes
+  de la revisión manual; `/review` lo usa en pantallas de Persuadir.
+
+### Upgrade
+`/ai-dd:init --upgrade` (paso 9e) propone las filas nuevas de anti-clichés, las secciones nuevas de
+`creative-direction.md` y los tokens de movimiento como cambio menor de `system.md`, y añade
+`.ai/inspect/` a `.gitignore`. Las specs ya diseñadas no se tocan.
+
 ## [1.15.0] - 2026-10-18
 Modelo por subagente. Hasta ahora todos los subagentes corrían con el modelo de la sesión: en la
 spec 016 de un proyecto real, la primera review leyó ≈ 330k tokens con cuatro revisores, todos en

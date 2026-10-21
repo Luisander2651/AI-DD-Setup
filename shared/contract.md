@@ -30,9 +30,12 @@ revisa todas las skills afectadas.
   `/init` nunca rediseña: en brownfield solo documenta el diseño existente si el usuario acepta
   (`declined` si no) y un rediseño es siempre una spec propia. El diseño lo hace **`/design-spec`**:
   `system` para el sistema (lo llama `/init`) y `NNN` para cada spec que crea o rehace pantallas,
-  entre `/specify` y `/plan`: 2–3 composiciones sobre el sistema, cada una con metáfora del
-  contenido real y distinta de las pantallas vecinas, y `docs/specs/NNN-<slug>/design.md`
-  (`draft` → `approved` por el usuario). El SEO lo hace **`/seo`** (`setup`, `audit`, `verify`).
+  entre `/specify` y `/plan`: 2–3 composiciones sobre el sistema, cada una con una idea sacada del
+  sujeto (no de la categoría), un registro distinto (al menos una audaz) y distinta de las
+  pantallas vecinas; en pantallas que persuaden, cosa viva y escenas de scroll con scroll nativo;
+  todas inspeccionadas en navegador antes de enseñarse; y `docs/specs/NNN-<slug>/design.md`
+  (`draft` → `approved` por el usuario). Movimiento: `skills/design-spec/references/movimiento.md`
+  (lo leen también `/implement` y `/review`). El SEO lo hace **`/seo`** (`setup`, `audit`, `verify`).
 - **Jerarquía de fuentes.** Ante un conflicto entre documentos prevalece, en este orden: este
   contrato y `shared/agent-security.md` → `docs/constitution.md` → `AGENTS.md` → `docs/security.md`,
   `docs/architecture.md`, el sistema de diseño y `docs/seo.md` del proyecto (si existen) → specs `approved`,

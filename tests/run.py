@@ -303,8 +303,54 @@ def scenario_design_templates():
     check("eje.html calcula el contraste y comprueba la carga de fuentes",
           "function ratio" in eje and "document.fonts" in eje)
     for name in ("system.md", "brief.md", "creative-direction.md", "anti-cliches.md", "option.html", "eje.html", "nicho.md",
-                 "spec-design.md"):
+                 "spec-design.md", "pagina.html"):
         check(f"existe templates/design/{name}", os.path.isfile(os.path.join(base, name)))
+
+
+def scenario_design_creative():
+    print("diseño creativo (reparto, catálogo, página de prueba, inspector):")
+    import re as _re
+    root = os.path.dirname(HERE)
+    tmp = tempfile.mkdtemp()
+    code, a = run(["deal", "--seed", "42", "--json"], tmp)
+    _, b = run(["deal", "--seed", "42", "--json"], tmp)
+    hand = json.loads(a)["hand"] if code == 0 else []
+    ids = [k for h in hand for k in h["escenas"] + h["jugadas"]]
+    check("deal: misma semilla, misma mano", code == 0 and a == b, a)
+    check("deal: 3 composiciones, nada repetido entre ellas", len(hand) == 3 and len(ids) == len(set(ids)) == 12, a)
+    code, o = run(["deal", "--mode", "operar", "--n", "4", "--seed", "1", "--json"], tmp)
+    oh = json.loads(o)["hand"] if code == 0 else []
+    check("deal: operar reparte sensación y ninguna escena",
+          len(oh) == 4 and all(not h["escenas"] and len(h["jugadas"]) == 2 for h in oh), o)
+    code, _ = run(["deal", "--mode", "fiesta"], tmp)
+    check("deal: modo desconocido es error", code == 2)
+    shutil.rmtree(tmp, ignore_errors=True)
+    mov = open(os.path.join(root, "skills", "design-spec", "references", "movimiento.md"), encoding="utf-8").read()
+    src = open(AIDD, encoding="utf-8").read()
+    cat_ids = set(_re.findall(r'^\s+\("([a-z-]+)", "', src, _re.M))
+    sec5 = mov.split("## 5.", 1)[-1].split("## 6.", 1)[0]
+    doc_ids = set(_re.findall(r"^\| `([a-z-]+)` \|", sec5, _re.M))
+    check("catálogo de movimiento.md = catálogo de aidd.py deal", cat_ids and cat_ids == doc_ids,
+          f"solo script: {sorted(cat_ids - doc_ids)} · solo doc: {sorted(doc_ids - cat_ids)}")
+    base = os.path.join(root, "skills", "init", "templates", "design")
+    pag = open(os.path.join(base, "pagina.html"), encoding="utf-8").read()
+    ext = _re.findall(r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']+|@import|url\(\s*["']?(?:https?:)?//""", pag)
+    check("pagina.html no carga nada externo", not ext, str(ext))
+    check("pagina.html: escenas sticky con progreso, entradas y movimiento reducido",
+          "data-scene" in pag and "position: sticky" in pag and "--p" in pag and "data-reveal" in pag
+          and "prefers-reduced-motion" in pag and "IntersectionObserver" in pag)
+    opt = open(os.path.join(base, "option.html"), encoding="utf-8").read()
+    check("option.html: sección Idea con prueba del competidor y cosa viva",
+          'id="idea"' in opt and "Prueba del competidor" in opt and "Cosa viva" in opt and "opcion-x-pagina.html" in opt)
+    sd = open(os.path.join(base, "spec-design.md"), encoding="utf-8").read()
+    check("spec-design.md: modo, registro, cosa viva, imágenes e inspección",
+          "Modo y registro" in sd and "## Cosa viva" in sd and "## Imágenes" in sd and "## Inspección" in sd)
+    refs = os.path.join(root, "skills", "design-spec", "references")
+    for name in ("creatividad.md", "movimiento.md", "inspeccion.md"):
+        check(f"existe design-spec/references/{name}", os.path.isfile(os.path.join(refs, name)))
+    ins = os.path.join(root, "skills", "design-spec", "scripts", "inspect.mjs")
+    check("existe design-spec/scripts/inspect.mjs y no instala nada",
+          os.path.isfile(ins) and "npm install" not in open(ins, encoding="utf-8").read())
 
 
 def scenario_closed_specs():
@@ -625,6 +671,7 @@ if __name__ == "__main__":
     scenario_encoding()
     scenario_hook()
     scenario_design_templates()
+    scenario_design_creative()
     scenario_closed_specs()
     scenario_release_status()
     scenario_design_contrast_rule()
