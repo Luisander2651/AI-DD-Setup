@@ -185,6 +185,8 @@ Lo que evita que todas las pantallas parezcan la misma plantilla (`spec-mode.md`
 |---|---|---|
 | Ninguna opción convence | `/design-spec system --redo-options` (o "rehacer" en `/design-spec NNN`) | Pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `history/ronda-<N>/` y genera otra con "qué cambia respecto a la ronda anterior". |
 | Una opción convence salvo un aspecto | `/design-spec system --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <opción>` (o "afinar un eje" en `/design-spec NNN`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula luz exterior. |
+| Las opciones se quedan cortas o se pasan | "más audaz" o "más segura" al elegir en `/design-spec` | Otra ronda: formas ajenas al sector y registro audaz en todas, o la convención del sector bien hecha frente a competidores con nombre. La ronda anterior se archiva. |
+| Ya se eligió y una sección se lee plana o grita | `/design-spec NNN --bolder <sección>` · `--quieter <sección>` | Sube o baja solo esa sección con el vocabulario del sistema, la registra como `refinado` y la vuelve a inspeccionar. |
 | Ya hay sistema aprobado | `/specify "rediseño de …"` | Spec de rediseño (ver arriba). |
 
 En `/plan`, la tipografía o el color se afinan **antes** de "Cambios a incorporar al sistema";
@@ -220,6 +222,8 @@ por idioma, sin redirecciones automáticas).
 - `templates [--yaml]` — huellas de `docs/templates/`: `--upgrade` sabe cuáles personalizó el usuario.
 - `rotate` / `history [--write] [--migrate]` — archivan e indexan rondas y versiones en
   `docs/specs/NNN/history/` (nunca se borran).
+- `deal [--mode persuadir|operar] [--n N] [--seed S]` — reparte jugadas firma y escenas del
+  catálogo de diseño entre las composiciones de `/design-spec`, con semilla reproducible.
 - `review-pack` — paquete compartido de `/review`: diff de código filtrado desde `impl_base`,
   alcance frente a las tareas y contexto mínimo para cada revisor.
 - **Hook `PreToolUse`** (`hooks/hooks.json`): en proyectos con `.ai/project.yaml`, según
@@ -303,17 +307,19 @@ día el validador, las plantillas y `.ai/project.yaml`; ver "Mantenimiento" → 
 
 - **Python 3.8+** para el validador (`.ai/bin/aidd.py`) y el hook.
 - **Skill `design`** (opcional; crea un canvas Design a partir de un brief): si la sesión la
-  ofrece, `/init` y `/plan` generan con ella las opciones de diseño (y las láminas de una ronda
+  ofrece, `/design-spec` genera con ella las opciones de diseño (y las láminas de una ronda
   acotada a un eje) y enlazan el canvas. Sin ella,
   las opciones se generan igual en HTML con `skills/init/templates/design/option.html`. El HTML es
   siempre el entregable: queda en el repo y se abre sin red.
+- **Playwright** (opcional): el inspector de diseño (`skills/design-spec/scripts/inspect.mjs`, Node
+  18+) lo usa si ya está en el proyecto, global o en `PLAYWRIGHT_PATH`, y no instala nada. Sin él,
+  las capturas se hacen con la herramienta de navegador de la sesión o las pasa el usuario.
 - **Plugin oficial `design` de Anthropic** (opcional, recomendado en proyectos con interfaz:
   `frontend`, `fullstack`, `mobile`). Por ahora el flujo **depende de él** para la parte de diseño:
-  `/init` lo registra en `skills.enabled` si está instalado, `/plan` deja la nota de revisarlo con
+  `/init` lo registra en `skills.enabled` si está instalado, `/design-spec` deja la nota de revisarlo con
   `design:design-handoff` y `/review` añade `design:accessibility-review` y `design:design-critique`.
-  Si no está instalado, el flujo sigue con su revisión propia de accesibilidad. En una versión
-  posterior este plugin tendrá su propia skill de diseño, construida a partir de cómo se usa esta
-  (ver `docs/analisis-brechas.md` → hoja de ruta).
+  Si no está instalado, el flujo sigue con su revisión propia de accesibilidad y con la skill
+  propia `/design-spec` (que no depende de él).
 
 ## Mantenimiento
 
