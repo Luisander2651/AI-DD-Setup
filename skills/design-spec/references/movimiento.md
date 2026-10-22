@@ -26,6 +26,9 @@ aparezca).
 Duraciones: pulsar 100–160 ms · hover 150–200 ms · menús 150–250 ms · diálogos 200–450 ms ·
 revelados 600–900 ms · salida 60–70 % de su entrada. Escalonados: 50–110 ms, cuatro pasos como
 máximo. Sin rebote ni elástico en interfaz; resortes solo en gestos de arrastre.
+Momento firma al cargar (uno por página, si la dirección lo pide): una secuencia de fases que
+termina en menos de 5 s (WCAG 2.2.2), sin bloquear nada: el titular y la acción principal se ven
+desde el primer fotograma. `evaluate.mjs` espera esos 5 s antes de juzgar la primera pantalla.
 
 ## 3. Lo que se permite y cómo
 

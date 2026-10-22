@@ -47,7 +47,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.18.0"
+VERSION = "1.18.1"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}

@@ -3,6 +3,14 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.18.1] - 2026-10-22
+Correcciones tras la prueba del sistema con dirección oscura (sitio de ejemplo).
+
+### Fixed
+- `evaluate.mjs` juzgaba la primera pantalla 1 s después de cargar: un momento firma más largo
+  (permitido hasta 5 s) salía como contenido que no aparece. Ahora espera 5 s en la primera
+  pantalla, y `movimiento.md` fija la regla del momento firma al cargar.
+
 ## [1.18.0] - 2026-10-22
 Páginas más elaboradas sin volver al diseño "por gusto": fondos, escenas de scroll y fotos se piden
 como criterios.

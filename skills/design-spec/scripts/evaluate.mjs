@@ -300,7 +300,8 @@ async function walk(p, m, fn) {   // recorre la página pantalla a pantalla
   for (let y = 0; y < end; y += step) ys.push(y);
   ys.push(end);   // la última pantalla, aunque no sea completa
   for (const y of ys) {
-    await p.evaluate(y => window.scrollTo(0, y), y); await p.waitForTimeout(1000); await fn(y);
+    // En la primera pantalla, el momento firma de la carga puede durar hasta 5 s (movimiento.md §2).
+    await p.evaluate(y => window.scrollTo(0, y), y); await p.waitForTimeout(y === 0 ? 5000 : 1000); await fn(y);
   }
   await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(800);   // que terminen las transiciones de vuelta
 }
