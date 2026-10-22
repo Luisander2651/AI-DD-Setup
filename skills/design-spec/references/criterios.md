@@ -129,6 +129,11 @@ con la captura completa. **Umbral de aceptación**: puntuación ≥ `threshold` 
 defecto) **y** ningún punto por debajo de `floor` (3 por defecto). Los pesos pueden cambiar por
 spec con motivo (p. ej. `plantilla` 0 en una pantalla de ajustes), registrado en "Decisiones".
 
+**Dónde se buscan los textos:** por defecto en toda la página, prefiriendo el contenido a la barra,
+el menú y el pie. En una spec de navegación (o de cualquier pieza de la barra o del pie),
+`criterios.json` declara `"text_scope": "header"` (o el selector de la pieza) y los textos de los KPIs
+se buscan solo ahí.
+
 ## 6. Pedir una página más elaborada
 
 Fondos propios, escenas de scroll o fotos se piden como criterios, no como gusto: así el ciclo no

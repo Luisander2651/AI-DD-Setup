@@ -4,9 +4,17 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
 ## [1.18.1] - 2026-10-22
-Correcciones tras la prueba del sistema con dirección oscura (sitio de ejemplo).
+Correcciones tras la prueba del sistema con dirección oscura y de las specs de galería y menú (sitio
+de ejemplo).
+
+### Added
+- `criterios.json` acepta `text_scope` (selector): los textos de los KPIs se buscan solo dentro de
+  esa pieza. Sin él, `evaluate.mjs` prefiere el contenido a la barra y en una spec de menú encontraba
+  «Servicios» en la página y no en el menú.
 
 ### Fixed
+- `G-sin-js` buscaba los textos de todos los KPIs a cada ancho, aunque un KPI limitara sus anchos con
+  `widths`: un menú que en escritorio va en la barra fallaba por no mostrar el teléfono del panel.
 - `evaluate.mjs` juzgaba la primera pantalla 1 s después de cargar: un momento firma más largo
   (permitido hasta 5 s) salía como contenido que no aparece. Ahora espera 5 s en la primera
   pantalla, y `movimiento.md` fija la regla del momento firma al cargar.

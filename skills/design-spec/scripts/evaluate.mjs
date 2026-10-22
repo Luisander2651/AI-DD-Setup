@@ -151,18 +151,19 @@ const probe = (cfg) => {
   }
   // Texto encontrado y su posición.
   const find = t => {
-    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const scope = (cfg.text_scope && document.querySelector(cfg.text_scope)) || document.body;
+    const w = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
     const norm = s => s.replace(/\s+/g, ' ').toLowerCase();
     let n, best = null, chrome = null;   // prefiere el contenido a la barra, el menú y el pie
     while ((n = w.nextNode())) {
       const el = n.parentElement;
       if (!el || ignorable(el) || !norm(n.textContent).includes(norm(t))) continue;
-      if (el.closest('header,nav,footer,[role=banner],[role=navigation],[role=contentinfo]')) { chrome = chrome || el; continue; }
+      if (!cfg.text_scope && el.closest('header,nav,footer,[role=banner],[role=navigation],[role=contentinfo]')) { chrome = chrome || el; continue; }
       best = el; break;
     }
     best = best || chrome;
     if (!best) {   // el texto puede estar repartido entre varios nodos: busca el elemento más pequeño que lo contiene
-      const all = [...document.querySelectorAll('body *')].filter(el => !ignorable(el) && norm(el.innerText || '').includes(norm(t)));
+      const all = [...scope.querySelectorAll('*')].filter(el => !ignorable(el) && norm(el.innerText || '').includes(norm(t)));
       best = all.sort((a, b) => (a.innerText || '').length - (b.innerText || '').length)[0] || null;
     }
     if (!best) return { found: false };
@@ -274,7 +275,8 @@ const probe = (cfg) => {
 
 const kpis = C.kpis || [];
 const allTexts = [...new Set(kpis.flatMap(k => k.texts || (k.text ? [k.text] : [])))];
-const cfg = { contrast: G.contrast, contrast_large: G.contrast_large, touch: G.touch, tokens: (C.tokens && C.tokens.colors) || [], texts: allTexts };
+const cfg = { contrast: G.contrast, contrast_large: G.contrast_large, touch: G.touch, tokens: (C.tokens && C.tokens.colors) || [], texts: allTexts,
+  text_scope: C.text_scope || null };   // dónde buscar los textos de los KPIs (p. ej. "header" en una spec de navegación)
 
 async function openPage(width, extra = {}) {
   const ctx = await browser.newContext({ viewport: { width, height: width < 600 ? 844 : width < 1100 ? 1100 : 900 }, ...extra });
@@ -390,7 +392,9 @@ for (const w of [...new Set([narrow, wide])]) {
     const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, javaScriptEnabled: false });
     const p = await ctx.newPage(); await p.goto(url, { waitUntil: 'load' });
     const m = await p.evaluate(probe, cfg);
-    const missing = allTexts.filter(t => !m.texts[t] || !m.texts[t].found);
+    // Solo los textos de los KPIs que se miden a este ancho (un KPI puede limitar sus anchos con "widths").
+    const textsAt = [...new Set(kpis.filter(k => !k.widths || k.widths.includes(w)).flatMap(k => k.texts || (k.text ? [k.text] : [])))];
+    const missing = textsAt.filter(t => !m.texts[t] || !m.texts[t].found);
     gate('G-sin-js', 'Todo el contenido sin JavaScript', m.hidden.length === 0 && missing.length === 0,
       `${w}px: ${[...m.hidden.slice(0, 4), ...missing.map(t => `falta "${t}"`)].join(' · ')}`);
     await p.screenshot({ path: path.join(out, `${w}-sin-js.png`), fullPage: true }); shots.push(`${w}-sin-js.png`);
