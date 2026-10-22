@@ -3,6 +3,20 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.17.1] - 2026-10-22
+Correcciones tras la prueba del ciclo con el sitio de ejemplo (spec 001 de una SPA).
+
+### Added
+- Puerta `G-solapamiento` en `evaluate.mjs`: falla si un texto se cruza con otro texto o queda
+  tapado por una imagen, un dibujo o una superficie con fondo. Las barras fijas o sticky no cuentan.
+  En la prueba, dos candidatos tenían texto tapado a 1440 px (una rueda sobre el horario y una frase
+  sobre el titular) y pasaban todas las puertas.
+
+### Fixed
+- `evaluate.mjs` ignoraba los menús plegables cerrados solo a medias: sus enlaces contaban para
+  contraste, toque y solapamiento aunque no se vieran.
+- Comentario de `design.source` en la plantilla de `project.yaml`: decía "elegido entre opciones".
+
 ## [1.17.0] - 2026-10-22
 Diseño por criterios. El motor creativo de 1.16.0 seguía produciendo diseños genéricos: pedía
 creatividad y la frenaba con prohibiciones, generaba 2–3 opciones a medias para elegir por gusto y

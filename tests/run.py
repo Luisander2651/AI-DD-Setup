@@ -386,6 +386,10 @@ def scenario_design_loop():
     ev = os.path.join(root, "skills", "design-spec", "scripts", "evaluate.mjs")
     evs = open(ev, encoding="utf-8").read() if os.path.isfile(ev) else ""
     check("evaluate.mjs existe y no instala nada", evs and "npm install" not in evs)
+    check("evaluate.mjs tiene la puerta de solapamiento y criterios.md la documenta",
+          "G-solapamiento" in evs and "G-solapamiento" in open(os.path.join(refs, "criterios.md"), encoding="utf-8").read())
+    pyt = open(os.path.join(root, "skills", "init", "templates", "project.yaml"), encoding="utf-8").read()
+    check("project.yaml ya no habla de elegir entre opciones", "elegido entre opciones" not in pyt)
     src = open(AIDD, encoding="utf-8").read()
     py_types = set(_re.findall(r'"(\w+)"', src.split("KPI_TYPES = {", 1)[1].split("}", 1)[0]))
     js_types = set(_re.findall(r"case '(\w+)':", evs))

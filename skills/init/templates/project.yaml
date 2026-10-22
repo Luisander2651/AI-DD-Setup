@@ -57,7 +57,7 @@ observability:
     retention: {{TODO(init)}}
 design:                        # solo proyectos con interfaz (frontend, fullstack, mobile)
   status: {{none|declined|draft|approved}}   # declined: el usuario no quiso documentarlo (no se vuelve a preguntar)
-  source: {{chosen|extracted|null}}         # chosen: elegido entre opciones · extracted: documentado del código
+  source: {{chosen|extracted|null}}         # chosen: aceptado por criterios en /design-spec · extracted: documentado del código
   system: docs/design/system.md
   html: docs/design/system.html
   canvas: {{null}}             # enlace del canvas si se usó la skill design

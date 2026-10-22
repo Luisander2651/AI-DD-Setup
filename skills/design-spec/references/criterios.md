@@ -41,6 +41,7 @@ estricta):
 | `G-foco` | Foco visible en cada elemento al recorrer con el teclado | — |
 | `G-tokens` | Ningún color fuera de los tokens del sistema (lista en `tokens.colors`) | — |
 | `G-h1` | Un solo `h1` por página | 1 |
+| `G-solapamiento` | Ningún texto tapado: ni otro texto que se cruza con él ni una imagen, un dibujo o una superficie con fondo encima (las barras fijas o sticky no cuentan) | — |
 | `G-aparece` | Todo el contenido aparece al recorrer la página (ningún revelado que no se dispara) | — |
 | `G-reducido` | Todo visible con `prefers-reduced-motion: reduce` | — |
 | `G-sin-js` | Todo el contenido y los textos de los KPIs presentes sin JavaScript | — |

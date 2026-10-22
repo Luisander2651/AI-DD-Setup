@@ -85,8 +85,9 @@ const probe = (cfg) => {
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
   const blend = (fg, bg) => [0, 1, 2].map(i => fg[i] * fg[3] + bg[i] * (1 - fg[3]));
   const hex = c => '#' + c.slice(0, 3).map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+  const closedDetails = el => { const d = el.closest('details:not([open])'); return !!d && !el.closest('summary'); };
   const ignorable = el => el.closest('[aria-hidden="true"],[hidden],.sr-only,.visually-hidden,dialog:not([open]),[inert]') ||
-    getComputedStyle(el).display === 'none' || el.getClientRects().length === 0;
+    closedDetails(el) || getComputedStyle(el).display === 'none' || el.getClientRects().length === 0;
   const effOpacity = el => { let o = 1; for (let n = el; n && n.nodeType === 1; n = n.parentElement) { const cs = getComputedStyle(n); o *= parseFloat(cs.opacity); if (cs.visibility === 'hidden') return 0; } return o; };
   const label = el => `${el.tagName.toLowerCase()} "${(el.innerText || el.getAttribute('aria-label') || el.getAttribute('alt') || '').trim().replace(/\s+/g, ' ').slice(0, 40)}"`;
   const bgOf = el => {
@@ -100,7 +101,7 @@ const probe = (cfg) => {
     return [255, 255, 255, 1];
   };
   // Texto visible con nodo de texto propio.
-  const textEls = [...document.querySelectorAll('body *')].filter(el => !ignorable(el) &&
+  const textEls = [...document.querySelectorAll('body *')].filter(el => !ignorable(el) && (el.innerText || '').trim() &&
     [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length > 0) && effOpacity(el) > 0.05);
   const contrastFails = []; let contrastUnknown = 0;
   for (const el of textEls) {
@@ -175,6 +176,53 @@ const probe = (cfg) => {
     const shown = Math.min(r.bottom, vh * 0.85) - Math.max(r.top, 0);   // parte del elemento dentro de la zona leída
     if (r.width > 4 && r.height > 4 && shown >= r.height * 0.5 && effOpacity(el) < 0.05) hidden.push(label(el));
   }
+  // Solapamiento: texto tapado por otro texto, por una imagen o un dibujo, o por una superficie con fondo.
+  // Se mira solo lo que está en la ventana; las barras fijas o sticky no cuentan (tapan al desplazarse).
+  const overlaps = [];
+  const fixedLike = el => { for (let n = el; n && n.nodeType === 1; n = n.parentElement) { const p = getComputedStyle(n).position; if (p === 'fixed' || p === 'sticky') return true; } return false; };
+  const painted = el => {
+    if (el.matches('img,svg,canvas,video,picture,iframe') || el.closest('svg')) return true;
+    const c = rgba(getComputedStyle(el).backgroundColor);
+    if (c && c[3] > 0.05) return true;
+    return [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+  };
+  const lines = [];
+  for (const el of textEls) {
+    if (effOpacity(el) < 0.05 || fixedLike(el)) continue;
+    for (const n of el.childNodes) {
+      if (n.nodeType !== 3 || !n.textContent.trim()) continue;
+      const rg = document.createRange(); rg.selectNodeContents(n);
+      for (const r of rg.getClientRects()) if (r.width > 2 && r.height > 2 && r.bottom > 0 && r.top < vh) lines.push({ el, r });
+    }
+  }
+  const seenPairs = new Set();
+  for (let i = 0; i < lines.length; i++) {
+    const a = lines[i];
+    // Texto sobre texto: líneas de elementos distintos (ni uno dentro del otro) que se cruzan.
+    for (let j = i + 1; j < lines.length; j++) {
+      const b = lines[j];
+      if (a.el === b.el || a.el.contains(b.el) || b.el.contains(a.el)) continue;
+      const w = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
+      const h = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+      if (w > 4 && h > Math.min(a.r.height, b.r.height) * 0.25) {
+        const k = label(a.el) + '|' + label(b.el);
+        if (!seenPairs.has(k)) { seenPairs.add(k); overlaps.push(`${label(a.el)} se cruza con ${label(b.el)}`); }
+      }
+    }
+    // Algo pintado encima del texto: se prueban tres puntos de la línea.
+    for (const fx of [0.15, 0.5, 0.85]) {
+      const x = a.r.left + a.r.width * fx, y = a.r.top + a.r.height / 2;
+      if (x < 0 || x >= vw || y < 0 || y >= vh) continue;
+      const top = document.elementFromPoint(x, y);
+      if (!top || top === a.el || a.el.contains(top) || top.contains(a.el) || fixedLike(top)) continue;
+      if (getComputedStyle(top).pointerEvents === 'none' && !top.closest('svg')) continue;
+      if (painted(top)) {
+        const k = label(a.el) + '^' + label(top);
+        if (!seenPairs.has(k)) { seenPairs.add(k); overlaps.push(`${label(a.el)} tapado por ${label(top)}`); }
+        break;
+      }
+    }
+  }
   const inlineJs = [...document.querySelectorAll('script:not([src])')].reduce((n, s) => n + s.textContent.length, 0);
   return {
     vh, height: document.documentElement.scrollHeight,
@@ -183,7 +231,7 @@ const probe = (cfg) => {
     contrastFails: contrastFails.slice(0, 12), contrastFailCount: contrastFails.length, contrastUnknown,
     touchFails: touchFails.slice(0, 12), touchFailCount: touchFails.length,
     offTokens: [...offTokens.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12),
-    texts, heads, hidden: hidden.slice(0, 12), inlineJs,
+    texts, heads, hidden: hidden.slice(0, 12), inlineJs, overlaps: overlaps.slice(0, 12),
     faces: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/["']/g, '')),
     lcp: window.__aidd ? window.__aidd.lcp : 0, cls: window.__aidd ? window.__aidd.cls : 0,
   };
@@ -230,7 +278,7 @@ for (const w of widths) {
   const extHosts = [...net.hosts].filter(h => !isUrl || h !== new URL(target).host).filter(h => !G.external_hosts.includes(h));
   if (!isUrl) gate('G-red', 'Sin recursos de otros sitios (salvo los permitidos)', extHosts.length === 0, extHosts.join(', '));
   // Recorrido: contraste, toque y tokens en cada pantalla; contenido que no aparece; tira del scroll.
-  const seen = { contrast: new Set(), touch: new Set(), tokens: new Map(), hidden: new Set() };
+  const seen = { contrast: new Set(), touch: new Set(), tokens: new Map(), hidden: new Set(), overlap: new Set() };
   let frame = 0;
   await walk(p, first, async () => {
     const m = await p.evaluate(probe, cfg);
@@ -238,6 +286,7 @@ for (const w of widths) {
     if (w < 1024) m.touchFails.forEach(x => seen.touch.add(x));
     m.offTokens.forEach(([h, n]) => seen.tokens.set(h, (seen.tokens.get(h) || 0) + n));
     m.hidden.forEach(x => seen.hidden.add(x));
+    m.overlaps.forEach(x => seen.overlap.add(x));
     if (w === narrow || w === wide) {
       const f = `film-${w}-${String(frame++).padStart(2, '0')}.png`;
       await p.screenshot({ path: path.join(out, f) }); shots.push(f);
@@ -246,6 +295,7 @@ for (const w of widths) {
   if (G.contrast) gate('G-contraste', `Contraste de texto ≥ ${G.contrast}:1 (≥ ${G.contrast_large}:1 en texto grande)`, seen.contrast.size === 0, seen.contrast.size ? `${w}px: ${[...seen.contrast].slice(0, 6).join(' · ')}` : '');
   if (G.touch && w < 1024) gate('G-toque', `Objetivos de toque ≥ ${G.touch} px`, seen.touch.size === 0, seen.touch.size ? `${w}px: ${[...seen.touch].slice(0, 6).join(' · ')}` : '');
   if (cfg.tokens.length) gate('G-tokens', 'Solo colores del sistema', seen.tokens.size === 0, seen.tokens.size ? `${w}px: ${[...seen.tokens.entries()].slice(0, 6).map(([h, n]) => `${h}×${n}`).join(', ')}` : '');
+  gate('G-solapamiento', 'Ningún texto tapado por otro texto o por un elemento pintado', seen.overlap.size === 0, seen.overlap.size ? `${w}px: ${[...seen.overlap].slice(0, 4).join(' · ')}` : '');
   gate('G-aparece', 'Todo el contenido aparece al recorrer la página', seen.hidden.size === 0, seen.hidden.size ? `${w}px: ${[...seen.hidden].slice(0, 6).join(' · ')}` : '');
   // Foco visible, con el teclado, al mayor ancho.
   if (G.focus && w === wide) {

@@ -102,7 +102,8 @@ acepta el que supera un nivel medible.
 
 1. **Criterios** (sección "Criterios de diseño" de la spec y `design/criterios.json`):
    - **Puertas**, obligatorias: sin desplazamiento horizontal, contraste de cada texto contra su
-     fondo real, toques ≥ 44 px, foco visible, solo colores del sistema, un `h1`, todo visible sin
+     fondo real, ningún texto tapado por otro elemento, toques ≥ 44 px, foco visible, solo colores
+     del sistema, un `h1`, todo visible sin
      JavaScript y con movimiento reducido, nada que no aparezca al recorrer la página, sin recursos
      de otros sitios.
    - **KPIs** con objetivo, sacados de los criterios de aceptación, la constitución y el modo de la
