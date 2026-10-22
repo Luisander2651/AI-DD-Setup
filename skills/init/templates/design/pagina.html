@@ -16,7 +16,9 @@
   4. Escenas ligadas al scroll, solo si un criterio las pide (movimiento.md §3): una
      <section data-scene="<nombre>" data-hold="N"> con un .scene-stage dentro; primero la
      composición terminada y después la versión viva bajo .is-live, guiada por --p (0→1).
-  5. Mide: node <skill>/scripts/evaluate.mjs cN.html --criteria ../criterios.json
+  5. Imágenes: cada una con data-origen="propia|generada|archivo|muestra|dibujada" (la puerta G-imagenes
+     lo exige); las de muestra nunca representan al negocio y se listan en el acta.
+  6. Mide: node <skill>/scripts/evaluate.mjs cN.html --criteria ../criterios.json
 -->
 <html lang="{{es}}">
 <head>

@@ -68,7 +68,15 @@ const gate = (id, name, ok, detail) => {
 const shots = [];
 
 const initScript = () => {
-  window.__aidd = { lcp: 0, cls: 0 };
+  window.__aidd = { lcp: 0, cls: 0, moved: new Set() };
+  // Lo que de verdad se mueve: transiciones, animaciones CSS o WAAPI y estilos que cambia un script.
+  const mark = e => { try { window.__aidd.moved.add(e.target); } catch {} };
+  document.addEventListener('transitionrun', mark, true);
+  document.addEventListener('animationstart', mark, true);
+  new MutationObserver(ms => ms.forEach(m => window.__aidd.moved.add(m.target)))
+    .observe(document, { attributes: true, attributeFilter: ['style'], subtree: true });
+  const anim = Element.prototype.animate;
+  Element.prototype.animate = function (...a) { window.__aidd.moved.add(this); return anim.apply(this, a); };
   try {
     new PerformanceObserver(l => { for (const e of l.getEntries()) window.__aidd.lcp = e.startTime; })
       .observe({ type: 'largest-contentful-paint', buffered: true });
@@ -223,6 +231,33 @@ const probe = (cfg) => {
       }
     }
   }
+  // Fondos propios: regiones (secciones, cabecera, pie) con imagen o degradado de fondo, o con un
+  // dibujo o imagen decorativa que cubre al menos un cuarto de la región.
+  const regions = [...document.querySelectorAll('body > header, body > footer, main > section, main > header, section, [data-bg]')]
+    .filter((el, i, a) => !ignorable(el) && a.indexOf(el) === i);
+  const bgRegions = regions.filter(el => {
+    const cs = getComputedStyle(el), r = el.getBoundingClientRect(), area = r.width * r.height;
+    if (area < 1) return false;
+    if (cs.backgroundImage && cs.backgroundImage !== 'none') return true;
+    return [...el.querySelectorAll('svg,img,canvas,video,picture')].some(d => {
+      if (!(d.closest('[aria-hidden="true"]') || d.getAttribute('alt') === '' || d.getAttribute('role') === 'presentation')) return false;
+      const q = d.getBoundingClientRect();
+      return q.width * q.height >= area * 0.25;
+    });
+  }).map(el => `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`);
+  // Imágenes con origen declarado (data-origen en la imagen o en el elemento que la lleva de fondo).
+  const imgs = [];
+  for (const el of document.querySelectorAll('img, [style*="url("]')) {
+    if (ignorable(el)) continue;
+    const decorative = el.matches('img') && (el.getAttribute('alt') === '' || el.closest('[aria-hidden="true"]'));
+    const src = el.getAttribute('src') || '';
+    imgs.push({ src: el.getAttribute('alt') || (src.startsWith('data:') ? 'imagen incrustada' : src.split('/').pop().slice(0, 60)), origen: el.closest('[data-origen]')?.getAttribute('data-origen') || null, decorative });
+  }
+  for (const el of document.querySelectorAll('body *')) {
+    const bi = getComputedStyle(el).backgroundImage;
+    if (bi && bi.includes('url(') && !el.matches('[style*="url("]') && !ignorable(el))
+      imgs.push({ src: 'fondo de ' + el.tagName.toLowerCase(), origen: el.closest('[data-origen]')?.getAttribute('data-origen') || null, decorative: false });
+  }
   const inlineJs = [...document.querySelectorAll('script:not([src])')].reduce((n, s) => n + s.textContent.length, 0);
   return {
     vh, height: document.documentElement.scrollHeight,
@@ -231,7 +266,7 @@ const probe = (cfg) => {
     contrastFails: contrastFails.slice(0, 12), contrastFailCount: contrastFails.length, contrastUnknown,
     touchFails: touchFails.slice(0, 12), touchFailCount: touchFails.length,
     offTokens: [...offTokens.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12),
-    texts, heads, hidden: hidden.slice(0, 12), inlineJs, overlaps: overlaps.slice(0, 12),
+    texts, heads, hidden: hidden.slice(0, 12), inlineJs, overlaps: overlaps.slice(0, 12), bgRegions, imgs,
     faces: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/["']/g, '')),
     lcp: window.__aidd ? window.__aidd.lcp : 0, cls: window.__aidd ? window.__aidd.cls : 0,
   };
@@ -292,12 +327,22 @@ for (const w of widths) {
       await p.screenshot({ path: path.join(out, f) }); shots.push(f);
     }
   });
+  measures[w].dyn = await p.evaluate(() => {
+    const moved = window.__aidd ? [...window.__aidd.moved].filter(e => e.isConnected) : [];
+    const scenes = [...document.querySelectorAll('[data-scene]')];
+    return { moved: new Set(moved).size, scenes: scenes.length,
+      scenesLive: scenes.filter(sc => moved.some(m => m === sc || sc.contains(m))).length };
+  });
   if (G.contrast) gate('G-contraste', `Contraste de texto ≥ ${G.contrast}:1 (≥ ${G.contrast_large}:1 en texto grande)`, seen.contrast.size === 0, seen.contrast.size ? `${w}px: ${[...seen.contrast].slice(0, 6).join(' · ')}` : '');
   if (G.touch && w < 1024) gate('G-toque', `Objetivos de toque ≥ ${G.touch} px`, seen.touch.size === 0, seen.touch.size ? `${w}px: ${[...seen.touch].slice(0, 6).join(' · ')}` : '');
   if (cfg.tokens.length) gate('G-tokens', 'Solo colores del sistema', seen.tokens.size === 0, seen.tokens.size ? `${w}px: ${[...seen.tokens.entries()].slice(0, 6).map(([h, n]) => `${h}×${n}`).join(', ')}` : '');
   gate('G-solapamiento', 'Ningún texto tapado por otro texto o por un elemento pintado', seen.overlap.size === 0, seen.overlap.size ? `${w}px: ${[...seen.overlap].slice(0, 4).join(' · ')}` : '');
   gate('G-aparece', 'Todo el contenido aparece al recorrer la página', seen.hidden.size === 0, seen.hidden.size ? `${w}px: ${[...seen.hidden].slice(0, 6).join(' · ')}` : '');
   // Foco visible, con el teclado, al mayor ancho.
+  // Origen de las imágenes: toda imagen de contenido declara data-origen (propia, generada, muestra,
+  // archivo, dibujada). Las de muestra se listan en el informe para sustituirlas antes de publicar.
+  const noOrigin = first.imgs.filter(i => !i.origen);
+  gate('G-imagenes', 'Toda imagen declara su origen (data-origen)', noOrigin.length === 0, noOrigin.length ? `${w}px: ${noOrigin.slice(0, 4).map(i => i.src || 'img').join(' · ')}` : '');
   if (G.focus && w === wide) {
     const bad = new Set();
     for (let i = 0; i < 60; i++) {
@@ -377,6 +422,19 @@ const kpiResults = kpis.map(k => {
       const s = +(measures[wide].first.height / measures[wide].first.vh).toFixed(1);
       value = s; pass = s <= k.value; break;
     }
+    case 'scenes': {   // escenas de scroll que de verdad se mueven al bajar
+      const bad = ws.filter(w => (measures[w].dyn?.scenesLive ?? 0) < k.value);
+      value = ws.map(w => `${measures[w].dyn?.scenesLive ?? 0}/${measures[w].dyn?.scenes ?? 0}@${w}`).join(' '); pass = bad.length === 0; break;
+    }
+    case 'moving_elements': {   // elementos que se mueven al cargar y al recorrer la página
+      value = Math.min(...ws.map(w => measures[w].dyn?.moved ?? 0)); pass = value >= k.value; break;
+    }
+    case 'custom_background': {   // regiones con fondo propio (imagen, degradado o dibujo grande)
+      value = Math.min(...ws.map(w => measures[w].first.bgRegions.length)); pass = value >= k.value; break;
+    }
+    case 'max_samples': {   // imágenes de muestra que quedan (0 antes de publicar)
+      value = measures[wide].first.imgs.filter(i => i.origen === 'muestra').length; pass = value <= k.value; break;
+    }
     case 'fonts_loaded': {   // las familias de marca cargan de verdad (no la fuente de reemplazo)
       const loaded = new Set(measures[wide].first.faces);
       const miss = (k.families || []).filter(f => !loaded.has(f));
@@ -389,7 +447,8 @@ const kpiResults = kpis.map(k => {
 
 const gateList = [...gates.values()];
 const ok = gateList.every(g => g.pass) && kpiResults.every(k => k.pass);
-const report = { candidate: target, criteria: critPath, widths, measured_pass: ok, gates: gateList, kpis: kpiResults,
+const samples = measures[wide].first.imgs.filter(i => i.origen === 'muestra').map(i => i.src);
+const report = { candidate: target, criteria: critPath, widths, measured_pass: ok, gates: gateList, kpis: kpiResults, samples,
   rubric: { threshold: C.threshold ?? 80, floor: C.floor ?? 3, items: C.rubric || null, scored: false }, shots, out };
 fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(report, null, 2));
 const fmt = v => typeof v === 'number' && v > 2048 ? `${(v / 1024).toFixed(0)} kB` : String(v);
@@ -398,6 +457,7 @@ const md = [`# Evaluación de ${target}`, '', `Criterios: \`${critPath}\` · anc
   ...gateList.map(g => `| ${g.id} · ${g.name} | ${g.pass ? '✅' : '❌'} | ${g.details.join(' · ').replace(/\|/g, '\\|')} |`),
   '', '## KPIs', '', '| KPI | Objetivo | Medido | Resultado |', '|---|---|---|---|',
   ...kpiResults.map(k => `| ${k.id} · ${k.name} | ${Array.isArray(k.target) ? k.target.join(' · ') : fmt(k.target)} | ${fmt(k.value)} | ${k.pass ? '✅' : '❌'} |`),
+  '', `**Imágenes de muestra (sustituir antes de publicar):** ${samples.length ? samples.join(' · ') : 'ninguna'}`,
   '', `**Medición:** ${ok ? 'pasa → evaluar la rúbrica (evaluacion.md §4)' : 'no pasa → el candidato se descarta; sus fallos alimentan el siguiente'}`,
   '', '## Capturas', '', ...shots.map(s => `- ${s}`)].join('\n');
 fs.writeFileSync(path.join(out, 'report.md'), md + '\n');

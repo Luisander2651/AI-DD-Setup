@@ -47,7 +47,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.17.0"
+VERSION = "1.18.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -103,7 +103,9 @@ SEO_STATES = {"none", "declined", "proposed", "inferred", "approved"}
 SPEC_DESIGN_STATES = {"draft", "approved"}
 SPEC_DESIGN_EXPLORATION = {"loop", "options", "none"}   # options: actas anteriores a 1.17.0
 KPI_TYPES = {"above_fold", "above_fold_all", "visible", "order", "max_bytes", "max_js_bytes", "max_lcp_ms",
-             "max_cls", "max_heading_lines", "max_page_screens", "fonts_loaded"}
+             "max_cls", "max_heading_lines", "max_page_screens", "fonts_loaded", "scenes", "moving_elements",
+             "custom_background", "max_samples"}
+RUBRIC_KEYS = {"jerarquia", "primera_pantalla", "sistema", "lectura", "plantilla", "riqueza"}
 SEO_RENDERING = {"static", "ssr", "spa", "hybrid"}
 # Modelo de cada perfil de subagente (shared/contract.md → "Modelo de cada subagente").
 MODEL_PROFILES = ("critical", "standard", "mechanical", "implementation")
@@ -367,6 +369,17 @@ def validate_design_loop(rep, s, dfm):
         seen.add(kid)
         if k.get("type") not in KPI_TYPES:
             rep.err(f"design/criterios.json: {kid}: type desconocido ({k.get('type')!r})")
+    weights = ((crit.get("rubric") or {}).get("weights")) or {}
+    if weights:
+        unknown = sorted(set(weights) - RUBRIC_KEYS)
+        if unknown:
+            rep.err(f"design/criterios.json: puntos de rúbrica desconocidos {unknown} ({', '.join(sorted(RUBRIC_KEYS))})")
+        try:
+            total = sum(float(v) for v in weights.values())
+        except (TypeError, ValueError):
+            total = -1
+        if total != 100:
+            rep.err(f"design/criterios.json: los pesos de la rúbrica suman {total:g}, deben sumar 100")
     spec_ids = set(re.findall(r"\bK\d+\b", section(body(s["spec"] or ""), "design_criteria") or ""))
     missing = sorted(spec_ids - seen, key=lambda x: int(x[1:]))
     if missing:

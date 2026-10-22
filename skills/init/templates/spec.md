@@ -65,7 +65,7 @@ Modo: {{persuadir · operar · leer}} · umbral {{80}} · mínimo por punto {{3}
 | {{K2}} | {{JavaScript de la ruta}} | {{≤ 100 kB}} | {{constitución P…}} |
 
 Puertas: las de `design-spec/references/criterios.md` §2{{; cambios: …}}. Rúbrica: pesos por
-defecto{{; cambios: …}}.
+defecto{{; cambios: …, p. ej. `riqueza` 15 si se pide una página con fondos y movimiento (§6)}}.
 <!-- endif -->
 
 ## Requisitos no funcionales

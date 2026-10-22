@@ -38,6 +38,8 @@ Con un candidato aceptado (o el mejor, si el usuario lo acepta bajo el umbral), 
   **primera tarea** de `/tasks` los aplica a `system.md` y `system.html` (con su entrada en
   "Decisiones") en el mismo commit que el código que los necesita, y añade sus colores a
   `criterios.json → tokens.colors`;
+- **Imágenes de muestra** (si las hay): cada una con su fuente, licencia y qué la sustituye;
+  `/review` y `/release` exigen que no quede ninguna salvo decisión del usuario;
 - **Movimiento** (fichas `M-n` de `movimiento.md` §5), **accesibilidad** y **Decisiones** (tipos del
   contrato; `refinado` para lo que cambia tras la revisión manual de `/implement`).
 

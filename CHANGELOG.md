@@ -3,6 +3,22 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.18.0] - 2026-10-22
+Páginas más elaboradas sin volver al diseño "por gusto": fondos, escenas de scroll y fotos se piden
+como criterios.
+
+### Added
+- KPIs `scenes` (escenas `data-scene` que se mueven al bajar), `moving_elements` (elementos que se
+  mueven al cargar y al recorrer), `custom_background` (regiones con fondo propio) y `max_samples`
+  (imágenes de muestra que quedan), medidos por `evaluate.mjs`.
+- Puerta `G-imagenes`: toda imagen declara `data-origen` (`propia`, `generada`, `archivo`,
+  `muestra`, `dibujada`). El informe lista las de muestra para sustituirlas antes de publicar.
+- Punto opcional `riqueza` en la rúbrica (peso 0 por defecto), juzgado con la tira del scroll.
+- `criterios.md` §6 (cómo pedir una página elaborada) y §7 (imágenes de muestra: nunca representan
+  al negocio, van con fuente y licencia, `/review` y `/release` las bloquean salvo decisión).
+- Sección "Imágenes de muestra" en la plantilla del acta.
+- `aidd.py validate`: los pesos de la rúbrica de `criterios.json` usan puntos conocidos y suman 100.
+
 ## [1.17.1] - 2026-10-22
 Correcciones tras la prueba del ciclo con el sitio de ejemplo (spec 001 de una SPA).
 

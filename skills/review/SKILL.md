@@ -127,8 +127,9 @@ supuesto por la plantilla), contraste, fidelidad al `design.md` de la spec (cand
 fichas `M-n` con sus versiones reducida, sin JavaScript y táctil, y nada de
 `../design-spec/references/movimiento.md` §4). Si la spec tiene `design/criterios.json`, ejecuta
 `../design-spec/scripts/evaluate.mjs` con esos criterios sobre cada pantalla de la build servida en
-local: una puerta que falla es hallazgo **bloqueante** y un KPI que falla, **importante**; el
-informe va en la evidencia) y consistencia con el sistema de
+local: una puerta que falla es hallazgo **bloqueante** y un KPI que falla, **importante**; una
+imagen con `data-origen="muestra"` en la build es **bloqueante** salvo decisión del usuario en el
+`design.md`; el informe va en la evidencia) y consistencia con el sistema de
 diseño, incluidas sus "Reglas de uso" (`docs/design/system.md`
 y su HTML, si existen: ningún valor visual fuera de los tokens; "Cambios a incorporar al sistema"
 del plan aplicados en `system.md`). Si `design` está en

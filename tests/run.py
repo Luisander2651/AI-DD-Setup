@@ -363,6 +363,14 @@ def scenario_design_loop():
     check("aprobado sin aceptado ni decisión → error", "aprobado sin candidato aceptado" in val, val)
     val = project(acta.format(score=84, extra="").replace("| aceptado |", "| descartado: rúbrica |"))
     check("accepted no marcado en Candidatos → error", "no lo marca como aceptado" in val, val)
+    rich = dict(crit, rubric={"weights": {"jerarquia": 20, "primera_pantalla": 20, "sistema": 15, "lectura": 15,
+                                          "plantilla": 15, "riqueza": 15}},
+                kpis=crit["kpis"] + [{"id": "K3", "type": "scenes", "value": 1}, {"id": "K4", "type": "max_samples", "value": 0}])
+    val = project(acta.format(score=84, extra=""), criteria=rich)
+    check("rúbrica con riqueza (pesos 100) y KPIs de escena y muestras → sin errores",
+          "pesos" not in val and "desconocido" not in val, val)
+    val = project(acta.format(score=84, extra=""), criteria=dict(crit, rubric={"weights": {"jerarquia": 50, "brillo": 20}}))
+    check("pesos que no suman 100 y punto desconocido → errores", "suman 70" in val and "brillo" in val, val)
     val = project(acta.format(score=84, extra=""), yaml_extra="  threshold: 150\n  budget: 0\n")
     check("umbral y presupuesto fuera de rango en project.yaml → errores",
           "design.threshold inválido" in val and "design.budget inválido" in val, val)
@@ -396,6 +404,8 @@ def scenario_design_loop():
     doc = open(os.path.join(refs, "criterios.md"), encoding="utf-8").read()
     doc_types = set(_re.findall(r"^\| `(\w+)` \| ", doc.split("## 3. KPIs", 1)[1].split("## 4.", 1)[0], _re.M))
     doc_types.discard("type")
+    check("G-imagenes en evaluate.mjs y criterios.md (§7 origen de imágenes)",
+          "G-imagenes" in evs and "data-origen" in doc and "max_samples" in doc)
     check("tipos de KPI iguales en aidd.py, evaluate.mjs y criterios.md", py_types == js_types == doc_types,
           f"py {sorted(py_types)} · js {sorted(js_types)} · doc {sorted(doc_types)}")
     code, out = run(["deal"], tempfile.gettempdir())

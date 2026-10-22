@@ -42,6 +42,14 @@ umbral: ver Decisiones · sin diseño nuevo: motivo}}. Página: `design/candidat
 | Coherencia con el sistema y la marca | {{20}} | {{4}} | {{…}} |
 | Lectura y ritmo | {{15}} | {{4}} | {{…}} |
 | Diferencia frente a una plantilla | {{15}} | {{3}} | {{…}} |
+| {{Riqueza visual y movimiento (solo si tiene peso)}} | {{0}} | {{—}} | {{tira del scroll · …}} |
+
+## Imágenes de muestra
+
+<!-- Solo si el aceptado usa fotos de muestra (design-spec/references/criterios.md §7). Vacío: "Ninguna". -->
+| Imagen | Dónde | Fuente y licencia | Qué la sustituye |
+|---|---|---|---|
+| {{calle.webp}} | {{fondo del hero}} | {{Unsplash, autor, licencia Unsplash}} | {{foto propia de la fachada}} |
 
 ## Pantallas
 

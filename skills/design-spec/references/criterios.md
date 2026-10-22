@@ -43,6 +43,7 @@ estricta):
 | `G-h1` | Un solo `h1` por página | 1 |
 | `G-solapamiento` | Ningún texto tapado: ni otro texto que se cruza con él ni una imagen, un dibujo o una superficie con fondo encima (las barras fijas o sticky no cuentan) | — |
 | `G-aparece` | Todo el contenido aparece al recorrer la página (ningún revelado que no se dispara) | — |
+| `G-imagenes` | Toda imagen de contenido (y todo fondo con imagen) declara su origen con `data-origen` (§7) | — |
 | `G-reducido` | Todo visible con `prefers-reduced-motion: reduce` | — |
 | `G-sin-js` | Todo el contenido y los textos de los KPIs presentes sin JavaScript | — |
 | `G-red` | Ningún recurso de otro sitio salvo los permitidos (`external_hosts`) | ninguno |
@@ -66,6 +67,10 @@ no lo inventes: conviértelo en un punto de verificación manual de la tarea que
 | `max_heading_lines` | Líneas de cada `h1`–`h3` | `value` |
 | `max_page_screens` | Largo de la página en pantallas al mayor ancho | `value` |
 | `fonts_loaded` | Las familias de marca cargan de verdad (no la de reemplazo) | `families` |
+| `scenes` | Escenas de scroll (`data-scene`) que de verdad se mueven al bajar, a cada ancho | `value` (mínimo) |
+| `moving_elements` | Elementos que se mueven al cargar y al recorrer la página (en el ancho que menos tenga) | `value` (mínimo) |
+| `custom_background` | Regiones (secciones, cabecera, pie) con fondo propio: imagen, degradado o un dibujo o imagen decorativa que cubre al menos un cuarto de la región | `value` (mínimo) |
+| `max_samples` | Imágenes de muestra que quedan en la página (`data-origen="muestra"`) | `value` (máximo; 0 antes de publicar) |
 
 Los textos de los KPIs se buscan primero en el contenido y después en la barra, el menú y el pie.
 
@@ -117,11 +122,38 @@ captura que lo muestra. La puntuación es la suma de `peso × nota / 5`, sobre 1
 | `lectura` · Lectura y ritmo | 15 | Texto apretado, líneas largas, saltos de tamaño sin orden | Se lee bien con alguna sección densa o algún hueco sin motivo | Medida, interlineado y espacios dan un ritmo claro en todos los anchos |
 | `plantilla` · Diferencia frente a una plantilla | 15 | Intercambiable con cualquier plantilla del sector (hero centrado, fila de tarjetas iguales) | Tiene algún recurso propio, pero el resto es de plantilla | Usa el contenido y los recursos de la marca de forma que, con otro logo, la composición dejaría de tener sentido |
 
-Las notas 2 y 4 son intermedias. **Umbral de aceptación**: puntuación ≥ `threshold` (80 por
+| `riqueza` · Riqueza visual y movimiento (opcional, peso 0 por defecto) | 0 | Fondos planos y nada se mueve, o efectos sueltos sin relación con el contenido | Algún fondo propio o movimiento, pero aislado o genérico | Fondos, imágenes y movimiento forman un recorrido con el contenido (se ve en la tira del scroll) y la página se lee completa sin ellos |
+
+Las notas 2 y 4 son intermedias. `riqueza` solo cuenta si la spec le da peso (y entonces los demás
+pesos bajan para sumar 100); el evaluador la juzga con la tira del scroll (`film-*.png`), no solo
+con la captura completa. **Umbral de aceptación**: puntuación ≥ `threshold` (80 por
 defecto) **y** ningún punto por debajo de `floor` (3 por defecto). Los pesos pueden cambiar por
 spec con motivo (p. ej. `plantilla` 0 en una pantalla de ajustes), registrado en "Decisiones".
 
-## 6. Lo que no es un criterio
+## 6. Pedir una página más elaborada
+
+Fondos propios, escenas de scroll o fotos se piden como criterios, no como gusto: así el ciclo no
+puede saltárselos y la rúbrica los valora.
+- **KPIs:** `scenes` (p. ej. ≥ 1), `moving_elements` (p. ej. ≥ 12), `custom_background` (p. ej. ≥ 2).
+- **Rúbrica:** peso a `riqueza` (p. ej. 15, restándolo de los otros puntos) con su motivo en
+  "Decisiones".
+- Las puertas siguen mandando: todo visible con movimiento reducido y sin JavaScript, nada tapado.
+
+## 7. Imágenes y su origen
+
+Toda imagen de contenido declara `data-origen` en la etiqueta (o en el elemento que la lleva de
+fondo): `propia` (del proyecto), `generada` (con una herramienta de imagen), `archivo` (colección
+abierta con licencia que permita uso comercial y crédito), `muestra` o `dibujada`.
+- **Muestra:** foto de banco con licencia libre (Unsplash, Pexels…) para ver la composición con una
+  imagen real mientras no hay propias. Solo si el brief no la rechaza o el usuario lo decide (fila
+  en "Decisiones"). Nunca representa al negocio (su local, su equipo, su producto, sus clientes):
+  solo el mundo alrededor (una calle, un material, un objeto genérico). Va al repo con su licencia y
+  su fuente, se lista en el acta ("Imágenes de muestra") y `/review` y `/release` exigen
+  `max_samples: 0` salvo decisión del usuario.
+- Si la sesión no puede descargar imágenes (red restringida), pide al usuario las fotos o que
+  permita el dominio; mientras tanto, dibuja desde el sujeto (`dibujada`). Nunca un hueco gris.
+
+## 8. Lo que no es un criterio
 
 - Gustos sin forma de medir o de anclar ("que se vea moderno", "más premium"): pide el ejemplo
   concreto y conviértelo en un punto de la rúbrica o en un KPI, o déjalo fuera.

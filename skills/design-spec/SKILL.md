@@ -48,8 +48,13 @@ siguiente candidato corrige sus fallos, hasta aceptar uno o agotar el presupuest
   páginas reales a ancho de ventana (`pagina.html`); en modo sistema, además, el visor `option.html`.
   Los descartados no se borran.
 - **Contenido y recursos reales.** Textos y datos del proyecto o de la spec; los recursos de marca
-  que existen (logo, fotos, íconos) se abren y se usan tal como son. Nunca lorem ipsum, fotos,
-  testimonios, cifras ni logos inventados.
+  que existen (logo, fotos, íconos) se abren y se usan tal como son. Nunca lorem ipsum,
+  testimonios, cifras ni logos inventados. Toda imagen declara su origen; las fotos de muestra solo
+  si el brief o el usuario lo permiten, sin representar al negocio, listadas para sustituirlas
+  (`references/criterios.md` §7).
+- **Lo elaborado se pide como criterio:** fondos propios, escenas de scroll y fotos entran como
+  KPIs (`scenes`, `moving_elements`, `custom_background`) y como peso del punto `riqueza` de la
+  rúbrica (`references/criterios.md` §6).
 - **No cambia código de la app** ni la spec, salvo "Criterios de diseño", la sección "Diseño" y una
   fila de "Decisiones". Escribe solo en `docs/design/` y `docs/specs/NNN-<slug>/design*`.
 - **Aprobación humana.** `system.md` y cada `design.md` nacen en `draft`; solo el usuario los aprueba.

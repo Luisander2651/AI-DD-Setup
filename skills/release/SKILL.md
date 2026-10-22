@@ -63,6 +63,8 @@ Para el repositorio:
    `no aplica`.
 
 8. `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` (o `python3`) para cada spec incluida, sin errores.
+   Con interfaz: ninguna imagen con `data-origen="muestra"` en la build (busca el atributo en el
+   código y los recursos), salvo decisión del usuario en el `design.md` de la spec.
 
 **Fichas de los carriles** (`docs/changes/`, contrato → "Carriles"):
 9. Con specs, si hay fichas `done` sin liberar, pregunta si entran en esta versión. Con

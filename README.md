@@ -105,13 +105,18 @@ acepta el que supera un nivel medible.
      fondo real, ningún texto tapado por otro elemento, toques ≥ 44 px, foco visible, solo colores
      del sistema, un `h1`, todo visible sin
      JavaScript y con movimiento reducido, nada que no aparezca al recorrer la página, sin recursos
-     de otros sitios.
+     de otros sitios, toda imagen con su origen declarado.
    - **KPIs** con objetivo, sacados de los criterios de aceptación, la constitución y el modo de la
      pantalla (persuadir, operar, leer): la acción principal en la primera pantalla, los textos
      exactos de los criterios, el orden de las secciones, peso, JavaScript, LCP y CLS, líneas de
-     los titulares, fuentes cargadas. Cada criterio de aceptación con interfaz tiene al menos uno.
+     los titulares, fuentes cargadas, y para páginas elaboradas escenas de scroll, elementos en
+     movimiento, fondos propios e imágenes de muestra pendientes. Cada criterio de aceptación con
+     interfaz tiene al menos uno.
    - **Rúbrica** de cinco puntos con escala anclada (jerarquía, primera pantalla en cinco segundos,
-     coherencia con el sistema y la marca, lectura y ritmo, diferencia frente a una plantilla).
+     coherencia con el sistema y la marca, lectura y ritmo, diferencia frente a una plantilla), más
+     `riqueza` (fondos, imágenes y movimiento) cuando la spec le da peso. Las fotos de muestra
+     (Unsplash y similares) se permiten para ver la composición, nunca como el negocio, y se
+     sustituyen antes de publicar.
 2. **Ciclo:** candidato (una página real a ancho de ventana) → `scripts/evaluate.mjs` mide puertas y
    KPIs en Chromium a cada ancho → si pasan, un **subagente evaluador que no lo diseñó** puntúa la
    rúbrica solo con las capturas y lo compara con el mejor anterior → si no llega, sus fallos son la

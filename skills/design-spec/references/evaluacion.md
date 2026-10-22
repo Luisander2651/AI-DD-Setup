@@ -21,7 +21,8 @@ criterios ─► candidato N ─► evaluate.mjs ─┬─ falla puerta o KPI �
    contenido real de la spec.
 3. **Abre y mira** los recursos de marca que existen (logo, íconos, fotos, ilustraciones) con la
    herramienta Read: el candidato los usa tal como son. Lista los que no existen; nunca inventes
-   fotos, testimonios, cifras ni logos.
+   testimonios, cifras ni logos. Las fotos que faltan solo se cubren con imágenes de muestra si el
+   brief o el usuario lo permiten, con las reglas de `criterios.md` §7.
 
 ## 2. Generar un candidato
 
@@ -37,8 +38,10 @@ criterios ─► candidato N ─► evaluate.mjs ─┬─ falla puerta o KPI �
   fallos**: cada puerta y KPI fallidos y los tres problemas que señaló el evaluador. Cambia solo lo
   necesario para corregirlos; si el mismo fallo vuelve dos veces con la misma solución, prueba una
   estructura distinta para esa sección.
-- **Movimiento:** solo el que pidan los criterios o el sistema, con las reglas de `movimiento.md`.
-  Una animación no suma puntos por sí misma.
+- **Movimiento y fondos:** los que pidan los criterios (`scenes`, `moving_elements`,
+  `custom_background`, peso de `riqueza`), con las reglas de `movimiento.md`; las escenas sobre el
+  escenario de `pagina.html`. Sin esos criterios, una animación no suma puntos por sí misma.
+- **Imágenes:** cada una con `data-origen` (`criterios.md` §7).
 
 ## 3. Medir
 
@@ -57,7 +60,8 @@ queda **descartado**; sus fallos son la lista del siguiente (§2). Código 3 (si
 Lanza un **subagente evaluador** (perfil `critical`, contrato → "Modelo de cada subagente") que
 **no** ha visto cómo se generó el candidato. Recibe solo:
 - las capturas de `--out` (todas: anchos, reducido, sin JavaScript y la tira);
-- la rúbrica de `criterios.md` §5 con sus anclas y los pesos de `criterios.json`;
+- la rúbrica de `criterios.md` §5 con sus anclas y los pesos de `criterios.json` (con `riqueza`
+  solo si tiene peso, juzgada sobre la tira del scroll);
 - el modo de la pantalla y los criterios de aceptación de la spec (para juzgar la primera pantalla);
 - si existe, las capturas del **mejor candidato aceptado o con mejor puntuación** hasta ahora.
 
@@ -72,7 +76,7 @@ Eres el evaluador de diseño. No diseñaste esto y no lo vas a mejorar: lo punt�
 3. Lista los tres problemas que más bajan la nota, cada uno con la captura y qué tendría que pasar
    en la pantalla para corregirlo (sin proponer estilos nuevos fuera del sistema).
 Responde solo con JSON:
-{"scores":{"jerarquia":n,"primera_pantalla":n,"sistema":n,"lectura":n,"plantilla":n},
+{"scores":{"jerarquia":n,"primera_pantalla":n,"sistema":n,"lectura":n,"plantilla":n[,"riqueza":n]},
  "evidence":{"<punto>":"<archivo · zona · por qué>"},
  "vs_best":{"<punto>":"mejor|peor|igual"},"problems":["…","…","…"]}
 ```
@@ -109,7 +113,9 @@ aceptarse hasta medirlo (o hasta que el usuario lo acepte así en "Decisiones").
 - una fila por candidato: puertas, KPIs, puntuación, resultado (`descartado: <motivo>` ·
   `aceptado`) y la ruta de su informe;
 - del aceptado: la tabla de puertas y KPIs con lo medido, las notas de la rúbrica con su evidencia,
-  los componentes que usa, los cambios al sistema y las fichas de movimiento si las hay.
+  los componentes que usa, los cambios al sistema, las fichas de movimiento si las hay y las
+  **imágenes de muestra** con su fuente y licencia (el informe las lista), que se sustituyen antes
+  de publicar.
 
 Presenta al usuario el acta y el candidato aceptado (abre la página o pasa sus capturas). El usuario
 no elige entre opciones: aprueba el resultado (`status: approved`) o ajusta criterios.
