@@ -296,7 +296,8 @@ async function openPage(width, extra = {}) {
 }
 async function walk(p, m, fn) {   // recorre la página pantalla a pantalla
   const end = Math.max(0, m.height - m.vh), ys = [];
-  for (let y = 0; y < end; y += m.vh) ys.push(y);
+  const step = Math.round(m.vh * 0.6);   // pasos solapados: todo elemento pasa por el centro de la pantalla
+  for (let y = 0; y < end; y += step) ys.push(y);
   ys.push(end);   // la última pantalla, aunque no sea completa
   for (const y of ys) {
     await p.evaluate(y => window.scrollTo(0, y), y); await p.waitForTimeout(1000); await fn(y);
@@ -334,13 +335,21 @@ for (const w of widths) {
   measures[w].dyn = await p.evaluate(() => {
     const moved = window.__aidd ? [...window.__aidd.moved].filter(e => e.isConnected) : [];
     const scenes = [...document.querySelectorAll('[data-scene]')];
-    return { moved: new Set(moved).size, scenes: scenes.length,
+    // Texto que sigue invisible después de recorrer toda la página: nunca apareció.
+    const op = el => { let o = 1; for (let n = el; n && n.nodeType === 1; n = n.parentElement) { const cs = getComputedStyle(n); o *= parseFloat(cs.opacity); if (cs.visibility === 'hidden') return 0; } return o; };
+    const never = [...document.querySelectorAll('body *')].filter(el =>
+      !el.closest('[aria-hidden="true"],[hidden],details:not([open]),dialog:not([open]),[inert],script,style,noscript') &&
+      [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) &&
+      el.getBoundingClientRect().width > 4 && op(el) < 0.05)
+      .map(el => `${el.tagName.toLowerCase()} "${(el.innerText || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40)}"`);
+    return { never: never.slice(0, 12), moved: new Set(moved).size, scenes: scenes.length,
       scenesLive: scenes.filter(sc => moved.some(m => m === sc || sc.contains(m))).length };
   });
   if (G.contrast) gate('G-contraste', `Contraste de texto ≥ ${G.contrast}:1 (≥ ${G.contrast_large}:1 en texto grande)`, seen.contrast.size === 0, seen.contrast.size ? `${w}px: ${[...seen.contrast].slice(0, 6).join(' · ')}` : '');
   if (G.touch && w < 1024) gate('G-toque', `Objetivos de toque ≥ ${G.touch} px`, seen.touch.size === 0, seen.touch.size ? `${w}px: ${[...seen.touch].slice(0, 6).join(' · ')}` : '');
   if (cfg.tokens.length) gate('G-tokens', 'Solo colores del sistema', seen.tokens.size === 0, seen.tokens.size ? `${w}px: ${[...seen.tokens.entries()].slice(0, 6).map(([h, n]) => `${h}×${n}`).join(', ')}` : '');
   gate('G-solapamiento', 'Ningún texto tapado por otro texto o por un elemento pintado', seen.overlap.size === 0, seen.overlap.size ? `${w}px: ${[...seen.overlap].slice(0, 4).join(' · ')}` : '');
+  (measures[w].dyn.never || []).forEach(x => seen.hidden.add(x));
   gate('G-aparece', 'Todo el contenido aparece al recorrer la página', seen.hidden.size === 0, seen.hidden.size ? `${w}px: ${[...seen.hidden].slice(0, 6).join(' · ')}` : '');
   // Foco visible, con el teclado, al mayor ancho.
   // Origen de las imágenes: toda imagen de contenido declara data-origen (propia, generada, muestra,

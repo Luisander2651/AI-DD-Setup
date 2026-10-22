@@ -23,7 +23,11 @@ como criterios.
 - `evaluate.mjs` hacía la captura completa antes de recorrer la página: en páginas con entradas al
   bajar, el evaluador veía secciones en blanco. Ahora la hace después del recorrido y espera a que
   terminen las transiciones de vuelta arriba.
-- El recorrido de `evaluate.mjs` no visitaba la última pantalla si no era completa.
+- El recorrido de `evaluate.mjs` no visitaba la última pantalla si no era completa, y avanzaba de
+  pantalla en pantalla: un elemento justo bajo la zona leída de una pantalla quedaba arriba de la
+  siguiente y nunca se revelaba (en la prueba, un enlace a 900 px), sin que fallara `G-aparece`.
+  Ahora avanza en pasos solapados (60 % de la pantalla) y, al terminar, `G-aparece` falla por
+  cualquier texto que siga invisible.
 
 ## [1.17.1] - 2026-10-22
 Correcciones tras la prueba del ciclo con el sitio de ejemplo (spec 001 de una SPA).
