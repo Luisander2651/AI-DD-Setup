@@ -19,6 +19,12 @@ como criterios.
 - Sección "Imágenes de muestra" en la plantilla del acta.
 - `aidd.py validate`: los pesos de la rúbrica de `criterios.json` usan puntos conocidos y suman 100.
 
+### Fixed
+- `evaluate.mjs` hacía la captura completa antes de recorrer la página: en páginas con entradas al
+  bajar, el evaluador veía secciones en blanco. Ahora la hace después del recorrido y espera a que
+  terminen las transiciones de vuelta arriba.
+- El recorrido de `evaluate.mjs` no visitaba la última pantalla si no era completa.
+
 ## [1.17.1] - 2026-10-22
 Correcciones tras la prueba del ciclo con el sitio de ejemplo (spec 001 de una SPA).
 

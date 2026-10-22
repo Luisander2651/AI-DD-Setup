@@ -121,7 +121,6 @@ captura que lo muestra. La puntuación es la suma de `peso × nota / 5`, sobre 1
 | `sistema` · Coherencia con el sistema y la marca | 20 | Parece otro producto; la marca no aparece o se contradice | Usa el sistema pero con piezas sueltas que no encajan | Se reconoce la marca (logo, color, forma) y todo encaja en el sistema |
 | `lectura` · Lectura y ritmo | 15 | Texto apretado, líneas largas, saltos de tamaño sin orden | Se lee bien con alguna sección densa o algún hueco sin motivo | Medida, interlineado y espacios dan un ritmo claro en todos los anchos |
 | `plantilla` · Diferencia frente a una plantilla | 15 | Intercambiable con cualquier plantilla del sector (hero centrado, fila de tarjetas iguales) | Tiene algún recurso propio, pero el resto es de plantilla | Usa el contenido y los recursos de la marca de forma que, con otro logo, la composición dejaría de tener sentido |
-
 | `riqueza` · Riqueza visual y movimiento (opcional, peso 0 por defecto) | 0 | Fondos planos y nada se mueve, o efectos sueltos sin relación con el contenido | Algún fondo propio o movimiento, pero aislado o genérico | Fondos, imágenes y movimiento forman un recorrido con el contenido (se ve en la tira del scroll) y la página se lee completa sin ellos |
 
 Las notas 2 y 4 son intermedias. `riqueza` solo cuenta si la spec le da peso (y entonces los demás

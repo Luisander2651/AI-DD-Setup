@@ -295,10 +295,13 @@ async function openPage(width, extra = {}) {
   return { ctx, p, net };
 }
 async function walk(p, m, fn) {   // recorre la página pantalla a pantalla
-  for (let y = 0; y <= Math.max(0, m.height - m.vh); y += m.vh) {
+  const end = Math.max(0, m.height - m.vh), ys = [];
+  for (let y = 0; y < end; y += m.vh) ys.push(y);
+  ys.push(end);   // la última pantalla, aunque no sea completa
+  for (const y of ys) {
     await p.evaluate(y => window.scrollTo(0, y), y); await p.waitForTimeout(1000); await fn(y);
   }
-  await p.evaluate(() => window.scrollTo(0, 0));
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(800);   // que terminen las transiciones de vuelta
 }
 
 const measures = {};
@@ -306,7 +309,6 @@ for (const w of widths) {
   const { ctx, p, net } = await openPage(w);
   const first = await p.evaluate(probe, cfg);
   measures[w] = { first, net };
-  await p.screenshot({ path: path.join(out, `${w}-claro.png`), fullPage: true }); shots.push(`${w}-claro.png`);
   if (G.overflow) gate('G-desborde', 'Sin desplazamiento horizontal', first.overflow <= 1, `${w}px: ${first.overflow}px de más`);
   if (G.h1) gate('G-h1', `Un solo h1 por página`, first.h1 === G.h1, `${w}px: ${first.h1} h1`);
   for (const e of net.errors) gate('G-errores', 'Sin errores de JavaScript', false, `${w}px: ${e}`);
@@ -327,6 +329,8 @@ for (const w of widths) {
       await p.screenshot({ path: path.join(out, f) }); shots.push(f);
     }
   });
+  // Captura completa después del recorrido: lo que se revela al bajar ya está a la vista.
+  await p.screenshot({ path: path.join(out, `${w}-claro.png`), fullPage: true }); shots.push(`${w}-claro.png`);
   measures[w].dyn = await p.evaluate(() => {
     const moved = window.__aidd ? [...window.__aidd.moved].filter(e => e.isConnected) : [];
     const scenes = [...document.querySelectorAll('[data-scene]')];
