@@ -15,9 +15,9 @@ una ficha en `docs/changes/` en lugar de spec, plan y tareas (ver "Carriles").
 
 | Skill | Qué hace | Produce |
 |---|---|---|
-| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (uno más si documenta el diseño existente y otro si el sitio es público e indexable) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: opciones de diseño en HTML (nuevo) o el sistema de diseño actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` rehace las opciones de diseño cuando ninguna convenció y aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <opción>` afina solo la tipografía, el color, la forma, el fondo o el movimiento de una opción (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), `seo.md` (sitio indexable), plantillas |
+| `init` | Inicializa un proyecto nuevo o existente: detecta stack y metodologías de agentes en competencia, explora el código con 6 subagentes (uno más si documenta el diseño existente y otro si el sitio es público e indexable) o crea el proyecto base y audita los valores por defecto de la plantilla (nuevo), entrevista y genera la documentación base. Con interfaz: sistema de diseño aceptado por criterios (nuevo) o el actual documentado, si el usuario lo acepta (existente). `--upgrade` pone al día un proyecto con la versión instalada del plugin; `--upgrade --redo-design` vuelve a documentar el diseño existente (todas las vistas con capturas reales) sin perder la deuda ya citada; `--upgrade --redo-options` repite el ciclo de diseño con criterios nuevos cuando aún no hay sistema aprobado, archivando la ronda anterior; con `--only <eje> --base <cN>` ajusta solo la tipografía, el color, la forma, el fondo o el movimiento del aceptado (ver "Diseño"). | `AGENTS.md`, `.ai/project.yaml`, `docs/constitution.md`, `architecture.md`, `deployment.md`, `security.md`, `observability.md`, `roadmap.md`, `docs/design/` (con interfaz), `seo.md` (sitio indexable), plantillas |
 | `specify` | Convierte una idea en spec: qué y por qué, sin tecnología, con casos de abuso. | `docs/specs/NNN-slug/spec.md` |
-| `design-spec` | Diseño de interfaz. `system`: opciones en HTML y sistema de diseño (o el diseño existente documentado); lo llama `init`. `NNN`: en cada spec con pantallas, 2–3 composiciones sobre el sistema, con idea sacada del sujeto, registros distintos (al menos una audaz), cosa viva y escenas de scroll en pantallas que persuaden, inspeccionadas en navegador antes de enseñarlas. `--fix`: refinado tras la revisión manual; `--bolder`/`--quieter`: ajustar una sección. | `docs/design/`, `docs/specs/NNN-slug/design.md` + composiciones en HTML |
+| `design-spec` | Diseño de interfaz por criterios: puertas, KPIs y rúbrica; genera un candidato tras otro, los mide en el navegador (`evaluate.mjs`), los puntúa un evaluador que no los diseñó y acepta el primero que supera el umbral. `system`: el sistema de diseño (o el existente documentado); lo llama `init`. `NNN`: cada spec con pantallas, antes de planear. `--fix`: refinado tras la revisión manual. | `docs/design/`, `docs/specs/NNN-slug/design.md` (acta) + `criterios.json` + candidatos en HTML |
 | `seo` | SEO técnico de sitios públicos. `setup`: reglas del sitio; `audit`: auditoría sobre la build (y, con permiso, el sitio publicado) con brechas `SE` y propuestas para el roadmap; `verify`: comprobaciones en producción tras un despliegue. La llaman `init` y `release`. | `docs/seo.md` |
 | `clarify` | Encuentra las ambigüedades de mayor impacto en una spec en borrador y las resuelve con preguntas. | `spec.md` actualizada |
 | `plan` | Diseña el cómo: contratos, modelo de amenazas, trazabilidad, rollout y Constitution Check. | `plan.md`, ADRs |
@@ -91,106 +91,73 @@ archivos de código (5 por defecto), **escala** a `/specify` salvo que lo acepte
 
 Solo en proyectos con interfaz (`frontend`, `fullstack`, `mobile`). Lo hace la skill
 `design-spec`: el sistema en `skills/design-spec/references/system-mode.md`, el diseño de cada spec
-en `skills/design-spec/references/spec-mode.md`, el motor creativo en `creatividad.md`, el
-movimiento en `movimiento.md` y la inspección en navegador en `inspeccion.md`.
+en `spec-mode.md`, los criterios en `criterios.md`, el ciclo en `evaluacion.md` y el movimiento en
+`movimiento.md`.
+
+### El diseño se acepta por criterios, no por gusto
+
+El diseño sigue la misma lógica que el código: criterios antes de construir y verificación al
+final. `/design-spec` no presenta opciones para elegir; genera **un candidato tras otro** y solo
+acepta el que supera un nivel medible.
+
+1. **Criterios** (sección "Criterios de diseño" de la spec y `design/criterios.json`):
+   - **Puertas**, obligatorias: sin desplazamiento horizontal, contraste de cada texto contra su
+     fondo real, toques ≥ 44 px, foco visible, solo colores del sistema, un `h1`, todo visible sin
+     JavaScript y con movimiento reducido, nada que no aparezca al recorrer la página, sin recursos
+     de otros sitios.
+   - **KPIs** con objetivo, sacados de los criterios de aceptación, la constitución y el modo de la
+     pantalla (persuadir, operar, leer): la acción principal en la primera pantalla, los textos
+     exactos de los criterios, el orden de las secciones, peso, JavaScript, LCP y CLS, líneas de
+     los titulares, fuentes cargadas. Cada criterio de aceptación con interfaz tiene al menos uno.
+   - **Rúbrica** de cinco puntos con escala anclada (jerarquía, primera pantalla en cinco segundos,
+     coherencia con el sistema y la marca, lectura y ritmo, diferencia frente a una plantilla).
+2. **Ciclo:** candidato (una página real a ancho de ventana) → `scripts/evaluate.mjs` mide puertas y
+   KPIs en Chromium a cada ancho → si pasan, un **subagente evaluador que no lo diseñó** puntúa la
+   rúbrica solo con las capturas y lo compara con el mejor anterior → si no llega, sus fallos son la
+   lista del siguiente candidato.
+3. **Aceptación:** todas las puertas, todos los KPIs y la rúbrica ≥ `threshold` (80) sin ningún
+   punto bajo `floor` (3). Como mucho `budget` (5) candidatos; al agotarlos, el ciclo para y
+   presenta el mejor con lo que le falta: casi siempre es un criterio mal planteado.
+4. **Acta** (`design.md`): una fila por candidato con su resultado y, del aceptado, lo medido y las
+   notas con su evidencia. El usuario aprueba el acta o ajusta criterios; no elige entre bocetos.
+5. **Después:** `/implement` construye la pantalla como el candidato aceptado y no da la tarea por
+   hecha si `evaluate.mjs` falla sobre la build; `/review` vuelve a medir con los mismos criterios
+   (una puerta que falla es bloqueante).
+
+Los KPIs de negocio (registros, citas) no se miden antes de publicar: van a
+`docs/observability.md` y se revisan tras `/release`; en el diseño se miden sus aproximaciones.
 
 ### Cuándo se diseña
 | Situación | Qué pasa |
 |---|---|
-| Proyecto nuevo | `/init` (con `/design-spec system`) investiga el nicho (`nicho.md`), hace la entrevista de diseño (Ronda 4b) con territorios de identidad propuestos, escribe `brief.md`, `creative-direction.md` y `anti-cliches.md`, genera 3 opciones en HTML (2 si la marca ya está cerrada) y la elegida pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
+| Proyecto nuevo | `/init` (con `/design-spec system`) investiga el nicho (`nicho.md`), hace la entrevista de diseño (Ronda 4b, con los criterios), escribe `brief.md`, `creative-direction.md`, `anti-cliches.md` y `criterios.json`, y hace el ciclo; el candidato aceptado pasa a ser el sistema (`docs/design/system.md` + `system.html`). |
 | Proyecto existente | `/init` solo **documenta** el diseño actual si lo aceptas (capturas reales, deuda `DS`); nunca rediseña. `/design-spec system --redo-design` (o `/init --upgrade --redo-design`) lo vuelve a documentar. |
-| Cada spec con pantallas | `/design-spec NNN` entre `/specify` y `/plan`: 2–3 composiciones en HTML sobre el sistema y `design.md` aprobado, que `/plan` sigue. Se omite (`exploration: none`) si la spec no crea ni recompone pantallas. |
-| Rediseño | Siempre una spec propia: `/specify` hace la entrevista y `/design-spec NNN` genera las opciones en la carpeta de la spec; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
+| Cada spec con pantallas | `/design-spec NNN` entre `/specify` y `/plan`: criterios, ciclo y `design.md` aprobado, que `/plan` sigue. Se omite (`exploration: none`) si la spec no crea ni recompone pantallas. |
+| Rediseño | Siempre una spec propia: `/specify` hace la entrevista; `/design-spec NNN` añade puertas para los problemas del diseño anterior y hace el ciclo; la primera tarea aplica los cambios al sistema y luego se migra pantalla por pantalla. |
 
-### Cómo se generan opciones que no parezcan de plantilla
-- **Investigación del nicho** (`skills/design-spec/references/nicho.md` → `docs/design/nicho.md`): antes
-  de la entrevista se estudian las convenciones del sector, los materiales propios del oficio
-  (documentos, envases, espacios, herramientas), 4–6 referentes reales con enlace, lo que todos
-  repiten (pasa a clichés) y el contexto de uso. Profundidad según el producto: completa en sitios
-  y apps públicas, ligera en herramientas internas, omitida si hay manual de marca. Se estudia el
-  patrón, nunca se copia a un competidor; sin estereotipos ni creación de logo o nombre.
-- **Territorios de identidad.** Con esa investigación, la entrevista propone 2–3 formas de ser
-  reconocible en el sector, cada una con concepto firma, tono, movimiento y superficies. El
-  elegido va a `creative-direction.md` y las opciones lo componen.
-- **Concepto firma.** La entrevista pregunta si ya hay una idea que deba reconocerse (p. ej. "el
-  código se escribe y se compila en la tarjeta"). Con ella, las opciones son **composiciones** de
-  esa idea; sin ella, cada opción es una **dirección** con su propia idea y su momento firma.
-- **Referencias con nombre** (productos, sitios o apps), no adjetivos.
-- **Distintas de verdad.** Entre opciones cambia siempre la composición de la pantalla principal y
-  al menos otro eje. Mismo esqueleto con otra piel = rehacer.
-- **Idea sacada del sujeto, no de la categoría** (`creatividad.md`): un inventario de 8–12 cosas
-  que solo tiene ese proyecto (su nombre, su lugar, sus números, su restricción, sus objetos
-  impresos) y la frase "en esta pantalla, X del sujeto se convierte en Y". **Prueba del
-  competidor:** si la frase sigue funcionando con el competidor, la idea es de la categoría y se
-  rehace.
-- **Registros distintos y reparto contra el sesgo.** Cada opción es `sobria`, `firme` o `audaz`
-  (al menos una audaz); `aidd.py deal` reparte jugadas firma y escenas del catálogo con una semilla
-  para que el modelo no caiga siempre en lo mismo. La convención del sector se ofrece como salida,
-  sin recomendarla; se puede pedir otra ronda "más audaz" o "más segura".
-- **Cosa viva.** En pantallas que persuaden, algo que el visitante puede hacer con contenido real
-  (configurar, calcular, ver algo que cambia), usable con el pulgar y legible sin JavaScript.
-- **Plenitud.** Quitar adornos no basta: escala tipográfica grande, estrategia de color declarada
-  (contenida, comprometida, paleta completa, empapada), imágenes reales o dibujadas desde el sujeto
-  (con crédito si vienen de colecciones abiertas) y contenido completo en cada sección.
-- **Clichés del sector.** Además de la lista por tipo de proyecto, la entrevista añade los del
-  dominio del producto, cada uno con su alternativa.
-- **Tipografía justificada.** Nada de fuentes del sistema como marca ni de fuentes de moda elegidas
-  por estética: cada familia se justifica contra el brief y se incrusta en woff2.
-- **Movimiento coreografiado** (`movimiento.md`). Un filtro por animación (frecuencia, propósito,
-  velocidad, función) y la capa completa según el modo: en pantallas que persuaden, 1–3 **escenas
-  de scroll** (ventana que se abre, historia fijada, galería lateral…) con scroll nativo, la jugada
-  firma, entradas que cambian con el contenido, respuesta en cada control y una imagen en
-  movimiento; en pantallas de trabajo, continuidad espacial, respuesta inmediata y deleite solo en
-  momentos raros. Curvas y duraciones medidas, versión reducida y sin JavaScript, y una lista de lo
-  que no se usa (pantallas de carga, scroll secuestrado, cursores propios, el mismo fundido en todo).
-- **Inspección en navegador antes de enseñar** (`inspeccion.md`, `scripts/inspect.mjs`): capturas a
-  cada ancho en claro, oscuro, movimiento reducido y sin JavaScript, una tira del scroll, medidas
-  (desborde, contenido que no aparece, página quieta, tramos vacíos) y una crítica escrita con
-  rúbrica; tres rondas como máximo. Las pantallas que persuaden tienen su página de prueba
-  (`templates/design/pagina.html`) donde las escenas y la cosa viva funcionan de verdad.
-- **Superficies y fondos.** Más allá del color sólido: texturas, patrones, cambios entre secciones
-  y tratamiento de imagen, salidos del territorio y en CSS o SVG ligero. El contraste se mide sobre
-  la zona más difícil del fondo (`--surface-worst`).
-- **Repaso antes de enseñar** cada opción contra los rasgos por defecto de las interfaces generadas
-  (`system-mode.md` §6) y contra `anti-cliches.md`, con o sin el plugin `design`.
-- **Marca fuera de la pantalla.** Íconos que salen de una marca de la interfaz (texto convertido a
-  trazos, revisados a 16 px en pestaña clara y oscura) y una tarjeta para compartir que repite la
-  pieza firma del sitio, con medidas y datos reales.
+### Qué alimenta los candidatos
+- **Investigación del nicho** (`skills/design-spec/references/nicho.md` → `docs/design/nicho.md`):
+  convenciones del sector, materiales del oficio, referentes reales y lo que todos repiten (pasa a
+  clichés). Se estudia el patrón, nunca se copia a un competidor.
+- **Recursos reales:** el candidato abre y usa el logo, las fotos y los íconos que existen; nunca
+  inventa fotos, testimonios, cifras ni logos.
+- **Clichés** (`anti-cliches.md` y los rasgos por defecto de las interfaces generadas): cada uno
+  presente baja la nota de "diferencia frente a una plantilla".
+- **Tipografía real** incrustada en woff2 desde el paquete que usará la app; nada de fuentes del
+  sistema como marca salvo que el brief lo pida.
+- **Movimiento** solo el que pasa el filtro de `movimiento.md` (frecuencia, propósito, velocidad,
+  función), con versión reducida y sin JavaScript; una animación no suma puntos.
+- **Marca fuera de la pantalla:** ícono que sale de una marca de la interfaz (texto convertido a
+  trazos, legible a 16 px en pestaña clara y oscura) y tarjeta para compartir que repite una pieza
+  reconocible del sitio, con sus propios KPIs.
 
-### Cada pantalla, su propia composición
-
-Lo que evita que todas las pantallas parezcan la misma plantilla (`spec-mode.md` §1–§4):
-- **2–3 composiciones por spec** sobre el sistema aprobado, cada una con **modo, registro e
-  idea** sacada del inventario del sujeto, con la prueba del competidor respondida.
-- **Vecino más parecido:** cada composición dice a qué otra pantalla del producto se parece más y
-  en qué se diferencia; los componentes firma son **exclusivos** de su pantalla.
-- **Jerarquía declarada** con proporciones (destacado 7:5, mosaico 5:7) en lugar de rejillas de
-  iguales sin motivo; **ancho intermedio** revisado cuando hay filas.
-- **Riesgo marcado:** una composición puede llevar a propósito un elemento que roza el cliché, y
-  el usuario decide si se queda.
-- **Adornos desde datos reales** (índices, rutas, código decorativo), ocultos a lectores de pantalla.
-- **Fichas de movimiento** con tipo (escena, firma, entrada, respuesta, deleite…), filtro, versión
-  reducida, sin JavaScript, táctil y plan de teléfono, su coste en JS y reglas de rendimiento (sin
-  `filter` animado en superficies grandes; movimiento ligado al scroll solo en escenas, con un único
-  script común).
-- **Reglas de uso contables** del sistema (cuántos momentos protagonistas, dónde se permite el
-  efecto firma) y **anti-clichés por pantalla** con la alternativa usada.
-- **Refinado registrado:** lo que cambia tras la revisión manual queda como decisión `refinado`
-  con su motivo (`/design-spec NNN --fix`); una sección plana o que grita se ajusta con
-  `/design-spec NNN --bolder <sección>` o `--quieter <sección>`, solo esa sección y con el
-  vocabulario del sistema.
-
-### Iterar antes de elegir
+### Iterar
 | Si… | Usa | Qué hace |
 |---|---|---|
-| Ninguna opción convence | `/design-spec system --redo-options` (o "rehacer" en `/design-spec NNN`) | Pregunta qué falló y qué se conserva, actualiza brief, dirección y clichés, archiva la ronda en `history/ronda-<N>/` y genera otra con "qué cambia respecto a la ronda anterior". |
-| Una opción convence salvo un aspecto | `/design-spec system --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <opción>` (o "afinar un eje" en `/design-spec NNN`) | Congela la base, escribe los criterios del eje desde el brief, propone 2–3 variantes justificadas y las compara en una lámina (`templates/design/eje.html`) que comprueba fuentes y contraste y simula luz exterior. |
-| Las opciones se quedan cortas o se pasan | "más audaz" o "más segura" al elegir en `/design-spec` | Otra ronda: formas ajenas al sector y registro audaz en todas, o la convención del sector bien hecha frente a competidores con nombre. La ronda anterior se archiva. |
-| Ya se eligió y una sección se lee plana o grita | `/design-spec NNN --bolder <sección>` · `--quieter <sección>` | Sube o baja solo esa sección con el vocabulario del sistema, la registra como `refinado` y la vuelve a inspeccionar. |
+| El ciclo agotó el presupuesto o el aceptado no convence | `/design-spec NNN` (repetir) o `/design-spec system --redo-options` | Traduce lo que no convence a criterios (un KPI, un peso, un cliché nuevo), archiva la ronda en `history/ronda-<N>/` y repite el ciclo desde el mejor candidato. |
+| El aceptado convence salvo un aspecto | `/design-spec system --redo-options --only <tipografia\|color\|forma\|fondo\|movimiento> --base <cN>` | Congela el resto, escribe el criterio del eje, mide 2–3 variantes y las compara en una lámina (`templates/design/eje.html`); se acepta la que cumple el criterio sin bajar la puntuación. |
+| La revisión manual pide otro valor | `/design-spec NNN --fix <qué>` | Aplica el cambio al aceptado, vuelve a medirlo y lo registra como `refinado`. |
 | Ya hay sistema aprobado | `/specify "rediseño de …"` | Spec de rediseño (ver arriba). |
-
-En `/plan`, la tipografía o el color se afinan **antes** de "Cambios a incorporar al sistema";
-cambiarlos después obliga a `/plan NNN --fix`.
 
 ## SEO técnico
 
@@ -222,8 +189,6 @@ por idioma, sin redirecciones automáticas).
 - `templates [--yaml]` — huellas de `docs/templates/`: `--upgrade` sabe cuáles personalizó el usuario.
 - `rotate` / `history [--write] [--migrate]` — archivan e indexan rondas y versiones en
   `docs/specs/NNN/history/` (nunca se borran).
-- `deal [--mode persuadir|operar] [--n N] [--seed S]` — reparte jugadas firma y escenas del
-  catálogo de diseño entre las composiciones de `/design-spec`, con semilla reproducible.
 - `review-pack` — paquete compartido de `/review`: diff de código filtrado desde `impl_base`,
   alcance frente a las tareas y contexto mínimo para cada revisor.
 - **Hook `PreToolUse`** (`hooks/hooks.json`): en proyectos con `.ai/project.yaml`, según
@@ -247,7 +212,7 @@ de Microsoft Store en Windows no lo rompe. Sin ningún Python válido, el hook n
   plugin.json          # manifiesto (la versión aquí = skills_version de los proyectos)
   marketplace.json     # permite instalar el plugin desde este repo
 hooks/hooks.json       # guardia PreToolUse
-scripts/aidd.py        # validate · status · hash · templates · snapshot · changes · rotate · history · review-pack · lane-check · drift · deal · hook (se copia a .ai/bin/ en cada proyecto)
+scripts/aidd.py        # validate · status · hash · templates · snapshot · changes · rotate · history · review-pack · lane-check · drift · hook (se copia a .ai/bin/ en cada proyecto)
 shared/
   contract.md          # reglas comunes: estados, numeración, puertas de aprobación
   security-checklist.md  # seguridad del código (OWASP por temas)
@@ -256,7 +221,7 @@ shared/
   agent-security.md    # seguridad del proceso con agentes
 skills/
   init/                # SKILL.md + references/ + templates/
-  design-spec/         # SKILL.md + references/ (system-mode, spec-mode, nicho, creatividad, movimiento, inspeccion) + scripts/inspect.mjs
+  design-spec/         # SKILL.md + references/ (system-mode, spec-mode, criterios, evaluacion, movimiento, nicho) + scripts/evaluate.mjs
   seo/                 # SKILL.md + references/audit.md
   specify/ clarify/ plan/ tasks/ analyze/ implement/ review/ release/
 ```
@@ -307,13 +272,14 @@ día el validador, las plantillas y `.ai/project.yaml`; ver "Mantenimiento" → 
 
 - **Python 3.8+** para el validador (`.ai/bin/aidd.py`) y el hook.
 - **Skill `design`** (opcional; crea un canvas Design a partir de un brief): si la sesión la
-  ofrece, `/design-spec` genera con ella las opciones de diseño (y las láminas de una ronda
-  acotada a un eje) y enlazan el canvas. Sin ella,
-  las opciones se generan igual en HTML con `skills/init/templates/design/option.html`. El HTML es
-  siempre el entregable: queda en el repo y se abre sin red.
-- **Playwright** (opcional): el inspector de diseño (`skills/design-spec/scripts/inspect.mjs`, Node
-  18+) lo usa si ya está en el proyecto, global o en `PLAYWRIGHT_PATH`, y no instala nada. Sin él,
-  las capturas se hacen con la herramienta de navegador de la sesión o las pasa el usuario.
+  ofrece, `/design-spec` puede usarla para el primer candidato y enlaza el canvas. Sin ella, los
+  candidatos se generan igual en HTML con `skills/init/templates/design/pagina.html`. El HTML es
+  siempre lo que se mide: queda en el repo y se abre sin red.
+- **Playwright** (recomendado en proyectos con interfaz): el evaluador de diseño
+  (`skills/design-spec/scripts/evaluate.mjs`, Node 18+) lo usa si ya está en el proyecto, global o
+  en `PLAYWRIGHT_PATH`, y no instala nada. Sin él, las puertas y KPIs se miden a mano con la
+  herramienta de navegador de la sesión y quedan marcados así en el acta; un KPI sin medir no
+  cuenta como superado.
 - **Plugin oficial `design` de Anthropic** (opcional, recomendado en proyectos con interfaz:
   `frontend`, `fullstack`, `mobile`). Por ahora el flujo **depende de él** para la parte de diseño:
   `/init` lo registra en `skills.enabled` si está instalado, `/design-spec` deja la nota de revisarlo con

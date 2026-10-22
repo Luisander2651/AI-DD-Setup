@@ -8,35 +8,30 @@ las skills la leen antes de diseñar cualquier pantalla.
 - Referencias de sensación: {{productos, sitios o apps con nombre; qué se toma de cada uno}}
 
 ## Identidad
-- Territorio: {{nombre y frase, de `nicho.md` → Elección; o "lo deciden las opciones"}}
+- Territorio: {{nombre y frase, de `nicho.md` → Elección; o "lo decide el ciclo"}}
 - Materiales del oficio que lo sostienen: {{…}}
 - Tono de textos e imagen: {{…}}
 
 ## Concepto firma
 {{la idea que debe reconocerse y el momento en que se ve, en una o dos frases; o "lo deciden las
-opciones" si el usuario no dio ninguno}}
+ciclo" si el usuario no dio ninguno}}
 
 ## Color y tipografía
 - {{papel del color de marca; familias y su uso}}
 
-## Modo y registro
-- Pantallas por modo: {{persuadir: landing, … · operar: panel, … · leer: …}}
-- Registro máximo permitido: {{sobrio · firme · audaz}} (las opciones cubren registros distintos
-  hasta este; `design-spec/references/creatividad.md` §4).
+## Modo de las pantallas
+- {{persuadir: página de inicio, … · operar: panel, … · leer: …}} (define los KPIs por defecto de
+  `design-spec/references/criterios.md` §4).
 
 ## Movimiento
-- Intensidad: {{sobria · moderada · protagonista}}; escenas de scroll por página en Persuadir:
-  {{0 · hasta 1 · hasta 3}}; una jugada firma por pantalla como máximo.
-- Carácter: {{preciso · físico · suave…, derivado del territorio}}
-- Paleta: jugada firma {{…}}; escenas {{IDs del catálogo o "las deciden las opciones"}};
-  entradas {{cómo cambian según el contenido}}; respuesta en controles {{…}}; transiciones {{…}}.
+- Intensidad: {{ninguno · respuesta en controles · entradas · escenas}}.
+- Carácter: {{preciso · físico · suave…, derivado del territorio}}; reglas de
+  `design-spec/references/movimiento.md`.
 
 ## Superficies y fondos
-- Estrategia de color: {{contenida · comprometida · paleta completa · empapada}}; escena física que
-  decide claro u oscuro: {{quién lo usa, dónde, con qué luz}}.
+- Claro u oscuro según la escena física: {{quién lo usa, dónde, con qué luz}}.
 - {{color sólido, textura, patrón, fotografía o ilustración; de dónde sale en el territorio}}
-- Imágenes disponibles: {{propias · generadas · colecciones abiertas con crédito · dibujadas desde
-  el sujeto · ninguna}}.
+- Recursos de marca disponibles: {{logo, fotos, íconos que existen; ninguno se inventa}}.
 - Cambios entre secciones y separadores: {{…}}
 - Tratamiento de imagen: {{…}}
 

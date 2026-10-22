@@ -1,38 +1,35 @@
 <!doctype html>
 <!--
-  Plantilla de ai-dd para la PÁGINA DE PRUEBA de una opción o composición
-  (docs/design/opciones/opcion-x-pagina.html · docs/specs/NNN-slug/design/opcion-x-pagina.html).
-  Obligatoria en pantallas de Persuadir o Experiencia (design-spec/references/inspeccion.md §1).
-  Es la pantalla principal como página real a ancho de ventana, donde viven las escenas de scroll,
-  las entradas y la cosa viva. Autocontenida: sin CDN, fuentes ni imágenes externas (las imágenes,
-  en la carpeta de la opción o en base64).
+  Plantilla de ai-dd para un CANDIDATO de diseño: una pantalla como página real a ancho de ventana
+  (docs/specs/NNN-slug/design/candidatos/cN.html · docs/design/candidatos/cN-pagina.html).
+  Es lo que mide scripts/evaluate.mjs contra design/criterios.json (design-spec/references/evaluacion.md).
+  Autocontenida: sin CDN, fuentes ni imágenes externas (imágenes en base64 o junto al archivo).
 
   Cómo rellenarla:
-  1. Copia los bloques "fonts", "tokens" y "components" de opcion-x.html (los mismos valores).
-  2. Sustituye el contenido de <main> por la pantalla completa con contenido real: cada sección del
-     argumento, con su encabezado, y la idea llevada hasta el pie.
-  3. Escenas: una <section data-scene="<id del catálogo>" data-hold="N"> con un .scene-stage
-     dentro. Escribe PRIMERO la composición terminada (lo que ven el movimiento reducido, un script
-     que falla y algunos teléfonos) y la versión viva bajo .is-live, guiada por la variable --p
-     (progreso 0→1) que pone el script común. Una sección tranquila entre dos escenas.
-  4. Entradas: data-reveal en las partes de cada sección (titular, texto, imagen, detalles); el
-     escalonado sale del orden. Varía la manera con data-reveal="line|mask|rise|scale".
-  5. Cosa viva: un elemento con data-live; funciona sin JavaScript (formulario o tabla legible) y
-     el script solo lo mejora.
-  6. Pásala por el inspector: node <skill>/scripts/inspect.mjs opcion-x-pagina.html --mode persuadir
+  1. Bloques "fonts" y "tokens": los del sistema (docs/design/system.md) y, si el candidato propone
+     "Cambios a incorporar al sistema", esos tokens nuevos con su motivo en este comentario.
+  2. Sustituye el contenido de <main> por la pantalla completa con el contenido real de la spec, en
+     el orden que fijen sus criterios; los textos literales de los criterios, tal cual.
+  3. Entradas (si el diseño las usa): data-reveal en las partes de cada sección; el escalonado sale
+     del orden. Todo debe verse sin JavaScript y con movimiento reducido (puertas G-sin-js y
+     G-reducido).
+  4. Escenas ligadas al scroll, solo si un criterio las pide (movimiento.md §3): una
+     <section data-scene="<nombre>" data-hold="N"> con un .scene-stage dentro; primero la
+     composición terminada y después la versión viva bajo .is-live, guiada por --p (0→1).
+  5. Mide: node <skill>/scripts/evaluate.mjs cN.html --criteria ../criterios.json
 -->
 <html lang="{{es}}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{Proyecto}} — {{Opción A · página de prueba}}</title>
+<title>{{Proyecto}} — {{pantalla}} · candidato {{N}}</title>
 <script>document.documentElement.classList.add('js')</script>
 <style id="fonts">
-/* @font-face incrustadas, iguales a las de opcion-x.html */
+/* @font-face incrustadas (woff2 en base64, del mismo paquete que usará la app) */
 </style>
 <style id="tokens">
 :root {
-  /* Copia aquí los tokens de opcion-x.html. Los de movimiento (movimiento.md §3): */
+  /* Tokens del sistema (docs/design/system.md) y los propuestos. Los de movimiento (movimiento.md §2): */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
@@ -67,7 +64,7 @@
 </head>
 <body>
 <main>
-  {{secciones de la pantalla con contenido real; escenas con data-scene; entradas con data-reveal; la cosa viva con data-live}}
+  {{secciones de la pantalla con el contenido real de la spec}}
 </main>
 <script>
 // Script común: un solo bucle para todas las escenas y un solo observador para las entradas.

@@ -123,11 +123,12 @@ Si la spec toca UI (frontend, fullstack o mobile), añade un subagente de accesi
 vistas y su JS: roles y nombres, anuncios de errores y estados (regiones vivas), foco al abrir y
 cerrar diálogos (una sola región de estado, montada antes de recibir el texto:
 `../design-spec/references/spec-mode.md` §6), tamaño de los objetivos de toque **medido** en el navegador o dispositivo (no
-supuesto por la plantilla), contraste, fidelidad al `design.md` de la spec (composición elegida, componentes exclusivos,
-fichas `M-n` con sus versiones reducida, sin JavaScript y táctil, cosa viva, escenas y nada de
-`../design-spec/references/movimiento.md` §7; en pantallas de Persuadir, el inspector
-`../design-spec/scripts/inspect.mjs` sobre la build servida en local: un FAIL es hallazgo
-importante y `contenido-que-no-aparece` u `oculto-sin-javascript` son bloqueantes) y consistencia con el sistema de
+supuesto por la plantilla), contraste, fidelidad al `design.md` de la spec (candidato aceptado, componentes exclusivos,
+fichas `M-n` con sus versiones reducida, sin JavaScript y táctil, y nada de
+`../design-spec/references/movimiento.md` §4). Si la spec tiene `design/criterios.json`, ejecuta
+`../design-spec/scripts/evaluate.mjs` con esos criterios sobre cada pantalla de la build servida en
+local: una puerta que falla es hallazgo **bloqueante** y un KPI que falla, **importante**; el
+informe va en la evidencia) y consistencia con el sistema de
 diseño, incluidas sus "Reglas de uso" (`docs/design/system.md`
 y su HTML, si existen: ningún valor visual fuera de los tokens; "Cambios a incorporar al sistema"
 del plan aplicados en `system.md`). Si `design` está en

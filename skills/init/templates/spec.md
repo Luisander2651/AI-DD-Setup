@@ -51,7 +51,21 @@ Eventos que deben quedar registrados, cada uno como criterio `CA` verificable (s
 
 ## Diseño
 {{qué debe sentir quien la usa y qué pantallas toca}}. Sistema: [docs/design/system.md](../../design/system.md).
-{{Si es un rediseño: "Rediseño de <pantallas>: /design-spec NNN genera las opciones."}}
+{{Si es un rediseño: "Rediseño de <pantallas>: /design-spec NNN genera los candidatos."}}
+
+## Criterios de diseño
+<!-- Lo que el diseño tiene que lograr, medible. /design-spec los completa con los valores por defecto
+     del modo de cada pantalla y los copia a design/criterios.json. Cada criterio de aceptación con
+     interfaz tiene al menos un KPI o una puerta. -->
+Modo: {{persuadir · operar · leer}} · umbral {{80}} · mínimo por punto {{3}} · presupuesto {{5}} candidatos.
+
+| ID | Qué se mide | Objetivo | Sale de |
+|---|---|---|---|
+| {{K1}} | {{La acción principal en la primera pantalla}} | {{"…" visible a 390 y 1440 px}} | {{CA1}} |
+| {{K2}} | {{JavaScript de la ruta}} | {{≤ 100 kB}} | {{constitución P…}} |
+
+Puertas: las de `design-spec/references/criterios.md` §2{{; cambios: …}}. Rúbrica: pesos por
+defecto{{; cambios: …}}.
 <!-- endif -->
 
 ## Requisitos no funcionales

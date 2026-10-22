@@ -18,6 +18,9 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | Historial | History | spec |
 | Decisiones | Decisions | spec |
 | Diseño | Design | spec (con interfaz) |
+| Criterios de diseño | Design criteria | spec (con interfaz): KPIs, puertas, umbral y presupuesto |
+| Candidatos | Candidates | `design.md`: una fila por candidato del ciclo |
+| Resultado | Result | `design.md`: el candidato aceptado con lo medido |
 | Deuda de diseño | Design debt | `docs/design/system.md` |
 | Inventario de vistas | View inventory | `docs/design/system.md` (sistema extraído) |
 | Cambios a incorporar al sistema | Changes to the design system | plan |
@@ -51,6 +54,8 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `hecho cuando:` | `done when:` | tarea |
 | `capturada` · `sin captura (motivo)` · `no accesible (motivo)` | `captured` · `not captured (reason)` · `not reachable (reason)` | estado de una vista del inventario |
 | `DS1` | `DS1` | deuda de diseño; un ID no se reutiliza |
+| `exploration: loop` · `none` | `exploration: loop` · `none` | frontmatter de `design.md` (`options`: actas anteriores a 1.17.0) |
+| `aceptado` · `descartado: <motivo>` | `accepted` · `discarded: <reason>` | columna Resultado de "Candidatos" en `design.md` |
 | `SE1`, `SE1.a` | `SE1`, `SE1.a` | brecha de SEO y su corrección (`docs/seo.md`); un ID no se reutiliza |
 | `sí` · `no (motivo)` | `yes` · `no (reason)` | columna Indexable del inventario de rutas |
 | `no determinado` | `not determined` | tema del checklist de SEO sin build, servidor ni URL que consultar |
@@ -68,7 +73,7 @@ escribe el contenido en ese idioma y conserva los títulos y marcadores en ingl�
 | `verificación manual:` | `manual check:` | parte de un criterio que se comprueba a mano (en la tarea que lo construye; T095 si exige staging o dispositivo) |
 | `Conteo:` | `Count:` | línea del Resumen de análisis y review (la lee `history`) |
 | `brecha` · `contradicción` · `implícita` · `supuesto` · `diseño` · `refinado` · `cierre` | `gap` · `contradiction` · `implicit` · `assumption` · `design` · `refined` · `closure` | columna Tipo de "Decisiones" (`refinado`: cambio de diseño tras revisión manual) |
-| `status: draft` · `approved` y `exploration: options` · `none` | (iguales) | frontmatter de `docs/specs/NNN-<slug>/design.md` |
+| `status: draft` · `approved` y `exploration: loop` · `none` (`options` en actas anteriores) | (iguales) | frontmatter de `docs/specs/NNN-<slug>/design.md` |
 | `usuario` | `user` | fuente de una decisión tomada por el usuario |
 | `- bloqueo: AAAA-MM-DD — <qué falta> — <skill>` | `- blocked: YYYY-MM-DD — <what is missing> — <skill>` | tarea detenida por `/implement` |
 | `- [-] … — obsoleta: <motivo>` | `- [-] … — obsolete: <reason>` | tarea que ya no aplica (no se borra) |

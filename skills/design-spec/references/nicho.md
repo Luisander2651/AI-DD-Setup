@@ -69,5 +69,6 @@ es una forma de ser reconocible en ese sector; cada uno trae:
 
 El usuario elige uno, combina o propone el suyo. Lo elegido va a `creative-direction.md`
 (identidad, concepto firma, movimiento y superficies) y a "Decisiones" de `brief.md`. Con un
-territorio elegido, las opciones son **composiciones** de ese territorio (`system-mode.md` §2.3). Si el
-usuario prefiere no elegir, cada opción desarrolla un territorio distinto.
+territorio elegido, los candidatos lo desarrollan y la rúbrica juzga la coherencia con él
+(`system-mode.md` §2.3). Si el usuario prefiere no elegir, el primer candidato parte del territorio
+que mejor encaja con los criterios y el acta lo dice.

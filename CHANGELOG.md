@@ -3,6 +3,56 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.17.0] - 2026-10-22
+Diseño por criterios. El motor creativo de 1.16.0 seguía produciendo diseños genéricos: pedía
+creatividad y la frenaba con prohibiciones, generaba 2–3 opciones a medias para elegir por gusto y
+no medía si el resultado cumplía lo que la spec pedía. `/design-spec` pasa a funcionar como el
+resto del flujo: criterios antes de construir, verificación al final y un ciclo que solo acepta lo
+que supera el umbral.
+
+### Added
+- `design-spec/references/criterios.md`: puertas obligatorias (desbordamiento, contraste real de
+  cada texto, toque, foco, solo colores del sistema, `h1`, contenido sin JavaScript y con movimiento
+  reducido, nada que no aparezca, recursos externos, errores), KPIs por tipo y por modo de la
+  pantalla (persuadir, operar, leer), rúbrica de cinco puntos con escala anclada y pesos, umbral,
+  mínimo por punto y presupuesto de candidatos.
+- `design-spec/references/evaluacion.md`: el ciclo candidato → medición → evaluador → siguiente
+  candidato con los fallos, hasta aceptar uno o agotar el presupuesto; evaluador de la rúbrica en
+  un subagente `critical` que no diseñó y solo ve las capturas, con comparación contra el mejor
+  anterior; qué pasa sin Playwright; el acta.
+- `design-spec/scripts/evaluate.mjs` (sustituye a `inspect.mjs`): mide un candidato o la build contra
+  `design/criterios.json` en Chromium a cada ancho; deja capturas, la tira del scroll, `report.md` y
+  `report.json`; código 0 solo si pasan todas las puertas y KPIs.
+- Sección "Criterios de diseño" en la plantilla de spec y en `brief.md`; `design.threshold`,
+  `design.floor` y `design.budget` en `project.yaml`.
+- `validate`: acta del ciclo (`exploration: loop`, umbral, mínimo, presupuesto, aceptado, puntuación
+  y la fila "Candidatos"), `criterios.json` (JSON válido, KPIs con id único y tipo conocido, los K de
+  la spec presentes), aceptado bajo el umbral solo con decisión del usuario, y aviso a la spec con
+  interfaz sin "Criterios de diseño".
+
+### Changed
+- `design.md` es ahora un acta: candidatos con su resultado y, del aceptado, puertas, KPIs y
+  rúbrica con evidencia. Las actas con `exploration: options` siguen siendo válidas.
+- `/design-spec system` y `NNN`: criterios y ciclo en lugar de opciones; `--redo-options` repite el
+  ciclo traduciendo lo que no convence a criterios; `--only <eje> --base <cN>` ajusta un eje del
+  aceptado sin bajar su puntuación; `--fix` vuelve a medir.
+- `pagina.html` es la plantilla de cada candidato; `option.html` sustituye "Idea" por "Criterios y
+  resultado".
+- `movimiento.md` queda como restricción (filtro, tokens, lo permitido, lo que no, ficha `M-n`).
+- `/implement` no da por hecha una pantalla si `evaluate.mjs` falla sobre la build; `/review` lo
+  ejecuta con los mismos criterios (puerta que falla = bloqueante, KPI = importante); `/tasks` lo pone
+  en `hecho cuando:`; `/specify` escribe los criterios; la entrevista (Ronda 4b) los pregunta.
+
+### Removed
+- El motor creativo de 1.16.0: `creatividad.md` (inventario, registros, cosa viva obligatoria,
+  salida estándar, `--bolder` / `--quieter`), `inspeccion.md`, `inspect.mjs` y `aidd.py deal` con
+  su catálogo de jugadas.
+
+### Upgrade
+`/ai-dd:init --upgrade` (paso 9e) añade `threshold`, `floor` y `budget` al bloque `design`, copia la
+plantilla de spec con "Criterios de diseño", añade `.ai/inspect/` a `.gitignore` y propone limpiar
+`creative-direction.md`. Los diseños ya aprobados no se tocan.
+
 ## [1.16.0] - 2026-10-21
 Diseño creativo. `/design-spec` decía sobre todo qué no hacer (anti-clichés, "un solo elemento
 audaz", "revelados por tiempo antes que ligados al scroll") y no daba con qué ser audaz: las

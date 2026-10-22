@@ -130,9 +130,11 @@ Construye y comprueba estas dos tablas (van al final de `tasks.md`):
 - Todo principio ✅ del Constitution Check del plan con `test:` o `lint:` tiene una tarea que crea
   o ejecuta esa comprobación.
 - Si el `design.md` de la spec (o el plan) tiene "Cambios a incorporar al sistema", la **primera** tarea actualiza
-  `docs/design/system.md` y `system.html`; las tareas de UI `depende:` de ella y su `verificación
-  manual:` compara con la composición elegida (`docs/specs/NNN-<slug>/design/opcion-<x>.html`) o
-  `system.html`, en los anchos de `design.widths` (y el intermedio si `design.md` lo pide).
+  `docs/design/system.md` y `system.html`; las tareas de UI `depende:` de ella. Cada tarea que
+  construye una pantalla con `design/criterios.json` lleva en `hecho cuando:` que
+  `evaluate.mjs` pase con esos criterios sobre la build, y su `verificación manual:` compara con el
+  candidato aceptado (`docs/specs/NNN-<slug>/design/candidatos/cN.html`) o `system.html`, en los
+  anchos de `design.widths`.
 
 ## Paso 4 — Constitution Check
 

@@ -25,17 +25,18 @@ revisa todas las skills afectadas.
 - **Sistema de diseño.** En proyectos con interfaz, `docs/design/system.md` (y su vista
   `system.html`) es la fuente de verdad visual cuando `.ai/project.yaml → design.status` es `draft`
   o `approved`. Ninguna skill cambia un token o un componente sin una tarea que lo haga ("Cambios a
-  incorporar al sistema" del plan). Las opciones y vistas de diseño son **HTML en el repo**
+  incorporar al sistema" del plan). Los candidatos y vistas de diseño son **HTML en el repo**
   (abribles sin red); el canvas de la skill `design`, si se usa, es un complemento enlazado.
   `/init` nunca rediseña: en brownfield solo documenta el diseño existente si el usuario acepta
   (`declined` si no) y un rediseño es siempre una spec propia. El diseño lo hace **`/design-spec`**:
   `system` para el sistema (lo llama `/init`) y `NNN` para cada spec que crea o rehace pantallas,
-  entre `/specify` y `/plan`: 2–3 composiciones sobre el sistema, cada una con una idea sacada del
-  sujeto (no de la categoría), un registro distinto (al menos una audaz) y distinta de las
-  pantallas vecinas; en pantallas que persuaden, cosa viva y escenas de scroll con scroll nativo;
-  todas inspeccionadas en navegador antes de enseñarse; y `docs/specs/NNN-<slug>/design.md`
-  (`draft` → `approved` por el usuario). Movimiento: `skills/design-spec/references/movimiento.md`
-  (lo leen también `/implement` y `/review`). El SEO lo hace **`/seo`** (`setup`, `audit`, `verify`).
+  entre `/specify` y `/plan`. El diseño **se acepta por criterios, no por gusto**: puertas, KPIs y
+  una rúbrica (`skills/design-spec/references/criterios.md`) en la sección "Criterios de diseño" de
+  la spec y en `design/criterios.json`; un ciclo genera candidatos, los mide con
+  `skills/design-spec/scripts/evaluate.mjs`, los puntúa un evaluador que no los diseñó y acepta el
+  primero que supera el umbral, con `budget` candidatos como máximo; el acta es
+  `docs/specs/NNN-<slug>/design.md` (`draft` → `approved` por el usuario). `/implement` y `/review`
+  vuelven a medir con los mismos criterios. El SEO lo hace **`/seo`** (`setup`, `audit`, `verify`).
 - **Jerarquía de fuentes.** Ante un conflicto entre documentos prevalece, en este orden: este
   contrato y `shared/agent-security.md` → `docs/constitution.md` → `AGENTS.md` → `docs/security.md`,
   `docs/architecture.md`, el sistema de diseño y `docs/seo.md` del proyecto (si existen) → specs `approved`,
@@ -86,7 +87,7 @@ revisa todas las skills afectadas.
   > tipo de proyecto y detente, salvo que el usuario insista.
 - **Dependencias externas.** Dos piezas de diseño que este plugin no incluye (no confundir con
   `/design-spec`, que es de este plugin): la skill `design` (crea un canvas Design a partir de un
-  brief; si la sesión la ofrece, `/design-spec` la usa para las opciones) y el plugin oficial `design` de
+  brief; si la sesión la ofrece, `/design-spec` puede usarla para el primer candidato) y el plugin oficial `design` de
   Anthropic (skills `design:design-system`, `design:accessibility-review`, `design:design-critique`,
   `design:design-handoff`, `design:ux-copy`; ver README → "Dependencias"). El plugin se usa **solo**
   si `design` está en `skills.enabled`; la skill de canvas, si la sesión la ofrece. Si el plugin
@@ -207,7 +208,7 @@ revisa todas las skills afectadas.
 
   | Perfil | Por defecto | Para qué |
   |---|---|---|
-  | `critical` | `opus` | Lo que, si falla, llega a producción: `/analyze` completo; en `/review`, A (spec), S (seguridad) y los revisores por módulo o únicos que los incluyen |
+  | `critical` | `opus` | Lo que, si falla, llega a producción: `/analyze` completo; en `/review`, A (spec), S (seguridad) y los revisores por módulo o únicos que los incluyen; el evaluador de la rúbrica de `/design-spec` |
   | `standard` | `sonnet` | Juicio sobre lo ya acotado: `/analyze` delta; en `/review`, C+D (constitución y calidad), accesibilidad y SEO; review ligera de los carriles; exploración de `/init`, `/seo` y `/design-spec` |
   | `mechanical` | `haiku` | Localizar y comprobar, sin decidir: exploración de código en `/plan`; verificar que un hallazgo existe en `archivo:línea` |
   | `implementation` | `inherit` | Subagentes que escriben código (`/implement --parallel`) |

@@ -1,4 +1,4 @@
-# Diseño: sistema de diseño y opciones en HTML
+# Diseño: sistema de diseño por criterios
 
 Modo `system` de `/design-spec` (lo llaman `/init` y `/init --upgrade` paso 9; también se ejecuta
 solo) en proyectos con interfaz: `frontend`, `fullstack`, `mobile`, o un paquete de esos tipos en
@@ -7,7 +7,7 @@ bloque `design` de `project.yaml`.
 
 | Caso | Qué haces |
 |---|---|
-| Greenfield con interfaz | §2: entrevista de diseño y opciones en HTML; la elegida es el sistema |
+| Greenfield con interfaz | §2: entrevista de diseño, criterios y ciclo de candidatos; el aceptado es el sistema |
 | Brownfield con interfaz | §3: **solo si el usuario acepta**, documentas el diseño que ya usa el código |
 | Rediseño | Nunca aquí: es una spec propia (`/specify`, y `/design-spec NNN` sigue `spec-mode.md` §5) |
 
@@ -20,12 +20,12 @@ El entregable visual es siempre **HTML en el repo** (`docs/design/*.html`, a par
 Comprueba qué ofrece la sesión antes de empezar y dilo en una línea:
 
 - **Skill `design`** (crea un artifact Design —canvas— a partir de un brief): si está, genera las
-  opciones con ella pasando el brief del §5 como `args` de la herramienta `Skill`, y guarda el
+  candidatos con ella pasando el brief del §5 como `args` de la herramienta `Skill`, y guarda el
   enlace del canvas en `design.canvas`. **Además** escribe cada opción en HTML (§2.4): el canvas es
   para retoques finos; el HTML es lo que se versiona y lo que leen las demás skills.
 - **Plugin `design` de Anthropic** (`design:design-system`, `design:design-critique`,
   `design:accessibility-review`…): no genera visuales. Úsalo para auditar y documentar el sistema
-  y para revisar las opciones. Solo si está en `skills.enabled` (contrato → "Dependencias
+  y para revisar el candidato aceptado. Solo si está en `skills.enabled` (contrato → "Dependencias
   externas").
 - Sin ninguna de las dos: genera el HTML directamente desde el brief con la plantilla y revisa el
   contraste con la propia página. Nunca bloquees `/init` por su ausencia.
@@ -45,7 +45,7 @@ Con las respuestas escribe, desde `../../init/templates/design/`:
 - `docs/design/creative-direction.md`: referencias de sensación **con nombre** (productos, sitios o
   apps concretos, no adjetivos) y, si el usuario lo dio, el **concepto firma**: la idea que debe
   reconocerse en el producto y el momento en que se ve (p. ej. "el código se escribe y se compila
-  en la tarjeta de presentación"). Si no lo dio, la sección dice "lo deciden las opciones".
+  en la tarjeta de presentación"). Si no lo dio, la sección dice "lo decide el ciclo".
   Con un territorio de identidad elegido (`nicho.md` §4), escribe también "Identidad",
   "Movimiento" y "Superficies y fondos" desde ese territorio.
 - `docs/design/anti-cliches.md`: conserva las filas de "todos los tipos" y las del tipo del
@@ -53,120 +53,68 @@ Con las respuestas escribe, desde `../../init/templates/design/`:
   **del sector** del producto ("Lo que todos repiten" de `nicho.md` y Ronda 4b), cada uno con una alternativa dentro de la dirección, no
   solo la prohibición.
 
-Muéstralos y pide aprobación antes de generar nada: las opciones cuestan tokens.
+Muéstralos y pide aprobación antes de generar nada (con los criterios de §2.3).
 
-### 2.3 Número de opciones
-**3 por defecto. 2 si el usuario ya trae marca y paleta cerradas** (las opciones cambian
-tipografía, forma, densidad y composición, no el color). Regístralo en `brief.md` (`options:`).
+### 2.3 Criterios del sistema
+Antes de generar nada, escribe y aprueba con el usuario los criterios del sistema
+(`criterios.md`) en `docs/design/criterios.json` y en una tabla en `brief.md` ("Criterios de
+diseño"):
+- **Puertas** de `criterios.md` §2, con el contraste y el toque de la constitución.
+- **KPIs** de la pantalla principal según su modo (`criterios.md` §4), con los textos reales de la
+  primera feature del roadmap, y `fonts_loaded` con las familias elegidas.
+- **Rúbrica** de `criterios.md` §5, donde `sistema` se lee como "adecuación al brief y al nicho"
+  (`brief.md`, `nicho.md`, `creative-direction.md` y `anti-cliches.md`).
+- `threshold`, `floor` y `budget` de `.ai/project.yaml → design`.
 
-Qué se explora depende de `creative-direction.md`:
-- **Con concepto firma** (dado por el usuario o por el territorio elegido): la dirección ya está decidida; las opciones son **composiciones** de esa
-  idea (cómo se ordena y se presenta el contenido principal, dónde vive el momento firma), con la
-  misma estética de partida.
-- **Sin concepto firma:** cada opción es una **dirección** con su propia idea y su propio momento
-  firma.
+Muéstralos junto con los documentos de partida y pide aprobación: los candidatos cuestan tokens.
 
-### 2.4 Generar las opciones
-Por cada opción, `docs/design/opciones/opcion-<a|b|c>.html` desde `option.html`:
+### 2.4 El ciclo del sistema
+Sigue `evaluacion.md` con un candidato de sistema en vez de una pantalla. Cada candidato son dos
+archivos en `docs/design/candidatos/`:
+- `c<N>.html` desde `option.html`: tokens completos (si hay modo oscuro, **todos** los colores
+  redefinidos), componentes con estados, tipografía, superficies y "Al compartir". Para rellenar los
+  bloques, busca la etiqueta **después** del comentario de instrucciones de la plantilla.
+- `c<N>-pagina.html` desde `pagina.html`: la pantalla principal como página real con contenido
+  real, sobre esos tokens. Es lo que mide `evaluate.mjs`.
 
-1. Tokens completos en el bloque de estilos `tokens` (si hay modo oscuro, **todos** los colores
-   redefinidos). Para rellenar los bloques, busca la etiqueta **después** del comentario de
-   instrucciones de la plantilla (el comentario los nombra).
-2. Componentes ajustados a la dirección en el bloque `components`, solo con tokens.
-3. Tipografía real: la fuente de marca no es una fuente del sistema (system-ui, Segoe, Roboto,
-   Arial, Verdana, Trebuchet, Bahnschrift…) salvo que el brief lo pida; varían por equipo y aplanan
-   cualquier dirección. Tampoco se elige por estética: escribe antes qué debe lograr la letra
-   según `brief.md` (legibilidad en el contexto de uso, tono, cifras, idioma) y justifica cada
-   familia contra eso en la "Idea" de la opción. Incrusta en el bloque `fonts` cada peso que
-   uses como `@font-face` con el subconjunto latino en woff2 y base64, tomado del mismo paquete o
-   archivo que usará la app (p. ej. `@fontsource/<familia>/files/<familia>-latin-400-normal.woff2`);
-   sin él, el usuario elegiría sobre la fuente de reemplazo. Comprueba que carga
-   (`[...document.fonts].some(f => f.family === '<familia>' && f.status === 'loaded')`;
-   `document.fonts.check()` da `true` aunque la fuente no exista).
-4. Pares de contraste: deja en "Color" solo los pares cuyos tokens existen en la opción (marca los
-   demás con `data-optional`, que la página oculta si falta un token).
-5. Contenido **real**: nombre del producto y textos de la primera feature del roadmap, datos de
-   prueba realistas; nunca lorem ipsum ni cifras inventadas.
-6. Pantallas: 1–2 principales en cada ancho de `design.widths`. Lo que cambia con el ancho se
-   escribe con `@container`, no con `@media` (el marco no es la ventana).
-7. **Idea** con el motor de `creatividad.md`: modo de la pantalla principal (§1), inventario del
-   sujeto (§2) y la frase "X del sujeto se convierte en Y" con la prueba del competidor (§3),
-   anclada en el inventario, en un dato concreto de `brief.md` o en el concepto firma; **registro**
-   distinto por opción y al menos una `audaz`, con las jugadas del reparto
-   (`python .ai/bin/aidd.py deal`, §4); la **cosa viva** si la pantalla principal es de Persuadir
-   (§5). Debajo, las 2–3 decisiones de **estructura** que la materializan, y el riesgo asumido. Ejemplos de forma (de sectores distintos): "La ficha del
-   paciente — la clínica se reconoce por su expediente: cabecera de datos fija, secciones en
-   pestañas de archivo, cifras en monoespaciada"; "El lomo del libro — la librería se recorre como
-   un estante: portadas de canto, títulos en vertical, color por sección". Una idea que no cambia la
-   estructura es solo un nombre: rehaz la opción.
-8. **Paleta de movimiento**, derivada de la idea y del territorio, con la capa completa del modo
-   (`movimiento.md` §2): en Persuadir, escenas según el registro, la **jugada firma**, entradas
-   coreografiadas por sección (variadas según el contenido), respuesta en cada control y una imagen
-   en movimiento; en Operar, respuesta, continuidad espacial y deleite en momentos raros. Tokens de
-   curva y duración de `movimiento.md` §3 (`--ease-out`, `--ease-expo`, `--ease-in-out`,
-   `--ease-exit`). Cada efecto con disparador, propiedades, duración y curva con tokens y su versión
-   sin movimiento. La jugada firma va en fotogramas y **en vivo** en la sección "Movimiento" de
-   `option.html`; las escenas y la cosa viva, en la página de prueba
-   `opcion-<x>-pagina.html` (`inspeccion.md` §1).
-9. **Superficies, color e imágenes**, derivados del territorio (no de una moda) y con la plenitud
-   de `creatividad.md` §6: **estrategia de color** declarada (contenida, comprometida, paleta
-   completa o empapada) y aplicada a escala de página; fondo de página, cambios entre secciones
-   (un campo de color por capítulo es válido), texturas o patrones, separadores; **imágenes** en el
-   orden de §6 (propias, generadas, colecciones abiertas acreditadas, dibujadas desde el sujeto),
-   grandes y de una familia, nunca presentadas como del cliente si no lo son. Escala tipográfica de
-   display (titular ≥ ~4× el cuerpo en Persuadir). Sin vídeo de fondo pesado en el visor; un clip
-   real en bucle va en la página de prueba con su póster. El texto se mide sobre la **zona más
-   difícil** del fondo: define `--surface-worst` con ese color para que la página calcule el par.
-   Un color sólido es una elección válida si la idea lo pide; dilo.
-10. **Marca en el navegador y al compartir** (sección "Al compartir" de `option.html`):
-   - **Ícono:** sale de una marca que la opción ya muestra (las letras de la barra, el símbolo del
-     logo, el acento de color), no de un cuadrado genérico con iniciales. Sin logo, un **monograma
-     provisional** marcado como tal (el plugin no diseña logos: `nicho.md`). Dibujado en una
-     retícula de 64, trazo grueso, y revisado a 16 y 32 px en pestaña clara y oscura.
-   - **Tarjeta para compartir** (sitio indexable): **repite la pieza firma de la opción** (la
-     tarjeta del hero, el momento firma, la cabecera reconocible) con sus superficies, bordes y
-     luz, para que el enlace compartido y el sitio se reconozcan como la misma pieza. Datos reales
-     que dan identidad (título, sección, y lo que el contenido tenga: autor, fecha, categoría,
-     stack, precio), nunca inventados; marca y título dentro de la zona segura. Las reglas `c-share`
-     de la plantilla son andamiaje: una tarjeta que se les parece se rehace.
+Reglas de cada candidato:
+1. **Tipografía real**, incrustada como `@font-face` woff2 en base64 desde el mismo paquete que usará
+   la app (p. ej. `@fontsource/<familia>/files/<familia>-latin-400-normal.woff2`). La fuente de
+   marca no es una del sistema salvo que el brief lo pida; se justifica contra lo que el brief pide
+   de la letra (legibilidad en el contexto de uso, tono, cifras, idioma).
+2. **Pares de contraste:** en "Color" de `c<N>.html`, solo los pares cuyos tokens existen (los demás
+   con `data-optional`); ninguno puede salir "no cumple": se corrigen los tokens, no el umbral.
+3. **Contenido real:** nombre del producto y textos de la primera feature del roadmap, datos de
+   prueba realistas; nunca lorem ipsum ni cifras inventadas. Los recursos de marca que existen
+   (logo, fotos) se abren y se usan tal como son.
+4. **Pantallas** en cada ancho de `design.widths`; en `c<N>.html`, lo que cambia con el ancho se
+   escribe con `@container`, no con `@media`.
+5. **Movimiento** con los tokens y reglas de `movimiento.md`, solo el que pida el brief.
+6. **Superficies y fondos** del territorio de `nicho.md`; el texto se mide sobre la **zona más
+   difícil** del fondo (`--surface-worst`).
+7. **Marca en el navegador y al compartir** (sección "Al compartir"): ícono que sale de una marca que
+   el candidato ya muestra (sin logo, monograma provisional marcado como tal; el plugin no diseña
+   logos), revisado a 16 y 32 px en pestaña clara y oscura; tarjeta para compartir (sitio indexable)
+   que **repite una pieza reconocible** del candidato, con datos reales y marca y título en la zona
+   segura. Las reglas `c-share` de la plantilla son andamiaje.
+8. Antes de medir, repasa el candidato contra `anti-cliches.md` y §6: cada rasgo presente baja la
+   nota de `plantilla` y el evaluador lo verá.
 
-Las opciones deben ser **distintas de verdad**: cambian **siempre la composición** de la pantalla
-principal (orden, jerarquía y forma de presentar el contenido principal) y además al menos uno de
-familia de color, pareja tipográfica, forma y densidad, superficies y movimiento. Si comparten
-esqueleto (mismas secciones
-en el mismo orden, mismos textos, misma rejilla) son la misma opción con otra piel: rehazlas. Evita
-los clichés de `anti-cliches.md` y, salvo que el brief lo pida, los rasgos por defecto de las
-interfaces generadas (§6).
+Con el plugin `design` habilitado, `design:accessibility-review` sobre el candidato aceptado antes
+de presentarlo. **Presenta** el acta del ciclo (candidatos con su resultado y el aceptado con sus
+puertas, KPIs y notas) y abre el aceptado; el usuario lo aprueba o ajusta criterios.
 
-**Antes de enseñarlas:**
-- En "Al compartir", responde la revisión de la página: ¿se reconoce el sitio en la vista previa del
-  enlace?, ¿el ícono se distingue a 16 px en las dos pestañas? Si no, rehaz esa parte.
-- Repasa cada opción contra §6 y `anti-cliches.md`, rasgo por rasgo, haya o no plugin `design`;
-  corrige lo que aparezca o, si el brief lo pide, dilo en su "Idea". Compara también las opciones
-  entre sí con la regla de composición de arriba.
-- Pasa cada opción (y su página de prueba) por **la inspección** (`inspeccion.md`): inspector sin
-  FAIL en claro, oscuro, "Sin movimiento" y sin JavaScript, la tira del scroll mirada y la crítica
-  escrita; tres rondas como máximo. Ningún par de "Color" puede salir "no cumple": corrige los
-  tokens, no el umbral. Responde las pruebas de `creatividad.md` §7.
-- Si el plugin `design` está habilitado: `design:design-critique` y `design:accessibility-review`
-  sobre cada una; corrige lo grave antes de presentarla.
-
-**Presenta** una tabla (opción, registro, idea, jugada firma y escenas, cosa viva, riesgo, notas
-de la crítica, ruta del HTML y enlace del canvas si lo hay), la **salida estándar** del sector en una
-línea sin recomendarla, y pide que elija una, combine elementos o pida otra ronda **más audaz** o
-**más segura** (`creatividad.md` §4).
-
-### 2.5 Elección → sistema
-1. `docs/design/system.md` con `source: chosen`, `status: draft`: los tokens de la opción elegida
-   (y lo combinado; con modo oscuro, columnas "Claro" y "Oscuro" y el contraste como
-   `13.0:1 · 15.2:1`), contraste de cada color de texto (el que calculó la página), componentes con
-   estados, "Marca en el navegador y al compartir" (dibujo del ícono y, si el sitio es indexable, la
-   tarjeta con su pieza firma de origen, la composición **con medidas**, los datos y su origen,
-   variantes y modo de generación), pantallas principales y la
-   elección en "Decisiones" (tipo `diseño`, fuente `usuario`).
+### 2.5 Aceptado → sistema
+1. `docs/design/system.md` con `source: chosen`, `status: draft`: los tokens del candidato aceptado
+   (con modo oscuro, columnas "Claro" y "Oscuro" y el contraste como `13.0:1 · 15.2:1`), contraste
+   de cada color de texto (el que calculó la página), componentes con estados, "Marca en el navegador
+   y al compartir" (dibujo del ícono y, si el sitio es indexable, la tarjeta con su pieza de origen,
+   la composición **con medidas**, los datos y su origen, variantes y modo de generación), pantallas
+   principales, los criterios con los que se aceptó y el acta resumida en "Decisiones" (tipo
+   `diseño`, fuente `usuario` al aprobar).
    Con el plugin habilitado, redacta componentes y patrones con `design:design-system document`.
-2. `docs/design/system.html`: la opción elegida ajustada, con "sistema de diseño aprobado" en la
-   cabecera. Las opciones se quedan en `opciones/` (también las descartadas).
+2. `docs/design/system.html`: el candidato aceptado, con "sistema de diseño aprobado" en la
+   cabecera. Los candidatos se quedan en `candidatos/` (también los descartados).
 3. `.ai/project.yaml → design`: `status: draft` (pasa a `approved` cuando el usuario aprueba
    `system.md`), `source: chosen`, `canvas`, `widths`.
 4. Constitución: el principio condicional "La interfaz usa solo el sistema de diseño".
@@ -179,79 +127,41 @@ componentes** (`spec-mode.md` §9), y la auditoría de §3 compara también con
 `system.md`: tamaño de controles, margen lateral de campos y pantallas, colores y radios por
 defecto de la librería.
 
-### 2.7 Rehacer las opciones antes de elegir
+### 2.7 Repetir el ciclo antes de aprobar
 
-`/init --upgrade --redo-options`. Para cuando las opciones ya se generaron, ninguna convence y aún
-no hay sistema aprobado. Sin esto, el usuario aprueba una opción a medias para poder abrir un
-rediseño, o pide regenerarlas a mano sin procedimiento.
+`/design-spec system --redo-options` (o `/init --upgrade --redo-options`). Para cuando el ciclo
+terminó sin aceptado o el usuario no aprueba el aceptado y aún no hay sistema aprobado. Si
+`design.status` es `approved`, detente: cambiar el sistema es un rediseño (spec propia).
 
-**Condiciones:** existe `docs/design/opciones/` y `design.status` no es `approved`. Si es
-`approved`, detente: cambiar el sistema es un rediseño (spec propia, `/specify "rediseño de …"`).
-Si es `declined` o el sistema es `extracted`, no aplica: es §3b o un rediseño.
+1. **Qué falló:** pregunta en una sola ronda qué no convence y tradúcelo a criterios: un KPI nuevo o
+   más estricto, un peso distinto en la rúbrica, un rasgo nuevo en `anti-cliches.md`, una referencia
+   nueva en `creative-direction.md`. Un "no me gusta" sin traducir no cambia el resultado. Las
+   respuestas van a "Decisiones" de `brief.md` (tipo `diseño`, fuente `usuario`).
+2. **Archiva** `candidatos/` en `docs/design/candidatos/history/ronda-<N>/` (y un `system.md` en
+   `draft` de la ronda anterior, dejando `design.status: none` y `source: null`). Nunca borres una
+   ronda.
+3. **Repite el ciclo** (§2.4) con los criterios nuevos; el primer candidato parte del mejor de la
+   ronda anterior.
 
-1. **Qué falló.** Pregunta en una sola ronda qué no convenció de cada opción y qué se conserva
-   (una opción como base, o elementos sueltos de otras). Repite de la Ronda 4b solo lo que cambie
-   la siguiente ronda: casi siempre el concepto firma (punto 5), los clichés del sector y las
-   referencias. Las respuestas van a "Decisiones" de `brief.md` (tipo `diseño`, fuente `usuario`).
-   Si no existe `docs/design/nicho.md` (proyecto anterior a 1.12.0), ofrece investigar el nicho
-   (`nicho.md`) antes de la nueva ronda: es la causa más común de opciones genéricas.
-2. **Documentos de partida.** Actualiza `brief.md`, `creative-direction.md` y `anti-cliches.md`
-   (§2.2) con lo nuevo: lo rechazado pasa a `anti-cliches.md` con su alternativa, y una base
-   elegida se convierte en el concepto firma. Muestra el cambio y pide aprobación.
-3. **Archiva** las opciones actuales en `docs/design/opciones/history/ronda-<N>/` (`N` = 1, 2…,
-   la primera libre), con sus HTML intactos. Si había un `system.md`/`system.html` en `draft`
-   de una elección anterior, archívalos en esa misma carpeta y deja `design.status: none` y
-   `source: null` hasta la nueva elección. Nunca borres una ronda.
-4. **Genera** la nueva ronda con §2.3–§2.4 (y la skill `design` si está; el canvas nuevo sustituye a
-   `design.canvas` y el anterior queda citado en "Decisiones"). Si hay una base conservada, las
-   opciones son composiciones de su idea y ninguna repite el esqueleto de la ronda anterior.
-5. **Presenta** la tabla de §2.4 con una columna más, "Qué cambia respecto a la ronda <N>", y
-   sigue con §2.5.
+En un rediseño (spec propia) se aplica lo mismo desde `/design-spec NNN` (`spec-mode.md` §5).
 
-En un rediseño (spec propia), las opciones viven en la carpeta de la spec: aplica los mismos pasos
-desde `/design-spec NNN` (`spec-mode.md` §5), archivando en
-`docs/specs/NNN-<slug>/design/history/ronda-<N>/`.
+### 2.8 Ajustar un solo eje del aceptado
 
-### 2.8 Ronda acotada a un eje
+`/design-spec system --redo-options --only <eje> --base <cN>`, para cuando el aceptado convence
+salvo un aspecto ("la letra no"). Ejes: `tipografia`, `color`, `forma`, `fondo`, `movimiento`; la
+composición no es un eje (§2.7). Sin sistema `approved`.
 
-Para cuando una opción ya convence en composición pero falla en un solo aspecto ("la A, pero no me
-gusta la letra"). Rehacer las opciones completas tiraría lo que funciona.
-
-**Cómo se pide:** `/design-spec system --redo-options --only <eje> --base <a|b|c>` (o su atajo en
-`/init --upgrade`); en las opciones de una spec, `/design-spec NNN` al elegir (`spec-mode.md` §2 y
-§5, paso 3). Ejes:
-`tipografia`, `color`, `forma` (radios, bordes, sombras, densidad), `fondo` (superficies,
-texturas, tratamiento de imagen) y `movimiento` (paleta de movimiento). La composición no es un eje:
-cambiarla es §2.7. Mismas condiciones que §2.7: sin sistema `approved`.
-
-1. **Congela la base.** Composición, textos y los demás ejes no cambian. Solo cambian los tokens
-   del eje:
-   | Eje | Tokens que cambian |
-   |---|---|
-   | `tipografia` | `--font-*`, `--text-*` (tamaño, interlineado, peso, interletrado) y el bloque `fonts` |
-   | `color` | `--color-*` |
-   | `forma` | `--radius-*`, `--border-*`, `--shadow-*`, `--space-*` |
-   | `fondo` | `--surface-*` y las reglas de fondo, textura e imagen del bloque de componentes |
-   | `movimiento` | `--duration-*`, `--ease-*` y las reglas de animación del bloque de componentes |
-   Un ajuste de otro eje que el usuario pida a la vez (p. ej. aligerar bordes) se aplica a la
-   base **antes** de la comparación y se registra aparte, nunca mezclado en las variantes.
-2. **Criterios primero.** Antes de proponer variantes, escribe 3–4 criterios del eje sacados de
-   `brief.md` (tipografía: legibilidad en el contexto de uso, tono, cifras, acentos; color:
-   contraste, lectura en el contexto de uso, significado de los colores en el sector; forma: toque
-   mínimo, densidad; fondo: legibilidad del texto encima, peso, relación con el territorio;
-   movimiento: jerarquía, rendimiento, versión sin movimiento). Muéstralos al usuario junto con las variantes.
-3. **2–3 variantes**, cada una justificada contra los criterios, con su riesgo. Nada de §6 sin
-   motivo del brief.
-4. **Lámina comparativa** desde `../../init/templates/design/eje.html`, en la misma carpeta que las
-   opciones (`eje-<eje>.html`): las mismas piezas de la base con cada variante, lado a lado al ancho
-   más chico de `design.widths` y el hero a ancho completo. La página comprueba la carga de las
-   fuentes y el contraste de cada variante y tiene "Simular luz exterior" (pantalla con brillo alto y contraste reducido); anota el peso de las fuentes en
-   KB. En `movimiento`, cada variante se reproduce en vivo con el botón "Reproducir". Ábrela en un navegador (o pide al usuario que lo haga) antes de enseñarla: ninguna fuente
-   "no cargada", ningún par que no cumpla. Con la skill `design`, añade la lámina al canvas.
-5. **Elección.** La variante elegida se aplica a la opción base (su HTML y el canvas); la decisión
-   va a "Decisiones" de `brief.md` (o del plan) con el criterio que la decidió; la lámina se
-   archiva en `history/ronda-<N>-<eje>/`. Después se sigue con §2.5 (o con el plan) usando la base
-   ya afinada. Se puede encadenar otra ronda de otro eje.
+1. **Congela el resto:** solo cambian los tokens del eje (`--font-*` y `--text-*`; `--color-*`;
+   `--radius-*`, `--border-*`, `--shadow-*` y `--space-*`; `--surface-*`; `--duration-*` y
+   `--ease-*`).
+2. **El criterio primero:** escribe qué tiene que lograr el eje (p. ej. "cifras tabulares legibles a
+   14 px en exterior") como KPI o como nota mínima de un punto de la rúbrica.
+3. **2–3 variantes** como candidatos `c<N>-<eje>-<v>`, medidos con `evaluate.mjs` y comparados en
+   una lámina desde `../../init/templates/design/eje.html` (fuentes cargadas, contraste, "Simular luz
+   exterior"). Se acepta la variante que pasa puertas y KPIs, cumple el criterio del eje y no baja
+   la puntuación del aceptado; con varias, la de mayor puntuación.
+4. La variante aceptada se aplica a la base y va a "Decisiones" con el criterio que la decidió; la
+   lámina se archiva en `history/ronda-<N>-<eje>/`.
 
 ## 3. Brownfield: documentar el diseño existente
 
@@ -312,7 +222,7 @@ queda marcado como pendiente.
    plantilla del framework, imagen para compartir ausente o la misma captura en todas las rutas de
    un sitio indexable) es deuda `DS`. No diseñes una tarjeta nueva: eso es una spec.
 
-No propongas rediseño ni generes opciones. Si el usuario lo pide, el resumen indica que es una
+No propongas rediseño ni generes candidatos. Si el usuario lo pide, el resumen indica que es una
 spec propia (`/specify "rediseño de …"`).
 
 ### 3b. Re-extraer un sistema ya documentado
@@ -345,7 +255,7 @@ aplica a un sistema `chosen` (cambiarlo es un rediseño: spec propia).
 `../../init/references/upgrade.md` paso 9 ejecuta **solo** el §3 (pregunta incluida) sobre un proyecto ya inicializado, sin
 re-explorar el resto del código: lanza únicamente el subagente G. Con un sistema extraído por un
 procedimiento anterior, ofrece §3b (re-extraer); `--redo-design` lo ejecuta directamente.
-`--redo-options` sigue §2.7 (rehacer las opciones de un proyecto nuevo antes de elegir sistema);
+`--redo-options` sigue §2.7 (repetir el ciclo de un proyecto nuevo antes de aprobar el sistema);
 con `--only <eje> --base <opción>`, §2.8 (afinar un solo eje de una opción). Los tres argumentos son
 atajos de `/design-spec system` con el mismo nombre.
 
@@ -360,19 +270,17 @@ Concepto firma: <el de creative-direction.md, o "ninguno: cada opción propone e
 Clichés del sector: <los de anti-cliches.md, con su alternativa>
 Nicho: <convenciones, materiales y territorio elegido de docs/design/nicho.md>
 Movimiento y superficies: <los de creative-direction.md>
-Modo y registro: <persuadir · experiencia · operar · leer> · <sobrio · firme · audaz por opción>
-Inventario e idea: <8–12 cosas del sujeto; frase "X se convierte en Y" por opción>
-Jugadas repartidas: <IDs de aidd.py deal y semilla>; cosa viva: <qué hace la persona>
-Imágenes disponibles: <propias · generadas · colecciones abiertas · dibujadas · ninguna>
+Modo de la pantalla principal: <persuadir · operar · leer>
+Criterios: <puertas, KPIs con objetivo y pesos de la rúbrica de docs/design/criterios.json>
+Recursos de marca disponibles: <logo, fotos, íconos que existen; ninguno se inventa>
 Sistema de diseño: <tokens clave de system.md, o "a definir" en modo sistema>
 Contenido real: <textos y datos exactos; nunca lorem ipsum>
 Artboards:
-  - Opciones A, B (y C) con composición distinta de la pantalla principal; cada una con su idea
-    en una frase, anclada en un dato del brief, y las decisiones de estructura que la materializan
+  - Un candidato completo que cumpla los criterios (el ciclo genera el siguiente si no los cumple)
   - Cada una a <design.widths>
   - Estados: vacío, carga, error, foco, deshabilitado
   - Movimiento como fotogramas anotados (inicio → medio → final), con versión sin movimiento;
-    capa de movimiento del modo (escenas, jugada firma, entradas, respuesta, imagen en movimiento)
+    solo el movimiento que piden el brief y movimiento.md
   - Superficies y fondos de cada opción, con el texto sobre la zona más difícil del fondo
 Restricciones: <constitución: WCAG, toque mínimo, plataforma>; sin clichés de anti-cliches.md;
   solo tokens del sistema (modo spec)
@@ -397,25 +305,19 @@ generada sin dirección:
 - etiquetas en mayúsculas espaciadas sobre cada título, metadatos unidos con puntos medios,
   monoespaciada para cualquier dato pequeño, flechas añadidas a todos los botones;
 - numeración decorativa (01, 02, 03) en contenido que no es una secuencia;
-- la misma animación de entrada, con el mismo tiempo, en cada sección (las entradas se
-  coreografían según el contenido: `movimiento.md` §2);
-- el mismo esqueleto de página en todas las opciones, con solo el color, el radio y la sombra
-  cambiados.
+- la misma animación de entrada, con el mismo tiempo, en cada sección;
+- un esqueleto de página de plantilla (hero centrado, fila de tarjetas iguales, pie con columnas de
+  enlaces) con solo el color, el radio y la sombra cambiados.
 
 - fondos de moda sin relación con la idea: manchas de color difusas, degradados de malla, vidrio
   esmerilado, grano o ruido en toda la página, rejilla de puntos;
-- movimiento genérico (`movimiento.md` §7): el mismo fundido en cada bloque, parallax o contadores
-  sin relación con la idea ni datos reales, cursores personalizados, pantalla de carga, scroll
-  secuestrado, texto que se escribe solo;
-- la página quieta: nada responde ni se mueve, o solo un fundido; en Persuadir es tan delator como
-  el exceso.
+- movimiento genérico (`movimiento.md` §4): parallax o contadores sin datos reales, cursores
+  personalizados, pantalla de carga, scroll secuestrado, texto que se escribe solo.
 
 - tarjeta para compartir que no se parece al sitio: el logo centrado sobre un degradado, marca +
   título + descripción en columna sobre fondo liso (la base de la plantilla), o una captura de la
   página reducida hasta que nada se lee; un ícono que es un cuadrado redondeado con iniciales en la
   fuente del sistema.
 
-**Concentra la audacia, no la elimines:** una jugada firma reconocible y, en Persuadir, las
-escenas que pida el registro, con secciones tranquilas entre ellas. Quitar adornos sin poner nada
-en su lugar deja la página delgada: llena el espacio con escala, contenido completo, imágenes del
-sujeto o un campo de color (`creatividad.md` §6), nunca con otro adorno.
+Cada uno de estos rasgos baja la nota del punto `plantilla` de la rúbrica (`criterios.md` §5): el
+evaluador los busca en las capturas.

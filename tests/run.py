@@ -307,51 +307,95 @@ def scenario_design_templates():
         check(f"existe templates/design/{name}", os.path.isfile(os.path.join(base, name)))
 
 
-def scenario_design_creative():
-    print("diseño creativo (reparto, catálogo, página de prueba, inspector):")
+def scenario_design_loop():
+    print("diseño por criterios (criterios.json, acta del ciclo, evaluate.mjs):")
     import re as _re
     root = os.path.dirname(HERE)
-    tmp = tempfile.mkdtemp()
-    code, a = run(["deal", "--seed", "42", "--json"], tmp)
-    _, b = run(["deal", "--seed", "42", "--json"], tmp)
-    hand = json.loads(a)["hand"] if code == 0 else []
-    ids = [k for h in hand for k in h["escenas"] + h["jugadas"]]
-    check("deal: misma semilla, misma mano", code == 0 and a == b, a)
-    check("deal: 3 composiciones, nada repetido entre ellas", len(hand) == 3 and len(ids) == len(set(ids)) == 12, a)
-    code, o = run(["deal", "--mode", "operar", "--n", "4", "--seed", "1", "--json"], tmp)
-    oh = json.loads(o)["hand"] if code == 0 else []
-    check("deal: operar reparte sensación y ninguna escena",
-          len(oh) == 4 and all(not h["escenas"] and len(h["jugadas"]) == 2 for h in oh), o)
-    code, _ = run(["deal", "--mode", "fiesta"], tmp)
-    check("deal: modo desconocido es error", code == 2)
-    shutil.rmtree(tmp, ignore_errors=True)
-    mov = open(os.path.join(root, "skills", "design-spec", "references", "movimiento.md"), encoding="utf-8").read()
-    src = open(AIDD, encoding="utf-8").read()
-    cat_ids = set(_re.findall(r'^\s+\("([a-z-]+)", "', src, _re.M))
-    sec5 = mov.split("## 5.", 1)[-1].split("## 6.", 1)[0]
-    doc_ids = set(_re.findall(r"^\| `([a-z-]+)` \|", sec5, _re.M))
-    check("catálogo de movimiento.md = catálogo de aidd.py deal", cat_ids and cat_ids == doc_ids,
-          f"solo script: {sorted(cat_ids - doc_ids)} · solo doc: {sorted(doc_ids - cat_ids)}")
+    crit = {"spec": "002-pagina-inicio", "mode": "persuadir", "widths": [390, 1440],
+            "kpis": [{"id": "K1", "name": "Acción a la vista", "type": "above_fold", "text": "Reservar"},
+                     {"id": "K2", "name": "JS", "type": "max_js_bytes", "value": 102400}]}
+    acta = ("---\nspec: 002-pagina-inicio\nstatus: draft\nexploration: loop\nthreshold: 80\nfloor: 3\n"
+            "budget: 5\naccepted: c2\nscore: {score}\n---\n# Diseño\n## Candidatos\n"
+            "| Candidato | Puertas | KPIs | Rúbrica | Resultado | Informe |\n|---|---|---|---|---|---|\n"
+            "| `c1` | 9/10 | 2/2 | — | descartado: G-contraste | r1 |\n| `c2` | 10/10 | 2/2 | {score} | aceptado | r2 |\n"
+            "## Resultado\nc2.\n{extra}")
+    spec_crit = ("## Criterios de diseño\nModo: persuadir.\n\n| ID | Qué se mide | Objetivo | Sale de |\n"
+                 "|---|---|---|---|\n| K1 | Acción a la vista | visible | CA1 |\n| K2 | JS | 100 kB | P3 |\n")
+
+    def project(design_md=None, criteria=crit, spec_extra=spec_crit, yaml_extra=""):
+        tmp = tempfile.mkdtemp()
+        d = os.path.join(tmp, "docs/specs/002-pagina-inicio")
+        os.makedirs(os.path.join(tmp, ".ai")); os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(tmp, ".ai/project.yaml"), "w", encoding="utf-8").write(
+            "type: frontend\nlanguage: es\ndesign:\n  status: approved\n  source: chosen\n"
+            "  system: docs/design/system.md\n  html: docs/design/system.html\n" + yaml_extra)
+        open(os.path.join(d, "spec.md"), "w", encoding="utf-8").write(
+            "---\nstatus: approved\n---\n# Inicio\n## Problema\nNadie reserva.\n"
+            "## Criterios de aceptación\n- [ ] CA1 El botón Reservar se ve al entrar\n"
+            "## Fuera de alcance\nPagos.\n## Seguridad y privacidad\nNo aplica: sin datos personales.\n"
+            "## Diseño\nPágina pública. Diseño: [design.md](design.md).\n" + spec_extra)
+        if design_md is not None:
+            open(os.path.join(d, "design.md"), "w", encoding="utf-8").write(design_md)
+        if criteria is not None:
+            open(os.path.join(d, "design/criterios.json"), "w", encoding="utf-8").write(
+                criteria if isinstance(criteria, str) else json.dumps(criteria))
+        _, val = run(["validate"], tmp)
+        shutil.rmtree(tmp, ignore_errors=True)
+        return val
+
+    val = project(spec_extra="")
+    check("spec con interfaz sin 'Criterios de diseño' → aviso", "Criterios de diseño" in val, val)
+    val = project(acta.format(score=84, extra=""))
+    check("acta del ciclo válida → sin errores de diseño",
+          "design.md:" not in val and "criterios.json" not in val and "Criterios de diseño" not in val, val)
+    val = project(acta.format(score=72, extra=""))
+    check("aceptado bajo el umbral sin decisión → error", "por debajo del umbral" in val, val)
+    val = project(acta.format(score=72, extra="## Decisiones\n| 2026-10-22 | diseño | Umbral | El usuario acepta c2 bajo el umbral | usuario |\n"))
+    check("aceptado bajo el umbral con decisión del usuario → sin error", "por debajo del umbral" not in val, val)
+    val = project(acta.format(score=84, extra=""), criteria=None)
+    check("ciclo sin criterios.json → error", "sin design/criterios.json" in val, val)
+    bad = dict(crit, kpis=[{"id": "K1", "type": "looks_premium"}, {"id": "K1", "type": "visible", "texts": ["x"]}])
+    val = project(acta.format(score=84, extra=""), criteria=bad)
+    check("KPI de tipo desconocido y id repetido → errores", "type desconocido" in val and "repetido" in val, val)
+    val = project(acta.format(score=84, extra=""), criteria=dict(crit, kpis=crit["kpis"][:1]))
+    check("KPI de la spec que falta en criterios.json → aviso", "faltan KPIs" in val and "K2" in val, val)
+    val = project(acta.format(score=84, extra="").replace("accepted: c2", "accepted: none").replace("status: draft", "status: approved"))
+    check("aprobado sin aceptado ni decisión → error", "aprobado sin candidato aceptado" in val, val)
+    val = project(acta.format(score=84, extra="").replace("| aceptado |", "| descartado: rúbrica |"))
+    check("accepted no marcado en Candidatos → error", "no lo marca como aceptado" in val, val)
+    val = project(acta.format(score=84, extra=""), yaml_extra="  threshold: 150\n  budget: 0\n")
+    check("umbral y presupuesto fuera de rango en project.yaml → errores",
+          "design.threshold inválido" in val and "design.budget inválido" in val, val)
+
     base = os.path.join(root, "skills", "init", "templates", "design")
     pag = open(os.path.join(base, "pagina.html"), encoding="utf-8").read()
     ext = _re.findall(r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']+|@import|url\(\s*["']?(?:https?:)?//""", pag)
-    check("pagina.html no carga nada externo", not ext, str(ext))
-    check("pagina.html: escenas sticky con progreso, entradas y movimiento reducido",
-          "data-scene" in pag and "position: sticky" in pag and "--p" in pag and "data-reveal" in pag
-          and "prefers-reduced-motion" in pag and "IntersectionObserver" in pag)
+    check("pagina.html (candidato) no carga nada externo y apunta a evaluate.mjs", not ext and "evaluate.mjs" in pag, str(ext))
     opt = open(os.path.join(base, "option.html"), encoding="utf-8").read()
-    check("option.html: sección Idea con prueba del competidor y cosa viva",
-          'id="idea"' in opt and "Prueba del competidor" in opt and "Cosa viva" in opt and "opcion-x-pagina.html" in opt)
+    check("option.html: sección de criterios y resultado", 'id="criterios"' in opt and "Rúbrica" in opt)
     sd = open(os.path.join(base, "spec-design.md"), encoding="utf-8").read()
-    check("spec-design.md: modo, registro, cosa viva, imágenes e inspección",
-          "Modo y registro" in sd and "## Cosa viva" in sd and "## Imágenes" in sd and "## Inspección" in sd)
+    check("spec-design.md es un acta: candidatos, resultado, umbral y presupuesto",
+          "## Candidatos" in sd and "## Resultado" in sd and "threshold:" in sd and "budget:" in sd)
+    spt = open(os.path.join(root, "skills", "init", "templates", "spec.md"), encoding="utf-8").read()
+    check("spec.md tiene 'Criterios de diseño'", "## Criterios de diseño" in spt)
     refs = os.path.join(root, "skills", "design-spec", "references")
-    for name in ("creatividad.md", "movimiento.md", "inspeccion.md"):
+    for name in ("criterios.md", "evaluacion.md", "movimiento.md"):
         check(f"existe design-spec/references/{name}", os.path.isfile(os.path.join(refs, name)))
-    ins = os.path.join(root, "skills", "design-spec", "scripts", "inspect.mjs")
-    check("existe design-spec/scripts/inspect.mjs y no instala nada",
-          os.path.isfile(ins) and "npm install" not in open(ins, encoding="utf-8").read())
-
+    for gone in ("creatividad.md", "inspeccion.md"):
+        check(f"ya no existe design-spec/references/{gone}", not os.path.exists(os.path.join(refs, gone)))
+    ev = os.path.join(root, "skills", "design-spec", "scripts", "evaluate.mjs")
+    evs = open(ev, encoding="utf-8").read() if os.path.isfile(ev) else ""
+    check("evaluate.mjs existe y no instala nada", evs and "npm install" not in evs)
+    src = open(AIDD, encoding="utf-8").read()
+    py_types = set(_re.findall(r'"(\w+)"', src.split("KPI_TYPES = {", 1)[1].split("}", 1)[0]))
+    js_types = set(_re.findall(r"case '(\w+)':", evs))
+    doc = open(os.path.join(refs, "criterios.md"), encoding="utf-8").read()
+    doc_types = set(_re.findall(r"^\| `(\w+)` \| ", doc.split("## 3. KPIs", 1)[1].split("## 4.", 1)[0], _re.M))
+    doc_types.discard("type")
+    check("tipos de KPI iguales en aidd.py, evaluate.mjs y criterios.md", py_types == js_types == doc_types,
+          f"py {sorted(py_types)} · js {sorted(js_types)} · doc {sorted(doc_types)}")
+    code, out = run(["deal"], tempfile.gettempdir())
+    check("aidd.py deal ya no existe", code == 2 and "desconocido" in out, out)
 
 def scenario_closed_specs():
     print("specs cerradas, enmiendas y riesgos citados en Rollout:")
@@ -671,7 +715,7 @@ if __name__ == "__main__":
     scenario_encoding()
     scenario_hook()
     scenario_design_templates()
-    scenario_design_creative()
+    scenario_design_loop()
     scenario_closed_specs()
     scenario_release_status()
     scenario_design_contrast_rule()

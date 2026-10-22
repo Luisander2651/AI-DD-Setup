@@ -56,19 +56,20 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
    un sí, sigue **solo** `../../design-spec/references/system-mode.md` §3 (subagente G, capturas con datos de prueba y medidas,
    auditoría, `system.md` extraído, `system.html` y deuda `DS`), sin re-explorar el resto del
    código. Con un no, `design.status: declined` y no vuelvas a preguntar. Nunca ofrezcas rediseño
-   ni opciones. Si `design.status` es `declined` o el sistema es `source: chosen`, no hagas nada.
+   ni candidatos. Si `design.status` es `declined` o el sistema es `source: chosen`, no hagas nada.
    **Re-extracción (desde 1.11.2):** si `system.md` es `source: extracted` y `extracted_with` falta
    o es anterior a 1.11.2, explica qué cambió (inventario completo de vistas con capturas, nada
    dibujado a mano, textos y logo de la app, deuda conciliada) y **ofrece** re-extraer con
    `../../design-spec/references/system-mode.md` §3b; con `--upgrade --redo-design`, hazlo sin preguntar si ofrecerlo. Nunca borres
    el sistema anterior: se archiva en `docs/design/history/`.
-   **Rehacer opciones (desde 1.11.4):** con `--upgrade --redo-options`, sigue `../../design-spec/references/system-mode.md` §2.7 y
-   nada más del paso. Sin el argumento, si hay `docs/design/opciones/` y `design.status` es `none`
-   (opciones sin elegir), menciona en el resumen que existe. Con `--only <eje> --base <opción>`,
+   **Repetir el ciclo (desde 1.11.4; por criterios desde 1.17.0):** con `--upgrade --redo-options`, sigue `../../design-spec/references/system-mode.md` §2.7 y
+   nada más del paso. Sin el argumento, si hay `docs/design/opciones/` o `docs/design/candidatos/` y
+   `design.status` es `none` (sin sistema aprobado), menciona en el resumen que existe. Con
+   `--only <eje> --base <cN>`,
    sigue `../../design-spec/references/system-mode.md` §2.8 (ronda acotada a un eje, desde 1.11.5; ejes `fondo` y `movimiento`
-   desde 1.12.0). **Nicho (desde 1.12.0):** si hay diseño `chosen` o en opciones y falta
+   desde 1.12.0). **Nicho (desde 1.12.0):** si hay diseño `chosen` o candidatos y falta
    `docs/design/nicho.md`, no lo crees en el upgrade: menciónalo en el resumen; se investiga en la
-   siguiente ronda de opciones o spec de rediseño. Si `skills.enabled` no tiene
+   siguiente ciclo o spec de rediseño. Si `skills.enabled` no tiene
    `design` y el plugin está instalado, ofrece registrarlo.
 9b. **SEO técnico (desde 1.13.0).** Si el proyecto tiene interfaz web (`frontend`, `fullstack`,
     paquete web de un monorepo) y no tiene bloque `seo` o `seo.status` está vacío, sigue
@@ -92,16 +93,16 @@ dice desde qué versión existe y no hace nada si el proyecto ya lo cumple.
     (archivo del agente: siempre se pregunta). Si hay commits de código fuera del flujo desde el
     `/init` (`aidd.py drift`), menciónalo en el resumen y sugiere `/sync`; no los concilies aquí.
     Si el usuario tiene un arreglo en curso hecho sin ficha, ofrece `/fix --retro`.
-9e. **Diseño creativo (desde 1.16.0).** Solo con diseño `chosen` (o en opciones). Nada se
-    rediseña: **propón**, sin aplicar sin confirmación, las filas nuevas de
-    `../templates/design/anti-cliches.md` (página quieta, idea de categoría, secciones delgadas,
-    primera pantalla seguida de plantilla, pantalla de carga y scroll secuestrado) en
-    `docs/design/anti-cliches.md`; las secciones "Modo y registro" e "Imágenes disponibles" en
-    `creative-direction.md` (pregunta el registro máximo y qué imágenes existen); y los tokens de
-    movimiento nuevos (`--ease-expo`, `--ease-in-out`, `--ease-exit`, `--duration-reveal`,
-    `--duration-open`, `--stagger`) como cambio menor de `system.md` con su entrada en
-    "Decisiones". Las specs ya diseñadas no se tocan; las siguientes usan el motor nuevo
-    (`../../design-spec/references/creatividad.md`). Añade `.ai/inspect/` a `.gitignore`.
+9e. **Diseño por criterios (desde 1.17.0).** `/design-spec` ya no genera opciones para elegir:
+    acepta candidatos que superan criterios medibles. Añade `threshold: 80`, `floor: 3` y
+    `budget: 5` al bloque `design` (paso 4) y `.ai/inspect/` a `.gitignore`. Copia la plantilla
+    `spec.md` nueva (sección "Criterios de diseño"). Las actas aprobadas con `exploration: options`
+    siguen siendo válidas y no se tocan; las specs abiertas con interfaz y sin "Criterios de diseño"
+    reciben un aviso del validador: se completan al ejecutar `/design-spec NNN` (que los propone) o
+    se dejan como están si ya tienen diseño aprobado. **Propón**, sin aplicar sin confirmación,
+    quitar de `creative-direction.md` las secciones "Modo y registro" y "Paleta" de 1.16.0 (registro,
+    jugadas, cosa viva) y sustituirlas por "Modo de las pantallas". Menciona que `aidd.py deal` ya no
+    existe.
 10. **Historial de specs (desde 1.7.0).** Para cada spec con rondas o versiones sueltas en su
     carpeta (`analysis.r<N>.md`, `review.r<N>.md`, `plan.v<N>.md`, `tasks.v<N>.md`; el validador lo
     avisa), propone `python .ai/bin/aidd.py history docs/specs/NNN-<slug> --migrate` (las mueve a

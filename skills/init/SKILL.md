@@ -16,7 +16,7 @@ Diseño y SEO tienen skills propias: `/init` llama a `/design-spec system` y a `
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.16.0` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.17.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 
@@ -24,7 +24,7 @@ todos los comandos posteriores leen y respetan.
 |---|---|
 | `--upgrade` | Pone al día un proyecto ya inicializado con la versión instalada del plugin, sin re-explorar. Sigue `references/upgrade.md`. |
 | `--upgrade --redo-design` | Atajo de `/design-spec system --redo-design`: re-extrae el sistema documentado del código. |
-| `--upgrade --redo-options [--only <eje> --base <a\|b\|c>]` | Atajo de `/design-spec system --redo-options`: rehace las opciones antes de elegir sistema o afina un solo eje. |
+| `--upgrade --redo-options [--only <eje> --base <cN>]` | Atajo de `/design-spec system --redo-options`: repite el ciclo de diseño con criterios nuevos antes de aprobar el sistema, o ajusta un solo eje. |
 | `--type <frontend\|backend\|fullstack\|mobile\|monorepo\|library>` | Omite la pregunta de tipo de proyecto |
 | `--force` | Permite sobrescribir archivos existentes (siempre mostrando diff antes) |
 | `--no-explore` | En brownfield, omite los subagentes y solo entrevista |
@@ -221,7 +221,7 @@ contenido se queda).
    cubre y las que deja fuera con su destino (otro objetivo, spec o excepción). No resumas: si el
    riesgo propone cuatro correcciones, el objetivo nombra las cuatro. Pregunta al usuario por
    las que propones dejar fuera.
-9a. **Diseño** (proyectos con interfaz): `/design-spec system` (opciones y sistema elegido en
+9a. **Diseño** (proyectos con interfaz): `/design-spec system` (criterios, ciclo y sistema aceptado en
     greenfield; sistema extraído y deuda `DS` en brownfield aceptado). Bloque `design` de
     `.ai/project.yaml` en ambos casos (`declined` si el usuario no lo quiso).
 9b. `docs/specs/README.md` con la tabla de specs (vacía en greenfield): `AGENTS.md` la enlaza.
@@ -230,7 +230,7 @@ contenido se queda).
     paso 11, guarda sus huellas en `project.yaml` con `python .ai/bin/aidd.py templates --yaml`
     (`--upgrade` las usa para saber si el usuario las personalizó).
 11. `.ai/bin/aidd.py` ← copia de `../../scripts/aidd.py` (validadores; así CI no depende del
-    plugin). Propón añadir `.ai/cache/` y `.ai/inspect/` al `.gitignore` (copias locales para `/analyze` delta y capturas del inspector de diseño).
+    plugin). Propón añadir `.ai/cache/` y `.ai/inspect/` al `.gitignore` (copias locales para `/analyze` delta y capturas del evaluador de diseño).
 12. **CI (opcional, pregunta):** si el proyecto usa GitHub, propone
     `.github/workflows/ai-dd.yml` ← `templates/ci/github-actions-aidd.yml`, rellenado con los
     comandos de `AGENTS.md` y `security.tools`; quita los pasos con `command: null` o
@@ -297,7 +297,7 @@ Entrega al usuario, sin recapitular los pasos:
   detectados en brownfield (sin detallar vectores de explotación).
 - Estado de `docs/observability.md`: qué capacidades están solo presentes y no en uso, y si
   falta el registro de auditoría de accesos a datos sensibles.
-- Diseño: opciones generadas y elegida, o sistema extraído con su deuda `DS`, con las rutas de los
+- Diseño: acta del ciclo y sistema aceptado, o sistema extraído con su deuda `DS`, con las rutas de los
   HTML para abrirlos; o `declined`.
 - SEO: rutas auditadas sobre la build, brechas `SE` y por confirmar; o `declined`.
 - Conciliación con el roadmap (si ya existía): brechas cubiertas por objetivos existentes,

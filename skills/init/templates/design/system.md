@@ -1,6 +1,6 @@
 ---
 status: draft            # draft | approved (solo el usuario aprueba)
-source: {{chosen|extracted}}   # chosen: elegido entre opciones · extracted: documentado del código
+source: {{chosen|extracted}}   # chosen: aceptado por criterios · extracted: documentado del código
 version: 1.0.0
 extracted_with: {{skills_version}}   # solo source: extracted — versión del plugin que lo extrajo (--upgrade ofrece re-extraer si es anterior a 1.11.2)
 html: docs/design/system.html
@@ -127,7 +127,7 @@ margen lateral --space-gutter, altura ≥ --touch-min}}
 
 Cada animación declara su versión con `prefers-reduced-motion: reduce` (menos y más suave: se quitan
 desplazamiento, escala y reproducción automática), anima `transform`, `opacity` y `clip-path` salvo
-justificación y sigue `design-spec/references/movimiento.md` (filtro, escenas, lo que no se usa).
+justificación y sigue `design-spec/references/movimiento.md` (filtro, lo permitido y lo que no se usa).
 
 ## Marca en el navegador y al compartir
 
@@ -207,10 +207,8 @@ que las capturas citadas existan.
 ## Reglas de uso
 
 Reglas **contables** que `/design-spec` respeta y `/review` comprueba:
-- Jugada firma: {{una por página}} ({{cuál en cada página}}); escenas de scroll en Persuadir:
-  {{0–3 por página, con una sección tranquila entre dos}}; en Operar: {{ninguna}}.
-- Entradas: coreografiadas según el contenido, nunca el mismo fundido en cada bloque; lo de alta
-  frecuencia (atajos, navegación principal de una app) no se anima.
+- Momento protagonista: {{uno por página}} ({{cuál}}); escenas ligadas al scroll: {{ninguna · las
+  que pidan los criterios}}; lo de alta frecuencia (atajos, navegación principal) no se anima.
 - Efecto firma ({{luz, borde luminoso, textura…}}): solo en {{elementos interactivos y el componente
   firma}}; como máximo {{uno}} visible en reposo por pantalla.
 - Color de acento o de luz: {{nunca en párrafos; solo foco, acción principal, estados}}.

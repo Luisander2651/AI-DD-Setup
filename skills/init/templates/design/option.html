@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Plantilla de ai-dd para una opción de diseño (docs/design/opciones/opcion-x.html) y para el
+  Plantilla de ai-dd para un candidato de sistema (docs/design/candidatos/cN.html) y para el
   sistema aprobado (docs/design/system.html). Autocontenida: sin fuentes, scripts ni imágenes
   externas, para que se abra sin red cuantas veces se quiera.
 
@@ -35,12 +35,9 @@
        convertido a trazos; aquí se ve con la fuente incrustada.
      En un sistema EXTRAÍDO, los íconos y la imagen son los del repo incrustados (o el hueco "no
      existe", que es deuda DS). Sin sitio indexable, borra las tarjetas y deja los íconos.
-  7. Sección "idea": modo, registro, inventario del sujeto, la frase de la idea con la prueba del
-     competidor, jugadas repartidas (aidd.py deal y su semilla), cosa viva, estrategia de color,
-     origen de las imágenes y las pruebas antes de enseñar (design-spec/references/creatividad.md).
-  8. Persuadir o Experiencia: la pantalla principal también como página real en
-     opcion-x-pagina.html (plantilla pagina.html), con escenas, entradas y cosa viva funcionando;
-     enlázala en "Movimiento" y pásala por el inspector (references/inspeccion.md).
+  7. Sección "criterios": resultado del candidato frente a docs/design/criterios.json (puertas, KPIs
+     con lo medido por scripts/evaluate.mjs y notas de la rúbrica con su evidencia), y el enlace a
+     su página real (cN-pagina.html, plantilla pagina.html), que es la que se mide.
   El contraste de cada par de "Color" lo calcula la propia página: no lo escribas a mano. Un par
   con data-optional se oculta si la opción no define alguno de sus tokens; uno sin él sale como
   "falta el token".
@@ -297,7 +294,7 @@
 <nav class="v-toc" aria-label="Secciones">
   <div class="v-wrap">
     <ul>
-      <li><a href="#idea">Idea</a></li>
+      <li><a href="#criterios">Criterios</a></li>
       <li><a href="#color">Color</a></li>
       <li><a href="#tipografia">Tipografía</a></li>
       <li><a href="#espaciado">Espaciado y forma</a></li>
@@ -311,17 +308,15 @@
 </nav>
 
 <main class="v-wrap">
-  <section class="v-section" id="idea">
-    <h2>Idea</h2>
+  <section class="v-section" id="criterios">
+    <h2>Criterios y resultado</h2>
+    <p class="v-note">Candidato {{N}} medido con <code>evaluate.mjs</code> contra <code>criterios.json</code>.
+      Página medida: <a href="{{cN-pagina.html}}">{{cN-pagina.html}}</a>.</p>
     <dl class="v-idea">
-      <dt>Modo · registro</dt><dd>{{persuadir · experiencia · operar · leer}} · {{sobrio · firme · audaz}}</dd>
-      <dt>La idea</dt><dd>En esta pantalla, <strong>{{algo que es del sujeto}}</strong> se convierte en <strong>{{el recurso que organiza la composición}}</strong>.</dd>
-      <dt>Prueba del competidor</dt><dd>Con {{competidor más cercano}} la frase {{ya no funciona porque …}}.</dd>
-      <dt>Inventario del sujeto</dt><dd>{{8–12 cosas que son de este proyecto y de ningún competidor, de al menos tres familias}}</dd>
-      <dt>Jugadas</dt><dd>{{IDs elegidos del reparto}} (semilla {{n}}): {{qué contenido real llena cada una}}</dd>
-      <dt>Cosa viva</dt><dd>{{qué hace la persona, con qué datos; versión sin JavaScript · "no aplica: operar"}}</dd>
-      <dt>Color e imágenes</dt><dd>Estrategia {{contenida · comprometida · paleta completa · empapada}}; imágenes {{propias · generadas · colección abierta (crédito) · dibujadas desde el sujeto}}.</dd>
-      <dt>Pruebas</dt><dd>Esqueleto: {{…}} · Retirada: {{…}} · Cinco segundos: {{…}} · Inspector: {{0 FAIL · n WARN}} · Crítica: {{critica-x.md}}</dd>
+      <dt>Resultado</dt><dd>{{aceptado · descartado: motivo}} · puntuación {{n}}/100 (umbral {{80}}, mínimo por punto {{3}})</dd>
+      <dt>Puertas</dt><dd>{{n}}/{{n}} · {{las que fallaron, con su detalle}}</dd>
+      <dt>KPIs</dt><dd>{{K1 · objetivo → medido ✅}} · {{…}}</dd>
+      <dt>Rúbrica</dt><dd>jerarquía {{n}} · primera pantalla {{n}} · sistema {{n}} · lectura {{n}} · plantilla {{n}} — evidencia: {{captura y zona por punto}}</dd>
     </dl>
   </section>
 
@@ -533,8 +528,7 @@
       <li><strong>{{Momento firma}}</strong>: {{disparador, propiedades, duración y curva con tokens}}. Sin movimiento: {{versión estática}}.</li>
       <li><strong>{{Microinteracción}}</strong>: {{…}}. Sin movimiento: {{…}}.</li>
     </ul>
-    <p class="v-note">{{Persuadir/Experiencia: escenas, entradas y cosa viva en vivo en
-      <a href="opcion-x-pagina.html">la página de prueba</a> · Operar/Leer: borra esta línea.}}</p>
+    <p class="v-note">{{Si hay entradas o escenas: en vivo en <a href="cN-pagina.html">la página medida</a>; si no, borra esta línea.}}</p>
     <button type="button" class="v-toggle" id="replay">Reproducir</button>
     <div class="v-stage"><div class="opt" id="motion-demo" data-play>
       {{las piezas que se animan: el momento firma y los controles con sus microinteracciones}}

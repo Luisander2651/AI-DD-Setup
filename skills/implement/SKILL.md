@@ -130,13 +130,11 @@ detente y propone la skill que indica.
      dispositivo, pide al usuario la comprobación concreta. **Espera su confirmación** y regístrala:
      `  - nota: verificación manual OK AAAA-MM-DD (usuario)`. Si falla, se corrige dentro de la tarea.
      Si el usuario pide otro valor o comportamiento visual que `design.md` no fija, no lo
-     improvises: `/design-spec NNN --fix` (decisión `refinado`) y después la tarea; si pide "más
-     audaz" o "más tranquila" una sección, `/design-spec NNN --bolder|--quieter <sección>`.
-     Escenas, entradas y cosa viva se construyen como en `opcion-<x>-pagina.html` y con las reglas
-     de `../design-spec/references/movimiento.md` (un solo script común, composición terminada
-     primero, versión reducida y sin JavaScript); antes de la revisión manual de una pantalla de
-     Persuadir, pasa el inspector (`../design-spec/scripts/inspect.mjs`) sobre la build servida en
-     local y adjunta el resultado.
+     improvises: `/design-spec NNN --fix` (decisión `refinado`) y después la tarea.
+     La pantalla se construye como el candidato aceptado (`design/candidatos/cN.html`), con las
+     reglas de `../design-spec/references/movimiento.md`. Antes de la revisión manual, pasa
+     `../design-spec/scripts/evaluate.mjs` con `design/criterios.json` sobre la build servida en
+     local: la tarea no está hecha si falla una puerta o un KPI; adjunta el informe.
 5. **Marca** la tarea `[x]` en `tasks.md`. Si hubo algo relevante, añade una nota debajo:
    `  - nota: <decisión menor, archivo extra justificado, deuda detectada>`.
 6. **Commit** según la política elegida.

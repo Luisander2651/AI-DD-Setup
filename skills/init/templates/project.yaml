@@ -62,6 +62,9 @@ design:                        # solo proyectos con interfaz (frontend, fullstac
   html: docs/design/system.html
   canvas: {{null}}             # enlace del canvas si se usó la skill design
   widths: [{{390, 1440}}]      # anchos de comprobación (mobile: [360, 412])
+  threshold: 80                # puntuación mínima de la rúbrica para aceptar un candidato (0–100)
+  floor: 3                     # nota mínima de cada punto de la rúbrica (0–5)
+  budget: 5                    # candidatos como máximo por ciclo de /design-spec
 seo:                           # solo sitios web públicos (shared/contract.md → "SEO técnico")
   status: {{none|declined|proposed|inferred|approved}}   # declined: el usuario no lo quiso (no se vuelve a preguntar)
   indexable: {{true|false|null}}    # true: el sitio debe aparecer en buscadores

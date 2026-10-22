@@ -1,9 +1,9 @@
 ---
 name: "design-spec"
-description: "Diseña la interfaz: el sistema de diseño del proyecto (opciones en HTML o el diseño existente documentado) y, en cada spec con pantallas, 2–3 composiciones sobre el sistema antes de planear, con idea propia, escenas de scroll, cosa viva e inspección en navegador. Úsala con /design-spec system, /design-spec NNN o cuando el usuario pida diseñar, rediseñar, hacer más audaz o documentar pantallas."
+description: "Diseña la interfaz por criterios: define puertas, KPIs y una rúbrica, genera un candidato tras otro, los mide en el navegador y acepta solo el que supera el umbral. Hace el sistema de diseño (o documenta el existente) y el diseño de cada spec con pantallas antes de planear. Úsala con /design-spec system, /design-spec NNN o cuando el usuario pida diseñar, rediseñar o documentar pantallas."
 ---
 
-# /design-spec — Diseño de interfaz
+# /design-spec — Diseño por criterios
 
 Paso del flujo en proyectos con interfaz:
 
@@ -15,47 +15,46 @@ Paso del flujo en proyectos con interfaz:
 > Antes de actuar, lee el contrato común del flujo: `../../shared/contract.md` (relativo a este
 > archivo). Si algo aquí lo contradice, prevalece el contrato.
 
-Decide **cómo se ve y se mueve** el producto. El sistema de diseño fija el lenguaje de todo el
-producto; el diseño de cada spec elige entre composiciones distintas sobre ese lenguaje, para que
-ninguna pantalla sea la plantilla de otra.
-
-Los anti-clichés dicen qué no hacer; `references/creatividad.md` dice **con qué ser audaz**: una idea
-sacada del sujeto (no de la categoría), registros distintos entre opciones, una cosa viva que la
-persona puede usar, plenitud en lugar de vacío, y movimiento coreografiado con escenas de scroll
-(`references/movimiento.md`). Nada se enseña sin pasar por el navegador (`references/inspeccion.md`).
+El diseño **no se elige por gusto**: se acepta cuando supera un nivel medible. Primero se fijan los
+criterios (puertas, KPIs y rúbrica: `references/criterios.md`); después se genera un candidato, se
+mide con `scripts/evaluate.mjs`, lo puntúa un evaluador que no lo diseñó y, si no llega, el
+siguiente candidato corrige sus fallos, hasta aceptar uno o agotar el presupuesto
+(`references/evaluacion.md`). El usuario aprueba el resultado con su acta; no elige entre bocetos.
 
 ## Uso
 
 ```
-/design-spec system                       # greenfield: opciones y sistema · brownfield: documentar el existente
+/design-spec system                       # greenfield: criterios y ciclo del sistema · brownfield: documentar el existente
 /design-spec system --redo-design         # re-extraer un sistema documentado del código
-/design-spec system --redo-options [--only <eje> --base <a|b|c>]   # rehacer opciones o afinar un eje
-/design-spec <NNN|slug>                   # composiciones de una spec con pantallas
-/design-spec <NNN> --fix <qué>            # refinar tras la revisión manual (decisión `refinado`)
-/design-spec <NNN> --bolder <sección>     # subir una sección plana con el vocabulario del sistema
-/design-spec <NNN> --quieter <sección>    # bajar una sección que compite con la jugada principal
+/design-spec system --redo-options [--only <eje> --base <cN>]   # repetir el ciclo con criterios nuevos, o ajustar un eje
+/design-spec <NNN|slug>                   # criterios y ciclo de una spec con pantallas
+/design-spec <NNN> --fix <qué>            # refinar el aceptado tras la revisión manual (decisión `refinado`)
 ```
 
 ## Reglas
 
 - **Solo proyectos con interfaz** (`frontend`, `fullstack`, `mobile`, paquetes de esos tipos). En
   otro tipo, dilo y detente.
-- **HTML en el repo.** Toda opción o composición es un HTML desde `../init/templates/design/` que se
-  abre sin red. Si la sesión ofrece la skill externa `design` (canvas), úsala además y enlaza el
-  canvas; no es esta skill (contrato → "Dependencias externas").
-- **Contenido real.** Textos y datos del proyecto o de la spec; nunca lorem ipsum ni cifras
-  inventadas. Los adornos (índices, rutas, código decorativo) se generan desde datos reales.
-- **No cambia código de la app** ni la spec, salvo la sección "Diseño" y una fila de "Decisiones".
-  Escribe solo en `docs/design/` y `docs/specs/NNN-<slug>/design*`.
+- **Criterios antes que diseño.** Sin criterios aprobados no se genera ningún candidato. Cada
+  criterio de aceptación con interfaz tiene al menos un KPI o una puerta que lo comprueba.
+- **Aceptar solo lo que supera el umbral:** todas las puertas, todos los KPIs y la rúbrica ≥
+  `threshold` sin ningún punto por debajo de `floor` (`.ai/project.yaml → design`). Bajo el umbral,
+  solo el usuario puede aceptar, con una decisión registrada.
+- **Presupuesto:** como mucho `budget` candidatos por ciclo; al agotarlo, para y presenta el mejor
+  con lo que le falta (`references/evaluacion.md` §5).
+- **El evaluador no diseña:** la rúbrica la puntúa un subagente (perfil `critical`) que solo ve las
+  capturas, los criterios y la rúbrica.
+- **Candidatos en HTML en el repo**, autocontenidos (sin red), desde `../init/templates/design/`:
+  páginas reales a ancho de ventana (`pagina.html`); en modo sistema, además, el visor `option.html`.
+  Los descartados no se borran.
+- **Contenido y recursos reales.** Textos y datos del proyecto o de la spec; los recursos de marca
+  que existen (logo, fotos, íconos) se abren y se usan tal como son. Nunca lorem ipsum, fotos,
+  testimonios, cifras ni logos inventados.
+- **No cambia código de la app** ni la spec, salvo "Criterios de diseño", la sección "Diseño" y una
+  fila de "Decisiones". Escribe solo en `docs/design/` y `docs/specs/NNN-<slug>/design*`.
 - **Aprobación humana.** `system.md` y cada `design.md` nacen en `draft`; solo el usuario los aprueba.
-  Las opciones descartadas no se borran.
-- **Antes de enseñar** cualquier opción: contraste sin ningún "no cumple", repaso contra
-  `docs/design/anti-cliches.md` y `references/system-mode.md` §6, la revisión de "Al compartir", las
-  pruebas de `references/creatividad.md` §7 y la inspección (`references/inspeccion.md`: inspector
-  sin FAIL, tira del scroll mirada, crítica escrita; tres rondas como máximo).
-- **Contra el sesgo:** registros distintos entre opciones y al menos una `audaz`; jugadas repartidas
-  con `python .ai/bin/aidd.py deal` y la semilla registrada; la salida estándar del sector se
-  ofrece en una línea, nunca se recomienda.
+- Si la sesión ofrece la skill externa `design` (canvas), puede usarse para el primer candidato; no
+  es esta skill (contrato → "Dependencias externas"). El candidato que se mide es siempre el HTML.
 - Escribe en el idioma del proyecto.
 
 ---
@@ -64,11 +63,12 @@ persona puede usar, plenitud en lugar de vacío, y movimiento coreografiado con 
 
 Sigue `references/system-mode.md`:
 - **Greenfield** (§2): investigación del nicho (`references/nicho.md`), entrevista de diseño
-  (`../init/references/interview.md` → Ronda 4b), documentos de partida, 2–3 opciones distintas de
-  verdad, elección y `docs/design/system.md` + `system.html`.
+  (`../init/references/interview.md` → Ronda 4b), documentos de partida, **criterios del sistema**
+  (§2.3), **ciclo** de candidatos (§2.4) y el aceptado como `docs/design/system.md` +
+  `system.html` (§2.5).
 - **Brownfield** (§3): solo si el usuario aceptó documentar el diseño existente; fidelidad a lo que
   ve el usuario (capturas con datos de prueba, medidas), deuda `DS`, sin rediseñar.
-- `--redo-design` → §3b · `--redo-options` → §2.7 · `--only <eje> --base <opción>` → §2.8.
+- `--redo-design` → §3b · `--redo-options` → §2.7 · `--only <eje> --base <cN>` → §2.8.
 
 Al terminar, actualiza `.ai/project.yaml → design` y ejecuta `python .ai/bin/aidd.py validate`.
 Cuando lo llama `/init`, devuelve el control a la fase en que estaba.
@@ -79,63 +79,51 @@ Cuando lo llama `/init`, devuelve el control a la fase en que estaba.
 1. La spec existe y está en `approved` (o en `draft` si el usuario quiere diseñar antes de cerrarla;
    avísale de que un cambio de criterios puede rehacer el diseño).
 2. `design.status` es `draft` o `approved`. Si no, propone `/design-spec system` primero.
-3. Si ya existe `design.md` aprobado, pregunta si regenerar las composiciones o solo refinar.
+3. Si ya existe `design.md` aprobado, pregunta si repetir el ciclo (con los mismos criterios o con
+   criterios nuevos) o solo refinar (`--fix`). Repetirlo archiva el acta y los candidatos en
+   `design/history/ronda-<N>/`.
 
-### Paso 1 — ¿Hace falta explorar?
-Sigue `references/spec-mode.md` §1. Si no hay pantalla nueva ni recomposición (o el usuario lo
-pide), escribe `design.md` con `exploration: none` y el motivo, y salta al Paso 4.
+### Paso 1 — ¿Hace falta diseñar?
+`references/spec-mode.md` §1. Si no hay pantalla nueva ni recomposición (o el usuario lo pide),
+escribe `design.md` con `exploration: none` y el motivo, y salta al Paso 5.
 
-### Paso 2 — Composiciones
-`references/spec-mode.md` §2: contexto y pantallas vecinas y preguntas que falten (incluidas las
-imágenes que existen de verdad); **modo** de cada pantalla, **inventario del sujeto**, **frase de la
-idea** con la prueba del competidor y **reparto** (`references/creatividad.md` §1–§4); **2–3
-composiciones** con registro distinto, vecino más parecido y diferencia, jerarquía declarada,
-jugada firma y escenas, **cosa viva** (Persuadir), plenitud (color, escala, imágenes), riesgo
-marcado, anchos de `design.widths` más uno intermedio si hay filas, y estados. En Persuadir, cada
-composición tiene además su página de prueba (`../init/templates/design/pagina.html`). Movimiento:
-`references/movimiento.md`. Inspección antes de enseñar: `references/inspeccion.md`. Si es un
-rediseño o hay pantallas que el sistema no cubre, añade §5. Íconos o tarjeta para compartir: §7.
+### Paso 2 — Criterios
+`references/criterios.md`: si la spec no tiene "Criterios de diseño", propónlos según el modo de
+cada pantalla (§4) con un KPI o una puerta por cada criterio de aceptación con interfaz, la rúbrica
+con sus pesos (§5) y el umbral, el mínimo y el presupuesto de `project.yaml`. Pide aprobación: es la
+pregunta que decide todo lo demás. Escribe la tabla en la spec y `design/criterios.json`.
 
-### Paso 3 — Elección
-El usuario elige, combina, afina un eje, pide otra ronda **más audaz** o **más segura**, toma la
-salida estándar o pide rehacer (`references/spec-mode.md` §2, `references/creatividad.md` §4).
-Registra la elección.
+### Paso 3 — Ciclo
+`references/evaluacion.md`: lee el sistema, las pantallas vecinas y el contenido, abre los recursos
+de marca, y repite **candidato → `evaluate.mjs` → evaluador → fallos al siguiente** hasta un
+aceptado o hasta `budget`. Movimiento solo el que pidan los criterios, con `references/movimiento.md`.
+Íconos o tarjeta para compartir: `references/spec-mode.md` §7. Rediseño o pantallas que el sistema no
+cubre: §5.
 
-### Paso 4 — Documento
+### Paso 4 — Acta
 `docs/specs/NNN-<slug>/design.md` desde `../init/templates/design/spec-design.md`
-(`references/spec-mode.md` §3 y §4): dirección y motivo, composición con proporciones y puntos de
-corte, componentes del sistema y exclusivos, "Cambios a incorporar al sistema" con su modo,
-movimiento en fichas `M-n` con versiones reducida, sin JavaScript y táctil, accesibilidad,
-anti-clichés con su alternativa y decisiones. Enlázalo desde la sección "Diseño" de la spec con su
-fila en "Decisiones" (tipo `diseño`).
+(`references/spec-mode.md` §3): frontmatter del ciclo, una fila por candidato, el resultado del
+aceptado (puertas, KPIs, rúbrica con evidencia), componentes, "Cambios a incorporar al sistema" con
+su modo, fichas `M-n` si hay movimiento, accesibilidad y decisiones. Enlázalo desde la sección
+"Diseño" de la spec con su fila en "Decisiones" (tipo `diseño`).
 
 ### Paso 5 — Autoverificación y aprobación
-- [ ] Cada composición tiene modo, registro, frase de la idea con la prueba del competidor, vecino y
-      diferencia, y riesgo; ninguna repite el esqueleto de otra pantalla del producto; la idea
-      llega a todas las secciones.
-- [ ] Persuadir: cosa viva con versión sin JavaScript, escenas según el registro con sección
-      tranquila entre ellas, página de prueba que funciona; ninguna sección delgada ni tramo vacío.
-- [ ] Inspector sin FAIL en la composición elegida y crítica escrita (`references/inspeccion.md`).
+- [ ] Cada criterio de aceptación con interfaz tiene su KPI o puerta en `criterios.json`.
+- [ ] El aceptado pasa todas las puertas y KPIs (`report.json` del último `evaluate.mjs`) y su
+      puntuación supera el umbral sin ningún punto bajo el mínimo; o la decisión del usuario que lo
+      acepta por debajo está en "Decisiones".
 - [ ] Ningún valor visual fuera de los tokens o de "Cambios a incorporar al sistema".
-- [ ] Toda animación con ficha `M-n` (tipo, filtro, versión reducida, sin JavaScript, táctil y, en
-      escenas, plan de teléfono) y su coste; nada de `references/movimiento.md` §7; reglas de
-      rendimiento y de "Reglas de uso" respetadas.
-- [ ] Imágenes con su origen, licencia y crédito; ninguna encontrada presentada como del cliente.
-- [ ] Contraste calculado de cada par; adornos ocultos a lectores de pantalla.
+- [ ] Cada candidato tiene su fila en el acta; ninguno se borró.
 - [ ] `python .ai/bin/aidd.py validate docs/specs/NNN-<slug>` sin errores.
 
-Presenta el resumen (composición elegida, cambios al sistema, animaciones, riesgos) y pide
-aprobación: `design.md` pasa a `approved`. Siguiente paso: `/plan NNN`.
-
-## Modos `--bolder` y `--quieter`
-
-Sobre un `design.md` ya escrito, cuando una sección elegida se lee plana o grita:
-`references/creatividad.md` §8. Solo la sección nombrada, con el vocabulario del sistema; decisión
-`refinado` en `design.md` y nueva inspección de la sección. Si el diseño ya está aprobado, vuelve a
-`draft` hasta que el usuario lo apruebe y, si ya hay plan, después `/plan NNN --fix`.
+Presenta el acta y abre el candidato aceptado (o pasa sus capturas). Pide aprobación: `design.md`
+pasa a `approved`. Siguiente paso: `/plan NNN`. Si el usuario no lo aprueba, pregúntale qué criterio
+falta o sobra, cámbialo y repite el ciclo.
 
 ## Modo `--fix`
 
-Tras una revisión manual de `/implement` que pide otro valor o comportamiento: actualiza
+Tras una revisión manual de `/implement` que pide otro valor o comportamiento: aplica el cambio al
+candidato aceptado, vuelve a medirlo con `evaluate.mjs` (debe seguir pasando) y actualiza
 `design.md` (y "Cambios a incorporar al sistema" si toca el sistema) con la decisión `refinado` y su
-motivo, sin regenerar composiciones. Después, `/plan NNN --fix` añade la tarea.
+motivo. Si el cambio contradice un criterio, primero se cambia el criterio con el usuario. Después,
+`/plan NNN --fix` añade la tarea.

@@ -19,7 +19,7 @@
 
 ## Flujo de trabajo
 1. `/specify` → spec en `docs/specs/NNN-<slug>/spec.md`
-   - Con pantallas: `/design-spec NNN` → 2–3 composiciones y `design.md` aprobado
+   - Con pantallas: `/design-spec NNN` → criterios de diseño, ciclo de candidatos y `design.md` aprobado
 2. `/plan` → `plan.md` con Constitution Check
 3. `/tasks` → `tasks.md`
 4. `/analyze` → verificación independiente de consistencia → `analysis.md`

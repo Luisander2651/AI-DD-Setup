@@ -133,8 +133,9 @@ cambiar la spec, detente y sugiere `/specify --edit` antes de seguir.
 
 Si la spec tiene interfaz, el plan **sigue** su `design.md` aprobado: pantallas con sus
 componentes, "Cambios a incorporar al sistema" (la primera tarea los aplica), fichas de movimiento
-`M-n` (cada una con su test o `verificación manual:`) y la composición elegida como referencia de
-las verificaciones visuales. Recetas de tests del sistema: `../design-spec/references/spec-mode.md`
+`M-n` (cada una con su test o `verificación manual:`), el candidato aceptado como referencia de
+las verificaciones visuales y `design/criterios.json` como verificación de cada pantalla
+(`evaluate.mjs` sobre la build, en la Trazabilidad). Recetas de tests del sistema: `../design-spec/references/spec-mode.md`
 §10; íconos e imagen para compartir: §7. Si el plan necesita un valor visual que `design.md` no
 fija, no lo inventes: `/design-spec NNN --fix`.
 

@@ -5,7 +5,7 @@ options: {{3 | 2}}        # 2 si el usuario ya trae marca y paleta
 
 # Brief de diseño de {{project_name}}
 
-Respuestas de la entrevista de diseño de `/init` (Ronda 4b). Lo usan las opciones y
+Respuestas de la entrevista de diseño de `/init` (Ronda 4b). Lo usan los candidatos y
 `creative-direction.md`; no se edita después de elegir (los cambios van al sistema).
 
 ## Objetivo
@@ -28,7 +28,7 @@ Investigación en `nicho.md` ({{completa | ligera | omitida}}); territorio elegi
 - No gustan: {{…}}
 
 ## Concepto firma y clichés del sector
-- Concepto firma: {{idea y momento en que se ve, o "ninguno: lo proponen las opciones"}}
+- Concepto firma: {{idea y momento en que se ve, o "ninguno"}}
 - Clichés del sector a evitar: {{…}}
 
 ## Movimiento y densidad
@@ -37,7 +37,15 @@ Investigación en `nicho.md` ({{completa | ligera | omitida}}); territorio elegi
 ## Librería de componentes
 {{p. ej. Ionic, Material, ninguna; cuánto se personaliza}}
 
-## Contenido real para las opciones
+## Criterios de diseño
+Modo de la pantalla principal: {{persuadir · operar · leer}} · umbral {{80}} · mínimo por punto
+{{3}} · presupuesto {{5}} candidatos. Detalle en `criterios.json`.
+
+| ID | Qué se mide | Objetivo | Sale de |
+|---|---|---|---|
+| {{K1}} | {{…}} | {{…}} | {{brief · constitución}} |
+
+## Contenido real para los candidatos
 {{nombre del producto y textos de la primera feature del roadmap; nunca lorem ipsum}}
 
 ## Decisiones

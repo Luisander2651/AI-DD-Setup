@@ -52,23 +52,25 @@ solo se pregunta, en la Fase 0, si documentar el diseño existente. Antes de est
 el nicho (`../../design-spec/references/nicho.md`): las preguntas 1, 4 y 5 parten de lo encontrado, no de cero.
 1. Objetivo del diseño y qué debe sentir quien lo usa; público y contexto de uso (prisa, una mano,
    luz exterior, edad).
-2. Marca: ¿hay logo y paleta cerrados? (sí → 2 opciones · no → 3) · colores pedidos y a evitar.
+2. Marca: ¿hay logo y paleta cerrados? (sí → los candidatos solo cambian tipografía, forma y
+   composición) · colores pedidos y a evitar · ¿qué recursos de marca existen (logo, fotos, íconos)?
 3. Tipografía preferida o estilo (geométrica, humanista, con cifras tabulares para datos) · claro,
    oscuro o ambos.
 4. Referencias que gustan y que no, **con nombre** (productos, sitios o apps; si solo hay
    adjetivos, pide un ejemplo; ofrece los referentes de `nicho.md`) · librería de componentes prevista y cuánto se personaliza.
 5. Identidad: presenta los **2–3 territorios** de `nicho.md` §4 (frase, de dónde sale, concepto
    firma, tono, movimiento y superficies) y pide que elija uno, combine o proponga el suyo; si ya
-   trae un concepto firma, se usa ese (sí → las opciones componen esa idea · ninguno elegido →
-   cada opción desarrolla un territorio) · clichés del sector: propón los de "Lo que todos
+   trae un concepto firma, se usa ese · clichés del sector: propón los de "Lo que todos
    repiten" y pide que confirme, quite o añada.
-6. Movimiento y fondos: con ejemplos del territorio, ¿hasta qué registro se puede llegar (sobrio,
-   firme, audaz: `../../design-spec/references/creatividad.md` §4), escenas de scroll sí o no, y
-   qué superficies (color sólido, textura, patrón, fotografía, ilustración)? · ¿Qué **imágenes
-   existen de verdad** (fotos o vídeo propios del producto, el lugar o el proceso; interfaz real;
-   herramienta para generarlas) y se pueden usar imágenes de colecciones abiertas con crédito? ·
-   ¿Qué podría **hacer** el visitante en la página (la cosa viva: configurar, calcular, probar,
-   ver algo que cambia cada visita)?
+6. Movimiento y fondos: con ejemplos del territorio, ¿cuánto movimiento (ninguno, respuesta en
+   controles, entradas, escenas) y qué superficies (color sólido, textura, patrón, fotografía,
+   ilustración)?
+7. Criterios (`../../design-spec/references/criterios.md`): ¿qué tiene que lograr la pantalla
+   principal (la acción que debe hacer quien llega, lo que debe entender en cinco segundos) y qué
+   presupuestos fija la constitución? Propón los KPIs por defecto de su modo, la rúbrica con sus
+   pesos, el umbral (80), el mínimo por punto (3) y el presupuesto de candidatos (5); confirma o
+   ajusta. Van a `brief.md` y a `docs/design/criterios.json`, y el umbral, el mínimo y el
+   presupuesto a `.ai/project.yaml → design`.
 
 **Ronda 4c — SEO** (solo si el sitio es indexable: `../../seo/references/audit.md` §1). En brownfield, confirma lo que
 detectó H.
