@@ -16,7 +16,7 @@ Diseño y SEO tienen skills propias: `/init` llama a `/design-spec system` y a `
 Al terminar, el repositorio tiene una fuente de verdad (constitución, arquitectura, specs) que
 todos los comandos posteriores leen y respetan.
 
-**Versión del paquete de skills:** `1.18.1` (se escribe en `.ai/project.yaml → skills_version`).
+**Versión del paquete de skills:** `1.19.0` (se escribe en `.ai/project.yaml → skills_version`).
 
 ## Argumentos
 

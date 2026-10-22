@@ -82,6 +82,12 @@ Reglas de cada candidato:
    la app (p. ej. `@fontsource/<familia>/files/<familia>-latin-400-normal.woff2`). La fuente de
    marca no es una del sistema salvo que el brief lo pida; se justifica contra lo que el brief pide
    de la letra (legibilidad en el contexto de uso, tono, cifras, idioma).
+   **Lista corta antes del primer candidato:** tres parejas candidatas, cada una con su motivo en el
+   brief o el nicho (el oficio, el lugar, el uso: un estarcido de cajas de herramientas, una letra
+   de legibilidad para leer en la calle…). Una familia "de moda" (Inter, Geist, Space Grotesk, Satoshi,
+   una condensada tipo DIN) solo entra si el brief la justifica, nunca por defecto. Mono solo donde
+   el contenido es un dato, un código o un documento impreso; las etiquetas van en la letra del
+   texto, no en mono en mayúsculas espaciadas.
 2. **Pares de contraste:** en "Color" de `c<N>.html`, solo los pares cuyos tokens existen (los demás
    con `data-optional`); ninguno puede salir "no cumple": se corrigen los tokens, no el umbral.
 3. **Contenido real:** nombre del producto y textos de la primera feature del roadmap, datos de

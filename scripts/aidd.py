@@ -47,7 +47,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.18.1"
+VERSION = "1.19.0"
 
 SPEC_STATES = {"draft", "inferred", "approved", "implemented", "released"}
 PLAN_STATES = {"draft", "approved", "blocked"}
@@ -105,7 +105,7 @@ SPEC_DESIGN_EXPLORATION = {"loop", "options", "none"}   # options: actas anterio
 KPI_TYPES = {"above_fold", "above_fold_all", "visible", "order", "max_bytes", "max_js_bytes", "max_lcp_ms",
              "max_cls", "max_heading_lines", "max_page_screens", "fonts_loaded", "scenes", "moving_elements",
              "custom_background", "max_samples"}
-RUBRIC_KEYS = {"jerarquia", "primera_pantalla", "sistema", "lectura", "plantilla", "riqueza"}
+RUBRIC_KEYS = {"jerarquia", "primera_pantalla", "sistema", "lectura", "plantilla", "riqueza", "tipografia"}
 SEO_RENDERING = {"static", "ssr", "spa", "hybrid"}
 # Modelo de cada perfil de subagente (shared/contract.md → "Modelo de cada subagente").
 MODEL_PROFILES = ("critical", "standard", "mechanical", "implementation")

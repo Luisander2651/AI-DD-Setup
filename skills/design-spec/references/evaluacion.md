@@ -76,7 +76,7 @@ Eres el evaluador de diseño. No diseñaste esto y no lo vas a mejorar: lo punt�
 3. Lista los tres problemas que más bajan la nota, cada uno con la captura y qué tendría que pasar
    en la pantalla para corregirlo (sin proponer estilos nuevos fuera del sistema).
 Responde solo con JSON:
-{"scores":{"jerarquia":n,"primera_pantalla":n,"sistema":n,"lectura":n,"plantilla":n[,"riqueza":n]},
+{"scores":{"jerarquia":n,"primera_pantalla":n,"sistema":n,"lectura":n,"plantilla":n[,"riqueza":n][,"tipografia":n]},
  "evidence":{"<punto>":"<archivo · zona · por qué>"},
  "vs_best":{"<punto>":"mejor|peor|igual"},"problems":["…","…","…"]}
 ```

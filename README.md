@@ -114,7 +114,8 @@ acepta el que supera un nivel medible.
      interfaz tiene al menos uno.
    - **Rúbrica** de cinco puntos con escala anclada (jerarquía, primera pantalla en cinco segundos,
      coherencia con el sistema y la marca, lectura y ritmo, diferencia frente a una plantilla), más
-     `riqueza` (fondos, imágenes y movimiento) cuando la spec le da peso. Las fotos de muestra
+     `riqueza` (fondos, imágenes y movimiento) y `tipografia` (la letra sale del oficio o del uso, no
+     de la pareja por defecto) cuando la spec les da peso. Las fotos de muestra
      (Unsplash y similares) se permiten para ver la composición, nunca como el negocio, y se
      sustituyen antes de publicar.
 2. **Ciclo:** candidato (una página real a ancho de ventana) → `scripts/evaluate.mjs` mide puertas y

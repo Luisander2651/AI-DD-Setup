@@ -369,6 +369,12 @@ def scenario_design_loop():
     val = project(acta.format(score=84, extra=""), criteria=rich)
     check("rúbrica con riqueza (pesos 100) y KPIs de escena y muestras → sin errores",
           "pesos" not in val and "desconocido" not in val, val)
+    typo = dict(crit, rubric={"weights": {"jerarquia": 15, "primera_pantalla": 15, "sistema": 15, "lectura": 10, "plantilla": 15,
+                                          "riqueza": 10, "tipografia": 20}})
+    val = project(acta.format(score=84, extra=""), criteria=typo)
+    check("rúbrica con punto tipografia → sin errores", "pesos" not in val and "desconocido" not in val, val)
+    tpl = open(os.path.join(root, "skills", "init", "templates", "design", "anti-cliches.md"), encoding="utf-8").read()
+    check("anti-cliches.md: mono en mayúsculas y pareja por defecto como clichés", "mono, mayúsculas" in tpl and "tipo DIN" in tpl)
     val = project(acta.format(score=84, extra=""), criteria=dict(crit, rubric={"weights": {"jerarquia": 50, "brillo": 20}}))
     check("pesos que no suman 100 y punto desconocido → errores", "suman 70" in val and "brillo" in val, val)
     val = project(acta.format(score=84, extra=""), yaml_extra="  threshold: 150\n  budget: 0\n")

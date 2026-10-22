@@ -17,6 +17,8 @@ añade al final los clichés del sector del producto (Ronda 4b), cada uno con su
 | Estado transmitido solo por color | Color + texto o icono con nombre accesible |
 | Tríada de tarjetas icono + título + texto para presentar la empresa o las ventajas | Una forma propia de la idea: texto corrido, una pieza destacada o datos reales |
 | Fuente del sistema como tipografía de marca | Familia elegida e incrustada |
+| Etiquetas en mono, mayúsculas y espaciado ancho en cada bloque ("01 · SERVICIOS") | Etiquetas en la letra del texto; mono solo para datos, código o documentos impresos |
+| Pareja por defecto: condensada tipo DIN o grotesca de moda + mono | Familias con motivo en el oficio, el lugar o el uso (`system-mode.md` §2.4) |
 | Mismo esqueleto con otra piel en cada opción | Composición distinta de la pantalla principal |
 | Fondos de moda sin relación con la idea (manchas difusas, degradado de malla, vidrio esmerilado, grano en toda la página) | Superficies que salen del territorio, o color sólido elegido a propósito |
 | Todo entra con el mismo fundido al hacer scroll; parallax o contadores sin datos | Movimiento solo donde pasa el filtro de `movimiento.md` |

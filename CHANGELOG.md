@@ -3,6 +3,18 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [1.19.0] - 2026-10-22
+La letra deja de ser la pareja por defecto.
+
+### Added
+- Punto opcional `tipografia` en la rúbrica (peso 0 por defecto), con anclas: de "pareja por defecto
+  sin relación con el contenido" a "la letra sale del oficio, del lugar o del uso y se compone con
+  detalle".
+- `system-mode.md` §2.4: lista corta de tres parejas con su motivo antes del primer candidato;
+  familias de moda solo si el brief las justifica; mono solo para datos, código o documentos.
+- Dos clichés nuevos en la plantilla de `anti-cliches.md`: etiquetas en mono en mayúsculas
+  espaciadas en cada bloque, y la pareja condensada tipo DIN o grotesca de moda + mono.
+
 ## [1.18.1] - 2026-10-22
 Correcciones tras la prueba del sistema con dirección oscura y de las specs de galería y menú (sitio
 de ejemplo).
